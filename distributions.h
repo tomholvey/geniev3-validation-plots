@@ -15,25 +15,34 @@ class TCanvas;
 class TH1;
 
 /**
- * A kinematic distribution (base class).
+ * \class Distribution
+ * \brief A kinematic distribution (base class).
+ *
+ * \param _name A string name
+ * \param _filter The event filter to apply before filling the distribution
  */
 struct Distribution {
+  /** Constructor. */
   Distribution(std::string _name, Filter* _filter)
       : filter(_filter), name(_name) {}
 
+  /** Constructor. */
   Distribution(std::string _name, std::string _title,
                TH1* _hist, Filter* _filter);
 
+  /** Fill the distribution histogram */
   virtual void Fill(const simb::MCTruth& truth, float w=1.0) = 0;
 
+  /** Write to a ROOT file. */
   void Write();
 
+  /** Plot and save to a PDF. */
   void Save(TCanvas* c=NULL);
 
-  TH1* hist;
-  Filter* filter;
-  std::string name;
-  std::string title;
+  TH1* hist;  //!< A generic ROOT histogram
+  Filter* filter;  //!< The event filter function
+  std::string name;  //!< Distribution name
+  std::string title;  //!< Distribution ROOT/LaTeX title
 };
 
 
@@ -104,9 +113,33 @@ namespace distributions {
 
   /** Leading/subleading proton KE */
   struct MultP : public Distribution {
-    MultP(std::string _name, Filter* _filter, float ethreshold=0);
+    MultP(std::string _name, Filter* _filter, float _ethreshold=0);
     void Fill(const simb::MCTruth& truth, float w=1.0);
     float ethreshold;  //!< KE threshold (GeV)
+  };
+
+
+  /** Leading pion momentum */
+  struct PPiLead : public Distribution {
+    PPiLead(std::string _name, Filter* _filter, bool _charged=false);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
+    bool charged;  //!< Consider only charged pions
+  };
+
+
+  /** Leading pion angle */
+  struct ThetaPiLead : public Distribution {
+    ThetaPiLead(std::string _name, Filter* _filter, bool _charged=false);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
+    bool charged;  //!< Consider only charged pions
+  };
+
+
+  /** Leading pion/lepton angle */
+  struct ThetaLepPiLead : public Distribution {
+    ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged=false);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
+    bool charged;  //!< Consider only charged pions
   };
 
 }  // namespace distributions

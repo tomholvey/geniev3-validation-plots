@@ -41,7 +41,9 @@ int main(int argc, char* argv[]) {
 
   // Define event filters
   filters::NuMode* filt_num_ccqe = new filters::NuMode(14, simb::kQE, simb::kCC);
+  filters::NuMode* filt_nue_ccqe = new filters::NuMode(12, simb::kQE, simb::kCC);
   filters::NuMode* filt_num_ccmec = new filters::NuMode(14, simb::kMEC, simb::kCC);
+  filters::NuMode* filt_num_ccres = new filters::NuMode(14, simb::kRes, simb::kCC);
 
   // Define distributions (plots)
   std::vector<Distribution*> dists = {
@@ -57,9 +59,31 @@ int main(int argc, char* argv[]) {
     new distributions::MultP("num_ccqe_multp", filt_num_ccqe),
     new distributions::MultP("num_ccqe_multp_30MeV", filt_num_ccqe, 0.03),
 
-    // numuCCMEC
+    // nueCCQE
+    new distributions::Q2("nue_ccqe_q2", filt_nue_ccqe),
+    new distributions::Q0Q3("nue_ccqe_q0q3", filt_nue_ccqe),
+    new distributions::W("nue_ccqe_w", filt_nue_ccqe),
+    new distributions::BjorkenX("nue_ccqe_bjorkenx", filt_nue_ccqe),
+    new distributions::InelasticityY("nue_ccqe_inely", filt_nue_ccqe),
+    new distributions::PLep("nue_ccqe_plep", filt_nue_ccqe),
+    new distributions::ThetaLep("nue_ccqe_tlep", filt_nue_ccqe),
+    new distributions::PThetaLep("nue_ccqe_ptlep", filt_nue_ccqe),
+    new distributions::MultP("nue_ccqe_multp", filt_nue_ccqe),
+    new distributions::MultP("nue_ccqe_multp_30MeV", filt_nue_ccqe, 0.03),
+
+    // numCCMEC
     new distributions::Q0Q3("num_ccmec_q0q3", filt_num_ccmec),
-    new distributions::Pke("num_ccmec_ppp", filt_num_ccmec)
+    new distributions::Pke("num_ccmec_ppp", filt_num_ccmec),
+
+    // numCCRes
+    new distributions::Q0Q3("num_ccres_q0q3", filt_num_ccres),
+    new distributions::W("num_ccres_w", filt_num_ccres),
+    new distributions::PLep("num_ccres_plep", filt_num_ccres),
+    new distributions::ThetaLep("num_ccres_tlep", filt_num_ccres),
+    new distributions::PThetaLep("num_ccres_ptlep", filt_num_ccres),
+    new distributions::PPiLead("num_ccres_ppi", filt_num_ccres),
+    new distributions::ThetaPiLead("num_ccres_tpi", filt_num_ccres),
+    new distributions::ThetaLepPiLead("num_ccres_tlpi", filt_num_ccres)
   };
 
   size_t nevents = 0;

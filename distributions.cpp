@@ -44,7 +44,7 @@ namespace distributions {
   }
 
   void Q2::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(truth.GetNeutrino().QSqr());
+    dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().QSqr(), w);
   }
 
 
@@ -57,7 +57,7 @@ namespace distributions {
   }
 
   void W::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(truth.GetNeutrino().W());
+    dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().W(), w);
   }
 
 
@@ -70,7 +70,7 @@ namespace distributions {
   }
 
   void BjorkenX::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(truth.GetNeutrino().X());
+    dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().X(), w);
   }
 
 
@@ -83,7 +83,7 @@ namespace distributions {
   }
 
   void InelasticityY::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(truth.GetNeutrino().Y());
+    dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Y(), w);
   }
 
 
@@ -96,7 +96,7 @@ namespace distributions {
   }
 
   void PLep::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(truth.GetNeutrino().Lepton().P());
+    dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Lepton().P(), w);
   }
 
 
@@ -109,7 +109,7 @@ namespace distributions {
   }
 
   void ThetaLep::Fill(const simb::MCTruth& truth, float w) {
-    hist->Fill(cos(truth.GetNeutrino().Lepton().Momentum().Theta()));
+    dynamic_cast<TH1F*>(hist)->Fill(cos(truth.GetNeutrino().Lepton().Momentum().Theta()), w);
   }
 
 
@@ -125,7 +125,7 @@ namespace distributions {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
     float q3 = (nu.Nu().Momentum().Vect() - nu.Lepton().Momentum().Vect()).Mag();
-    hist->Fill(q3, q0);
+    dynamic_cast<TH2F*>(hist)->Fill(q3, q0, w);
   }
 
 
@@ -141,7 +141,7 @@ namespace distributions {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
     float p = lep.P();
     float ct = cos(lep.Momentum().Theta());
-    hist->Fill(p, ct);
+    dynamic_cast<TH2F*>(hist)->Fill(p, ct, w);
   }
 
 
@@ -170,7 +170,7 @@ namespace distributions {
       }
     }
 
-    hist->Fill(plead, psub);
+    dynamic_cast<TH2F*>(hist)->Fill(plead, psub, w);
   }
 
 
@@ -191,7 +191,111 @@ namespace distributions {
       }
     }
 
-    hist->Fill(np);
+    dynamic_cast<TH1F*>(hist)->Fill(np, w);
+  }
+
+
+  PPiLead::PPiLead(std::string _name, Filter* _filter, bool _charged)
+      : Distribution(_name, _filter), charged(_charged) {
+    title = std::string("Leading #pi, p_{#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
+    std::string hname = "hppi_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";p_{#pi} (GeV);Events").c_str(),
+                    20, 0, 2);
+  }
+
+  void PPiLead::Fill(const simb::MCTruth& truth, float w) {
+    float plead = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (abs(p.PdgCode()) == 211 || (!charged && p.PdgCode() == 111)) {
+        if (p.P() > plead) {
+          plead = p.P();
+        }
+      }
+    }
+
+    dynamic_cast<TH1F*>(hist)->Fill(plead, w);
+  }
+
+
+  ThetaPiLead::ThetaPiLead(std::string _name, Filter* _filter, bool _charged)
+      : Distribution(_name, _filter), charged(_charged) {
+    title = std::string("Leading #pi, cos#theta_{#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
+    std::string hname = "htpi_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";cos#theta_{#pi};Events").c_str(),
+                    50, -1, 1);
+  }
+
+  void ThetaPiLead::Fill(const simb::MCTruth& truth, float w) {
+    size_t npi = 0;
+    float plead = 0;
+    float ctlead = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (abs(p.PdgCode()) == 211 || (!charged && p.PdgCode() == 111)) {
+        npi++;
+        if (p.P() > plead) {
+          plead = p.P();
+          ctlead = cos(p.Momentum().Theta());
+        }
+      }
+    }
+
+    if (npi > 0) {
+      dynamic_cast<TH1F*>(hist)->Fill(ctlead, w);
+    }
+  }
+
+
+  ThetaLepPiLead::ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged)
+      : Distribution(_name, _filter), charged(_charged) {
+    title = std::string("Leading #pi, cos#theta_{lep,#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
+    std::string hname = "htlp_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";cos#theta_{lep,#pi};Events").c_str(),
+                    50, -1, 1);
+  }
+
+  void ThetaLepPiLead::Fill(const simb::MCTruth& truth, float w) {
+    const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
+
+    size_t npi = 0;
+    float plead = 0;
+    float ctlep = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (abs(p.PdgCode()) == 211 || (!charged && p.PdgCode() == 111)) {
+        npi++;
+        if (p.P() > plead) {
+          plead = p.P();
+          ctlep = cos(lep.Momentum().Vect().Angle(p.Momentum().Vect()));
+        }
+      }
+    }
+
+    if (npi > 0) {
+      dynamic_cast<TH1F*>(hist)->Fill(ctlep, w);
+    }
   }
 
 }  // namespace distributions
