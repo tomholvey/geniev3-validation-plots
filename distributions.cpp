@@ -6,12 +6,11 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH3F.h"
-#include "nusimdata/SimulationBase/MCTruth.h"
-#include "nusimdata/SimulationBase/MCNeutrino.h"
-#include "nusimdata/SimulationBase/MCParticle.h"
-#include "GENIE/Framework/GHEP/GHepStatus.h"
+#include "TMath.h"
+#include "TVector3.h"
 #include "distributions.h"
 #include "filter.h"
+#include <iostream>
 
 // From GENIE: Decoding Z from the PDG code (PDG ion code convention: 10LZZZAAAI)
 int IonPdgCodeToZ(int ion_pdgc) {
@@ -57,8 +56,14 @@ namespace distributions {
                     20, 0, 2);
   }
 
+  #ifndef __NO_LARSOFT__
   void Q2::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().QSqr(), w);
+  }
+  #endif
+
+  void Q2::Fill(const NuisTree& nuistr){
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight);
   }
 
 
@@ -70,8 +75,14 @@ namespace distributions {
                     20, 0, 2);
   }
 
+  #ifndef __NO_LARSOFT__
   void W::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().W(), w);
+  }
+  #endif
+
+  void W::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_genie,nuistr.Weight);
   }
 
 
@@ -83,8 +94,14 @@ namespace distributions {
                     30, 0, 3);
   }
 
+  #ifndef __NO_LARSOFT__
   void BjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().X(), w);
+  }
+  #endif
+
+  void BjorkenX::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight);
   }
 
 
@@ -96,8 +113,14 @@ namespace distributions {
                     20, 0, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void InelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Y(), w);
+  }
+  #endif
+
+  void InelasticityY::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.y, nuistr.Weight);
   }
 
 
@@ -109,8 +132,30 @@ namespace distributions {
                     20, 0, 2);
   }
 
+  #ifndef __NO_LARSOFT__
   void PLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Lepton().P(), w);
+  }
+  #endif
+
+  void PLep::Fill(const NuisTree& nuistr) {
+    // Find final-state lepton in stack
+    int i_lep=-999;
+    for (size_t i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep){
+        // check this is the only lepton we've found
+        if (i_lep!=-999){
+          // previously found another lepton -- error!
+        }
+        i_lep = i;
+      }
+    }
+
+    // Now get lepton momentum from components.
+    TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+    float p = pv.Mag();
+
+    dynamic_cast<TH1F*>(hist)->Fill(p,nuistr.Weight);
   }
 
 
@@ -122,8 +167,14 @@ namespace distributions {
                     50, -1, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void ThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(cos(truth.GetNeutrino().Lepton().Momentum().Theta()), w);
+  }
+  #endif
+
+  void ThetaLep::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.CosLep,nuistr.Weight);
   }
 
 
@@ -135,11 +186,17 @@ namespace distributions {
                     48, 0, 1.2, 48, 0, 1.2);
   }
 
+  #ifndef __NO_LARSOFT__
   void Q0Q3::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
     float q3 = (nu.Nu().Momentum().Vect() - nu.Lepton().Momentum().Vect()).Mag();
     dynamic_cast<TH2F*>(hist)->Fill(q3, q0, w);
+  }
+  #endif
+
+  void Q0Q3::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH2F*>(hist)->Fill(nuistr.q3, nuistr.q0, nuistr.Weight);
   }
 
 
@@ -151,6 +208,7 @@ namespace distributions {
                     50, 0, 0.5, 50, 0, 0.5);
   }
 
+  #ifndef __NO_LARSOFT__
   void LeadPKEQ0::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
@@ -167,6 +225,21 @@ namespace distributions {
 
     dynamic_cast<TH2F*>(hist)->Fill(plead, q0, w);
   }
+  #endif
+
+  void LeadPKEQ0::Fill(const NuisTree& nuistr) {
+    // Loop through final-state particles and find leading proton (defined by highest KE)
+    float KElead = 0;
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i] == 2212){
+        if ((nuistr.fsp_E[i] - 0.938) > KElead){
+          KElead = nuistr.fsp_E[i] - 0.938;
+        }
+      }
+    }
+
+    dynamic_cast<TH2F*>(hist)->Fill(KElead, nuistr.q0, nuistr.Weight);
+  }
 
 
   PThetaLep::PThetaLep(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
@@ -177,11 +250,31 @@ namespace distributions {
                     20, 0, 2, 50, -1, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void PThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
     float p = lep.P();
     float ct = cos(lep.Momentum().Theta());
     dynamic_cast<TH2F*>(hist)->Fill(p, ct, w);
+  }
+  #endif
+
+  void PThetaLep::Fill(const NuisTree& nuistr) {
+    // Find final-state lepton in stack
+    int i_lep=-999;
+    for (size_t i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    // Now get lepton momentum from components.
+    TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+    float p = pv.Mag();
+
+    dynamic_cast<TH2F*>(hist)->Fill(p, nuistr.CosLep, nuistr.Weight);
   }
 
 
@@ -193,6 +286,7 @@ namespace distributions {
                     20, 0, 1, 20, 0, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void Pke::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float plead = 0;
     float psub = 0;
@@ -212,6 +306,30 @@ namespace distributions {
 
     dynamic_cast<TH2F*>(hist)->Fill(plead, psub, w);
   }
+  #endif
+
+  void Pke::Fill(const NuisTree& nuistr) {
+
+    // Loop through final-state particles and find leading and subleading proton (defined by highest KE)
+    float KElead = 0;
+    float KEsub = 0;
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i] == 2212){
+          float ke = nuistr.fsp_E[i] - 0.938;
+          if (ke > KEsub){
+            if (ke > KElead){
+              KEsub = KElead;
+              KElead = ke;
+            }
+            else{
+              KEsub = ke;
+            }
+          }
+      }
+    }
+
+    dynamic_cast<TH2F*>(hist)->Fill(KElead, KEsub, nuistr.Weight);
+  }
 
 
   Mult::Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold)
@@ -221,11 +339,12 @@ namespace distributions {
     title = std::string("Multiplicity, PDG ") + spdg + ", " + _filter->title;
     std::string hname = std::string("hmult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 20, 0, 20);
-    mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
   }
 
+  #ifndef __NO_LARSOFT__
   void Mult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t nf = 0;
+    mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
 
     for (int i=0; i<truth.NParticles(); i++) {
       const simb::MCParticle& p = truth.GetParticle(i);
@@ -235,6 +354,31 @@ namespace distributions {
     }
 
     dynamic_cast<TH1F*>(hist)->Fill(nf, w);
+  }
+  #endif
+
+  void Mult::Fill(const NuisTree& nuistr) {
+    size_t nf = 0;
+    if (TMath::Abs(pdg) == 13) mass = 0.105658; // muon
+    else if (TMath::Abs(pdg) == 11) mass = 0.000510; // electron
+    else if (pdg == 311) mass = 0.497648; // k0
+    else if (TMath::Abs(pdg) == 321) mass = 0.493677; // k+/-
+    else if (pdg == 111) mass = 0.134977; // pi0
+    else if (TMath::Abs(pdg) == 211) mass = 0.139570; // pi+/-
+    else if (pdg == 2112) mass = 0.939565; // neutron
+    else if (pdg == 2212) mass = 0.938272; // proton
+    else{
+      std::cout << "Error: could not assign mass for particle with pdg " << pdg << ". Setting mass to 0 - this will mess up any thresholding you try to apply!" << std::endl;
+      mass = 0;
+    }\
+
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i] == pdg && (nuistr.fsp_E[i] - mass) > ethreshold){
+        nf++;
+      }
+    }
+
+    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight);
   }
 
 
@@ -247,6 +391,7 @@ namespace distributions {
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 20, 0, 20);
   }
 
+  #ifndef __NO_LARSOFT__
   void IMult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t nf = -999;
 
@@ -264,6 +409,23 @@ namespace distributions {
 
     dynamic_cast<TH1F*>(hist)->Fill(nf, w);
   }
+  #endif
+
+  void IMult::Fill(const NuisTree& nuistr) {
+
+    // Nuisance tree gives "vertex particles" -- not sure but assuming this is the same thing as intermediate particles
+    // Actually, have recently found that Nuisance "vertex particles" might have a bug. Comenting this out and just filling with -999 to avoid confusion. If we decide we need this, may have to go back and check nuisance code first.
+
+    size_t nf = -999;
+
+    // for (int i=0; i<nuistr.nvertp; i++){
+    //   if (nuistr.vertp_pdg[i] == pdg){
+    //     nf++;
+    //   }
+    // }
+
+    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight);
+  }
 
 
   PPiLead::PPiLead(std::string _name, Filter* _filter, bool _charged)
@@ -275,6 +437,7 @@ namespace distributions {
                     20, 0, 2);
   }
 
+  #ifndef __NO_LARSOFT__
   void PPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float plead = 0;
 
@@ -294,6 +457,24 @@ namespace distributions {
 
     dynamic_cast<TH1F*>(hist)->Fill(plead, w);
   }
+  #endif
+
+  void PPiLead::Fill(const NuisTree& nuistr) {
+
+    // Loop through final-state particles and find leading proton (defined by highest KE)
+    float plead = 0;
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (abs(nuistr.fsp_pdg[i]) == 211 || (!charged && nuistr.fsp_pdg[i] == 111)){
+        TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+        float p = pv.Mag();
+        if (p > plead){
+          plead = p;
+        }
+      }
+    }
+
+    dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight);
+  }
 
 
   ThetaPiLead::ThetaPiLead(std::string _name, Filter* _filter, bool _charged)
@@ -305,6 +486,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void ThetaPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t npi = 0;
     float plead = 0;
@@ -330,6 +512,31 @@ namespace distributions {
       dynamic_cast<TH1F*>(hist)->Fill(ctlead, w);
     }
   }
+  #endif
+
+  void ThetaPiLead::Fill(const NuisTree& nuistr) {
+
+      size_t npi = 0;
+      float plead = 0;
+      float ctlead = 0;
+
+      for (int i=0; i<nuistr.nfsp; i++) {
+
+        if (abs(nuistr.fsp_pdg[i]) == 211 || (!charged && nuistr.fsp_pdg[i] == 111)) {
+          npi++;
+          TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+          float p = pv.Mag();
+          if (p > plead) {
+            plead = p;
+            ctlead = cos(pv.Theta());
+          }
+        }
+      }
+
+      if (npi > 0) {
+        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight);
+      }
+  }
 
 
   ThetaLepPiLead::ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged)
@@ -341,6 +548,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
+  #ifndef __NO_LARSOFT__
   void ThetaLepPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
@@ -368,6 +576,44 @@ namespace distributions {
       dynamic_cast<TH1F*>(hist)->Fill(ctlep, w);
     }
   }
+  #endif
+
+  void ThetaLepPiLead::Fill(const NuisTree& nuistr) {
+
+      size_t npi = 0;
+      float plead = 0;
+      float ctlep = 0;
+      int i_lep = -999;
+      int i_leadingpi = -999;
+
+      for (int i=0; i<nuistr.nfsp; i++) {
+
+        // Find lepton
+        if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+          // check this is the only lepton we've found
+          assert(i_lep==-999);
+          i_lep = i;
+        }
+
+        // Find leading pion
+        if (abs(nuistr.fsp_pdg[i]) == 211 || (!charged && nuistr.fsp_pdg[i] == 111)) {
+          npi++;
+          TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+          float p = pv.Mag();
+          if (p > plead) {
+            plead = p;
+            i_leadingpi = i;
+          }
+        }
+      }
+
+      if (npi > 0) {
+        TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+        TVector3 pv_leadingpi(nuistr.fsp_px[i_leadingpi],nuistr.fsp_py[i_leadingpi],nuistr.fsp_pz[i_leadingpi]);
+        ctlep = cos(pv_lep.Angle(pv_leadingpi));
+        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight);
+      }
+  }
 
 
   ECons::ECons(std::string _name, Filter* _filter)
@@ -379,6 +625,7 @@ namespace distributions {
                     50, -2.5, 2.5);
   }
 
+  #ifndef __NO_LARSOFT__
   void ECons::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float pmass = TDatabasePDG::Instance()->GetParticle(2212)->Mass();
     float nmass = TDatabasePDG::Instance()->GetParticle(2112)->Mass();
@@ -452,6 +699,13 @@ namespace distributions {
 
     dynamic_cast<TH1F*>(hist)->Fill(de, w);
   }
+  #endif
+
+  void ECons::Fill(const NuisTree& nuistr) {
+    // It's not clear that we can recreate this plot with NUISANCE trees (and I'm worried that if we try we will end up with inconsistencies of O(binding energy) with the GENIE implementation that could cause a lot of confusion) so don't try. Just fill with 0s -- if we need to make a similar plot to this in the future, can think through exactly what we want to show and whether that's possible to implement with the NUISANCE trees
+    float de = 0;
+
+    dynamic_cast<TH1F*>(hist)->Fill(de, nuistr.Weight);
+  }
 
 }  // namespace distributions
-

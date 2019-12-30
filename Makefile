@@ -25,9 +25,19 @@ LDFLAGS=$(shell root-config --libs) \
         -L $(LARDATAOBJ_LIB) -l lardataobj_RecoBase \
 	-L $(LARSIM_LIB) -l larsim_EventWeight_Base_dict -l larsim_EventWeight_Base
 
-all: plot_kinematics
+CXXROOTONLY=$(shell root-config --cxx)
+
+CXXFLAGSROOTONLY=$(shell root-config --cflags) -D__NO_LARSOFT__
+
+LDFLAGSROOTONLY=$(shell root-config --libs)
+
+
+all: plot_kinematics plot_kinematics_nuistr
 
 plot_kinematics: plot_kinematics.cpp filter.cpp distributions.cpp
 	@echo Building $@
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
+plot_kinematics_nuistr: plot_kinematics_nuistr.cpp NuisTree.cpp filter.cpp distributions.cpp
+	@echo Building $@
+	$(CXXROOTONLY) $(CXXFLAGSROOTONLY) $(LDFLAGSROOTONLY) -o $@ $^
