@@ -23,9 +23,12 @@ assert len(args.inputs) >= 4, "Did not provide enough inputs! Provide at least t
 
 # Get a list of just the input .root files
 input_rootfiles = []
+input_legendtitles = []
 for input in args.inputs:
     if ".root" in input:
         input_rootfiles.append(input)
+    else:
+        input_legendtitles.append(input)
 
 assert len(input_rootfiles)*2 == len(args.inputs), "Input root files: %s, All inputs: %s"%(input_rootfiles,args.inputs)
 
@@ -47,7 +50,7 @@ os.system('rm *.pdf')
 # Now run compare.py to produce overlay plots
 cmd = 'python compare.py '+str(args.normalize)
 for i in range(len(input_rootfiles)):
-    cmd += ' tmpfile_%d.root '%i + '"'+args.inputs[2*i-1]+'"'
+    cmd += ' tmpfile_%d.root '%i + '"'+input_legendtitles[i]+'"'
 os.system(cmd)
 
 # Clean up by deleting the .root files we made
