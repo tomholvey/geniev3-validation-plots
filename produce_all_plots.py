@@ -32,8 +32,11 @@ assert len(input_rootfiles)*2 = len(args.inputs)
 
 os.system('make plot_kinematics_nuistr')
 
+for i in range(len(input_rootfiles)):
+    outname = 'tmpfile_'+i+'.root'
+    cmd = './plot_kinematics_nuistr tmpfile_'+i+'.root '+input_rootfiles[i]
+    os.system(cmd)
 
-os.system('./plot_kinematics_nuistr uB_mcc9_nominal_out.root ../../Plots/GENIETruthComparisons/uB_all_MCC9Nominal_vectors.root')
 
 ###################################################################
 #                Stage 2: Upload to the webpage                   #
