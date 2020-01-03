@@ -2,12 +2,15 @@
 # Takes as input:
 # - up to 5 input NUISANCE GenericVectors tree files (can be extended if desired -- will also require editing compare.py to accept more than 5 inputs)
 # - a "legend title" for each of those input files (to be used in plot legends and the webpage organisation)
+#
+# Example usage:
+# python produce_all_plots.py /genie/app/users/kduffy/t2k_fit_CC0pi/NoSTV_Noifk/Nov14/uBCCincPlots/NuisTrees/uB_all_MCC8Tune1_vectors.root "MCC8 Tune 1" /genie/app/users/kduffy/t2k_fit_CC0pi/NoSTV_Noifk/Nov14/uBCCincPlots/NuisTrees/uB_all_MCC9Nominal_vectors.root "MCC9 Nominal" /genie/app/users/kduffy/t2k_fit_CC0pi/NoSTV_Noifk/Nov14/uBCCincPlots/NuisTrees/uB_all_MCC9TunedAverage_vectors.root "MCC9 Tuned"
 
 import argparse
 import os
 import glob
 import shutil
-import validationwebhelper
+import websitehelper
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Create and upload a set of validation plots to the https://microboone-sim.fnal.gov website')
@@ -21,22 +24,36 @@ assert len(args.inputs) >= 4, "Did not provide enough inputs! Provide at least t
 # Get a list of just the input .root files
 input_rootfiles = []
 for input in args.inputs:
-    if ".root" in args.inputs:
+    if ".root" in input:
         input_rootfiles.append(input)
 
-assert len(input_rootfiles)*2 = len(args.inputs)
+assert len(input_rootfiles)*2 == len(args.inputs), "Input root files: %s, All inputs: %s"%(input_rootfiles,args.inputs)
 
 ###################################################################
 #                  Stage 1: Make the plots                        #
 ###################################################################
 
+# Build the app to make the plots
 os.system('make plot_kinematics_nuistr')
 
+# Make histograms for each individual thing we want to compare
 for i in range(len(input_rootfiles)):
-    outname = 'tmpfile_'+i+'.root'
-    cmd = './plot_kinematics_nuistr tmpfile_'+i+'.root '+input_rootfiles[i]
+    cmd = './plot_kinematics_nuistr tmpfile_%d.root '%i +input_rootfiles[i]
     os.system(cmd)
 
+# The command above made a lot of .pdf output files that we don't want to keep - delete them to stop filling up directories
+os.system('rm *.pdf')
+
+# Now run compare.py to produce overlay plots
+cmd = 'python compare.py '+str(args.normalize)
+for i in range(len(input_rootfiles)):
+    cmd += ' tmpfile_%d.root '%i + '"'+args.inputs[2*i-1]+'"'
+os.system(cmd)
+
+# Clean up by deleting the .root files we made
+for i in range(len(input_rootfiles)):
+    cmd = 'rm tmpfile_%d.root'%i
+    os.system(cmd)
 
 ###################################################################
 #                Stage 2: Upload to the webpage                   #
@@ -112,14 +129,14 @@ for i in range(len(input_rootfiles)):
 #     for i_subdir in range(0,len(version_sample_subdirs[i_sample])):
 #         sample = version_sample_dirs[i_sample]
 #         subdir = version_sample_subdirs[i_sample][i_subdir]
-#         validationwebhelper.make_html_allplots(version_dir+'/'+sample+'/'+subdir, args.version, sample, subdir)
+#         websitehelper.make_html_allplots(version_dir+'/'+sample+'/'+subdir, args.version, sample, subdir)
 #
 # # For version.html:
 # #  1) For all samples, add a sample header to version.html
 # #  2) For all sample subdirectories, add a link to version_sample_subdir.php to version.html
 #
-# validationwebhelper.make_version_html(args.version, version_sample_dirs, version_sample_subdirs)
+# websitehelper.make_version_html(args.version, version_sample_dirs, version_sample_subdirs)
 #
 # #  3) Edit localincludes/nav-left.html to add a link on the left hand navigation bar to version.html
 #
-# validationwebhelper.add_to_nav_left(args.version)
+# websitehelper.add_to_nav_left(args.version)
