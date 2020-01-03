@@ -391,7 +391,7 @@ namespace distributions {
   ThetaPLead::ThetaPLead(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
     title = std::string("Leading p, cos#theta_{p}, ") + _filter->title;
-    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "htp_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{p};Events").c_str(),
@@ -454,7 +454,7 @@ namespace distributions {
   ThetaLepPLead::ThetaLepPLead(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
     title = std::string("Leading p, cos#theta_{lep,p}, ") + _filter->title;
-    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "htlepp_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{lep,p};Events").c_str(),
@@ -532,7 +532,7 @@ namespace distributions {
   dPhiLepPLead::dPhiLepPLead(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
     title = std::string("Leading p, #Delta#phi_{lep,p}, ") + _filter->title;
-    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "hdphilp_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";#Delta#phi_{lep,p};Events").c_str(),
