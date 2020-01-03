@@ -529,6 +529,84 @@ namespace distributions {
   }
 
 
+  dPhiLepPLead::dPhiLepPLead(std::string _name, Filter* _filter, float _ethreshold)
+      : Distribution(_name, _filter), ethreshold(_ethreshold) {
+    title = std::string("Leading p, #Delta#phi_{lep,p}, ") + _filter->title;
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    std::string hname = "hdphilp_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";#Delta#phi_{lep,p};Events").c_str(),
+                    20, -1, 1);
+  }
+
+  #ifndef __NO_LARSOFT__
+  void dPhiLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
+
+    size_t np = 0;
+    float plead = 0;
+    float dphilep = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (p.PdgCode() == 2212 && (p.E() - 0.938272) > ethreshold) {
+        np++;
+        if (p.P() > plead) {
+          plead = p.P();
+          dphilep = lep.Momentum().Vect().DeltaPhi(p.Momentum().Vect());
+        }
+      }
+    }
+
+    if (np > 0) {
+      dynamic_cast<TH1F*>(hist)->Fill(dphilep, w);
+    }
+  }
+  #endif
+
+  void dPhiLepPLead::Fill(const NuisTree& nuistr) {
+
+      size_t np = 0;
+      float plead = 0;
+      float dphilep = 0;
+      int i_lep = -999;
+      int i_leadingp = -999;
+
+      for (int i=0; i<nuistr.nfsp; i++) {
+
+        // Find lepton
+        if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+          // check this is the only lepton we've found
+          assert(i_lep==-999);
+          i_lep = i;
+        }
+
+        // Find leading proton (above threshold)
+        if (nuistr.fsp_pdg[i] == 2212 && (nuistr.fsp_E[i] - 0.938272) > ethreshold) {
+          np++;
+          TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+          float p = pv.Mag();
+          if (p > plead) {
+            plead = p;
+            i_leadingp = i;
+          }
+        }
+      }
+
+      if (np > 0) {
+        TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+        TVector3 pv_leadingp(nuistr.fsp_px[i_leadingp],nuistr.fsp_py[i_leadingp],nuistr.fsp_pz[i_leadingp]);
+        dphilep = pv_lep.DeltaPhi(pv_leadingp);
+        dynamic_cast<TH1F*>(hist)->Fill(dphilep, nuistr.Weight);
+      }
+  }
+
+
   Mult::Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold)
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];

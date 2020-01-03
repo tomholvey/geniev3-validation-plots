@@ -190,6 +190,17 @@ namespace distributions {
   };
 
 
+  /** Leading proton costheta */
+  struct dPhiLepPLead : public Distribution {
+    dPhiLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
+    #ifndef __NO_LARSOFT__
+    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    #endif
+    void Fill(const NuisTree& nuistr);
+    float ethreshold;  //!< KE threshold (GeV)
+  };
+
+
   /** Final state particle multiplicity */
   struct Mult : public Distribution {
     Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold=0);
