@@ -69,7 +69,7 @@ if __name__ == '__main__':
             for i in range(len(ov)):
                 if ov[i].GetMaximum() > ymax:
                     ymax = ov[i].GetMaximum()
-            ymax *= 1.1
+            ymax *= 1.5
 
             ov[0].GetYaxis().SetRangeUser(0, ymax)
 
