@@ -128,9 +128,9 @@ namespace distributions {
   };
 
 
-  /** Leading proton KE vs. q0 distribution */
-  struct LeadPKEQ0 : public Distribution {
-    LeadPKEQ0(std::string _name, Filter* _filter);
+  /** Lepton p/theta distribution */
+  struct PThetaLep : public Distribution {
+    PThetaLep(std::string _name, Filter* _filter);
     #ifndef __NO_LARSOFT__
     void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
     #endif
@@ -138,9 +138,9 @@ namespace distributions {
   };
 
 
-  /** Lepton p/theta distribution */
-  struct PThetaLep : public Distribution {
-    PThetaLep(std::string _name, Filter* _filter);
+  /** Leading proton KE vs. q0 distribution */
+  struct LeadPKEQ0 : public Distribution {
+    LeadPKEQ0(std::string _name, Filter* _filter);
     #ifndef __NO_LARSOFT__
     void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
     #endif
@@ -155,6 +155,38 @@ namespace distributions {
     void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
+  };
+
+
+  /** Leading proton costheta */
+  struct ThetaPLead : public Distribution {
+    ThetaPLead(std::string _name, Filter* _filter, float _ethreshold=0);
+    #ifndef __NO_LARSOFT__
+    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    #endif
+    void Fill(const NuisTree& nuistr);
+    float ethreshold;  //!< KE threshold (GeV)
+  };
+
+
+  /** Leading proton momentum */
+  struct PPLead : public Distribution {
+    PPLead(std::string _name, Filter* _filter);
+    #ifndef __NO_LARSOFT__
+    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    #endif
+    void Fill(const NuisTree& nuistr);
+  };
+
+
+  /** Leading proton costheta */
+  struct ThetaLepPLead : public Distribution {
+    ThetaLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
+    #ifndef __NO_LARSOFT__
+    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    #endif
+    void Fill(const NuisTree& nuistr);
+    float ethreshold;  //!< KE threshold (GeV)
   };
 
 

@@ -331,6 +331,203 @@ namespace distributions {
     dynamic_cast<TH2F*>(hist)->Fill(KElead, KEsub, nuistr.Weight);
   }
 
+  PPLead::PPLead(std::string _name, Filter* _filter)
+      : Distribution(_name, _filter) {
+    title = std::string("Leading p, p_{p}, ") + _filter->title;
+    std::string hname = "hpp_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";p_{p} (GeV);Events").c_str(),
+                    20, 0, 2);
+  }
+
+  #ifndef __NO_LARSOFT__
+  void PPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    float plead = 0;
+    int nprot = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (p.PdgCode() == 2212) {
+        nprot++;
+        if (p.P() > plead) {
+          plead = p.P();
+        }
+      }
+    }
+
+    if (nprot>0){
+      dynamic_cast<TH1F*>(hist)->Fill(plead, w);
+    }
+  }
+  #endif
+
+  void PPLead::Fill(const NuisTree& nuistr) {
+
+    // Loop through final-state particles and find leading proton (defined by highest KE)
+    float plead = 0;
+    int nprot = 0;
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i] == 2212){
+        nprot++;
+        TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+        float p = pv.Mag();
+        if (p > plead){
+          plead = p;
+        }
+      }
+    }
+
+    if (nprot>0){
+      dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight);
+    }
+  }
+
+
+  ThetaPLead::ThetaPLead(std::string _name, Filter* _filter, float _ethreshold)
+      : Distribution(_name, _filter), ethreshold(_ethreshold) {
+    title = std::string("Leading p, cos#theta_{p}, ") + _filter->title;
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    std::string hname = "htp_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";cos#theta_{p};Events").c_str(),
+                    50, -1, 1);
+  }
+
+  #ifndef __NO_LARSOFT__
+  void ThetaPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    size_t np = 0;
+    float plead = 0;
+    float ctlead = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (p.PdgCode() == 2212 && (p.E() - 0.938272) > ethreshold) {
+        np++;
+        if (p.P() > plead) {
+          plead = p.P();
+          ctlead = cos(p.Momentum().Theta());
+        }
+      }
+    }
+
+    if (np > 0) {
+      dynamic_cast<TH1F*>(hist)->Fill(ctlead, w);
+    }
+  }
+  #endif
+
+  void ThetaPLead::Fill(const NuisTree& nuistr) {
+
+      size_t np = 0;
+      float plead = 0;
+      float ctlead = 0;
+
+      for (int i=0; i<nuistr.nfsp; i++) {
+
+        if (nuistr.fsp_pdg[i] == 2212 && (nuistr.fsp_E[i] - 0.938272) > ethreshold) {
+          np++;
+          TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+          float p = pv.Mag();
+          if (p > plead) {
+            plead = p;
+            ctlead = cos(pv.Theta());
+          }
+        }
+      }
+
+      if (np > 0) {
+        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight);
+      }
+  }
+
+
+  ThetaLepPLead::ThetaLepPLead(std::string _name, Filter* _filter, float _ethreshold)
+      : Distribution(_name, _filter), ethreshold(_ethreshold) {
+    title = std::string("Leading p, cos#theta_{lep,p}, ") + _filter->title;
+    if (ethreshold > 0) title += std::string(", KE_{p} > ") + ethreshold*1000 + std::string(" MeV");
+    std::string hname = "htlepp_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";cos#theta_{lep,p};Events").c_str(),
+                    50, -1, 1);
+  }
+
+  #ifndef __NO_LARSOFT__
+  void ThetaLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
+
+    size_t np = 0;
+    float plead = 0;
+    float ctlep = 0;
+
+    for (int i=0; i<truth.NParticles(); i++) {
+      const simb::MCParticle& p = truth.GetParticle(i);
+
+      if (p.StatusCode() != genie::kIStStableFinalState) {
+        continue;
+      }
+
+      if (p.PdgCode() == 2212 && (p.E() - 0.938272) > ethreshold) {
+        np++;
+        if (p.P() > plead) {
+          plead = p.P();
+          ctlep = cos(lep.Momentum().Vect().Angle(p.Momentum().Vect()));
+        }
+      }
+    }
+
+    if (np > 0) {
+      dynamic_cast<TH1F*>(hist)->Fill(ctlep, w);
+    }
+  }
+  #endif
+
+  void ThetaLepPLead::Fill(const NuisTree& nuistr) {
+
+      size_t np = 0;
+      float plead = 0;
+      float ctlep = 0;
+      int i_lep = -999;
+      int i_leadingp = -999;
+
+      for (int i=0; i<nuistr.nfsp; i++) {
+
+        // Find lepton
+        if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+          // check this is the only lepton we've found
+          assert(i_lep==-999);
+          i_lep = i;
+        }
+
+        // Find leading proton (above threshold)
+        if (nuistr.fsp_pdg[i] == 2212 && (nuistr.fsp_E[i] - 0.938272) > ethreshold) {
+          np++;
+          TVector3 pv(nuistr.fsp_px[i],nuistr.fsp_py[i],nuistr.fsp_pz[i]);
+          float p = pv.Mag();
+          if (p > plead) {
+            plead = p;
+            i_leadingp = i;
+          }
+        }
+      }
+
+      if (np > 0) {
+        TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+        TVector3 pv_leadingp(nuistr.fsp_px[i_leadingp],nuistr.fsp_py[i_leadingp],nuistr.fsp_pz[i_leadingp]);
+        ctlep = cos(pv_lep.Angle(pv_leadingp));
+        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight);
+      }
+  }
+
 
   Mult::Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold)
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
@@ -542,7 +739,7 @@ namespace distributions {
   ThetaLepPiLead::ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged)
       : Distribution(_name, _filter), charged(_charged) {
     title = std::string("Leading #pi, cos#theta_{lep,#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
-    std::string hname = "htlp_" + name;
+    std::string hname = "htlpi_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{lep,#pi};Events").c_str(),
                     50, -1, 1);
