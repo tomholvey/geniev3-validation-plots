@@ -87,13 +87,22 @@ if __name__ == '__main__':
         elif ov[0].IsA() == ROOT.TH2F.Class():
             c.SetRightMargin(0.17)
             for i in range(len(ov)):
-                ov[i].Divide(ov[0])
+                # Draw distribution as-is (comparisons are hard for 2D plots)
+                ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
                 ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
                 ov[i].Draw('colz')
-                ov[i].GetZaxis().SetRangeUser(0,2)
                 ov[i].GetZaxis().SetTitleOffset(1.15)
 
-                plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.pdf'
+                plotname = '_'.join(['nocmp2d'] + legendtitle[i].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
                 c.SaveAs(plotname)
+
+                # Draw ratio to the first one given in arguments
+                # Comment out for now because it's just confusing
+                # ov[i].Divide(ov[0])
+                # ov[i].Draw('colz')
+                # #ov[i].GetZaxis().SetRangeUser(0,2)
+                #
+                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
+                # c.SaveAs(plotname)
 
         del c
