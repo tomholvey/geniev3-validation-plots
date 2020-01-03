@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
   for (Distribution* dist : dists) {
     if (dist->hist->GetEntries() > 0) {
       dist->Write();
-      dist->Save();
+      // dist->Save();
     }
   }
   fout->Close();
