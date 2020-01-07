@@ -93,7 +93,7 @@ if __name__ == '__main__':
                 ov[i].Draw('colz')
                 ov[i].GetZaxis().SetTitleOffset(1.15)
 
-                plotname = '_'.join(['nocmp2d'] + legendtitle[i].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
+                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
                 c.SaveAs(plotname)
 
                 # Draw ratio to the first one given in arguments
