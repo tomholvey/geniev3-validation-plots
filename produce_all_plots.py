@@ -16,6 +16,7 @@ import websitehelper
 parser = argparse.ArgumentParser(description='Create and upload a set of validation plots to the https://microboone-sim.fnal.gov website')
 parser.add_argument('inputs',nargs='*',help='Input files and legend titles, in the format "input1.root legendtitle1.root input2.root legendtitle2 [input3.root legendtitle3 input4.root legendtitle4 input5.root legendtitle5]". You must provide a legend title corresponding to every input file. You must provide at least two input files with legend titles.')
 parser.add_argument('-norm','--normalize',action='store_true',help='Plot area-normalized distributions (rather than absolutely normalized)')
+parser.add_argument('-f','--force',action='store_true',help='Use to force creation of plot directories when that will involve overwriting existing plots. Use with care!')
 args = parser.parse_args()
 
 # Check that we have the right number of inputs
@@ -62,8 +63,15 @@ for i in range(len(input_rootfiles)):
 #                Stage 2: Upload to the webpage                   #
 ###################################################################
 
-# The version and sample labels define the directory where the plots will be copied to. Check if the directory already exists. If it doesn't, make it. If it does, report an error and exit (unless the -f argument has been called, in which case carry on and overwrite everything in that directory)
-# directory = "/web/sites/m/microboone-sim.fnal.gov/data/" + args.version + "/" + args.sample
+# The legendtitle labels define the directory where the plots will be copied to. Check if the directory already exists. If it doesn't, make it. If it does, report an error and exit (unless the -f argument has been called, in which case carry on and overwrite everything in that directory)
+# sample = ""
+# for i in range(len(input_legendtitles)):
+#     if (i > 0):
+#         sample += '-'
+#     sample += '_'.join(input_legendtitles[i].split(' ')[0:])
+# # directory = "/web/sites/m/microboone-sim.fnal.gov/data/" + sample
+#
+# directory = "/genie/app/users/kduffy/tmp/" + sample
 # if not os.path.exists(directory):
 #     print "Making directory " + directory
 #     os.makedirs(directory)
@@ -74,72 +82,60 @@ for i in range(len(input_rootfiles)):
 #         if (args.force==True):
 #             print "[WARNING] Directory " + directory + " exists and is not empty. Overwriting contents..."
 #         else:
-#             print "[ERROR] Directory " + directory + " exists and is not empty. Will not overwrite contents. Please either 1) change your version or sample labels, 2) remove the contents of this directory, or 3) run this script again with the -f flag to force overwrite of the contents of this directory (caution!)"
+#             print "[ERROR] Directory " + directory + " exists and is not empty. Will not overwrite contents. Please either 1) change your legend title labels, 2) remove the contents of this directory, or 3) run this script again with the -f flag to force overwrite of the contents of this directory (caution!)"
 #             exit(1)
 #
 #
 # # Now copy the plots
-# # Make different folders for different reconstruction algorithms, to (hopefully) make it easier to navigate. These algorithms are hardcoded here so will need to be changed by hand if we want the CI to monitor others. Note that order matters (because of the breaks)!
-# algoNames = ['pandora_pandoraNu','pandora_pandoraCosmic','pmtrack', 'showerrecopandora', 'pandoraNuKHit', 'pandoraNuKalmanTrack', 'pandoraNuKalmanShower', 'pandoraKalmanTrack', 'pandoraKalmanShower', 'pandoraTrack', 'pandoraShower', 'pandoraNuPMA', 'pandoraNu', 'pandoraCosmicKHit', 'pandoraCosmicKalmanTrack', 'pandoraCosmic', 'pandora', 'simpleFlashBeam', 'simpleFlashCosmic', 'opflashBeam', 'opflashCosmic', 'hit', 'other']
+# # Make different folders for different interaction channels and neutrino flavours, to (hopefully) make it easier to navigate. These channels/flavours are hardcoded here so will need to be changed by hand if we want the website to separate out others.
+# flavours = ['num','nue']
+# channels = ['ccqe','ccmec','ccres']
+# all_subchannels = []
 #
-# plots = sorted(glob.glob(args.plotdir+'/*.jpg')) + sorted(glob.glob(args.plotdir+'/*.png')) + sorted(glob.glob(args.plotdir+'/*.gif')) + sorted(glob.glob(args.plotdir+'/*.pdf'))
+# plots = sorted(glob.glob('*.pdf'))
+# copied_plots = []
 # for plot in plots:
-#     for algoName in algoNames:
-#         if algoName in plot:
-#             if not os.path.exists(directory+'/'+algoName+'/'):
-#                 os.makedirs(directory+'/'+algoName+'/')
-#             #print plot
-#             shutil.copy2(plot,directory+'/'+algoName+'/')
-#             break
-#         # Add "other" category!
-#         else:
-#             if algoName=='other':
-#                 # If it makes it this far in the loop, the plot does not match any of the given algo names. Put it in an "other" directory
-#                 if not os.path.exists(directory+'/'+algoName+'/'):
-#                     os.makedirs(directory+'/'+algoName+'/')
-#                 shutil.copy2(plot,directory+'/'+algoName+'/')
-#             continue
-#         break
+#     for flavour in flavours:
+#         for channel in channels:
+#             subchannel = flavour + '_' + channel
+#             all_subchannels.append(subchannel)
+#             if flavour in plot and channel in plot:
+#                 if not os.path.exists(directory+'/'+subchannel+'/'):
+#                     os.makedirs(directory+'/'+subchannel+'/')
+#                 #print plot
+#                 shutil.copy2(plot,directory+'/'+subchannel+'/')
+#                 copied_plots.append(plot)
 #
 #
-# #print (os.listdir(directory))
+#
+# # Add "other" category!
+# # Check which plots have not been copied in the above loop, and put them in an "other" category
+# for plot in plots:
+#     if plot not in copied_plots:
+#         all_subchannels.append('other')
+#         if not os.path.exists(directory+'/other/'):
+#             os.makedirs(directory+'/other/')
+#         shutil.copy2(plot,directory+'/other/')
 #
 # # Ok, now we have the plots in the right place, we need to make some webpages to display them!
 #
-# # 1) Make list of version subdirectories (i.e. samples)
-# # 2) Make list of sample subdirectories
+# # Make list of flavour/channel subdirectories
 #
-# version_dir = os.path.dirname(directory)
-# version_subdirs_fullpath = sorted(glob.glob(version_dir+'/*/'))
+# flavour_channel_subdirs = []
+# for tmp in os.listdir(directory):
+#     flavour_channel_subdirs.append(os.path.basename(os.path.normpath(tmp)))
 #
-# version_sample_dirs = []
-# version_sample_subdirs = []
-# for tmp in version_subdirs_fullpath:
-#     sample_subdirs = []
-#     sample_subdirs_fullpath = sorted(glob.glob(tmp+'/*/'))
-#     for tmp2 in sample_subdirs_fullpath:
-#         sample_subdirs.append(os.path.basename(os.path.normpath(tmp2)))
-#     version_sample_dirs.append(os.path.basename(os.path.normpath(tmp)))
-#     version_sample_subdirs.append(sample_subdirs)
+# # For flavour_channel_subdir.php
+# #  - Make flavour_channel_subdir.php to upload all plots in that directory
 #
-# #print version_sample_dirs
-# #print version_sample_subdirs
+# for subdir in flavour_channel_subdirs:
+#     websitehelper.make_html_allplots(directory,sample,subdir)
 #
-# # For version_sample_subdir.php
-# #  1) Make version_sample_subdir.php to upload all plots in that directory
+# # For sample.html:
+# #  - For all sample subdirectories, add a link to flavour_channel_subdir.php to sample.html
 #
-# for i_sample in range(0,len(version_sample_dirs)):
-#     for i_subdir in range(0,len(version_sample_subdirs[i_sample])):
-#         sample = version_sample_dirs[i_sample]
-#         subdir = version_sample_subdirs[i_sample][i_subdir]
-#         websitehelper.make_html_allplots(version_dir+'/'+sample+'/'+subdir, args.version, sample, subdir)
+# websitehelper.make_sample_html(sample,flavour_channel_subdirs)
 #
-# # For version.html:
-# #  1) For all samples, add a sample header to version.html
-# #  2) For all sample subdirectories, add a link to version_sample_subdir.php to version.html
+# #  3) Edit localincludes/nav-left.html to add a link on the left hand navigation bar to sample.html
 #
-# websitehelper.make_version_html(args.version, version_sample_dirs, version_sample_subdirs)
-#
-# #  3) Edit localincludes/nav-left.html to add a link on the left hand navigation bar to version.html
-#
-# websitehelper.add_to_nav_left(args.version)
+# websitehelper.add_to_nav_left(sample)
