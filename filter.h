@@ -10,7 +10,7 @@
 #include <functional>
 #include <string>
 #include "NuisTree.h"
-#ifndef __NO_LARSOFT__
+#ifdef __LARSOFT__
 #include "nusimdata/SimulationBase/MCTruth.h"
 #endif
 
@@ -21,7 +21,7 @@
  * This is a unary_function that must define an operator() that returns
  * true or false depending on whether an event passes.
  */
-#ifndef __NO_LARSOFT__
+#ifdef __LARSOFT__
 class Filter : public std::unary_function<const simb::MCTruth&, bool> {
 public:
   /** Decide whether to process the event. */
@@ -35,8 +35,7 @@ public:
 
   std::string title;  //!< ROOT/LaTeX title
 };
-#endif
-
+#else
 class Filter : public std::unary_function<const NuisTree&, bool> {
 public:
   /** Decide whether to process the event. */
@@ -50,6 +49,7 @@ public:
 
   std::string title;  //!< ROOT/LaTeX title
 };
+#endif
 
 namespace filters {
 
@@ -64,10 +64,11 @@ namespace filters {
   class NuMode : public Filter {
   public:
     NuMode(int _pdg, int _mode, int _cc);
-    #ifndef __NO_LARSOFT__
+    #ifdef __LARSOFT__
     virtual bool operator()(const simb::MCTruth& truth);
-    #endif
+    #else
     virtual bool operator()(const NuisTree& nuistr);
+    #endif
 
     int pdg;  //!< Neutrino PDG code
     int mode;  //!< Interaction mode
@@ -85,10 +86,11 @@ namespace filters {
   class CC1Pi : public Filter {
   public:
     CC1Pi(int _pdg, bool _charged=false);
-    #ifndef __NO_LARSOFT__
+    #ifdef __LARSOFT__
     virtual bool operator()(const simb::MCTruth& truth);
-    #endif
+    #else
     virtual bool operator()(const NuisTree& nuistr);
+    #endif
 
     int pdg;  //!< Neutrino PDG code
     bool charged;  //!< Require one charged pion, no neutrals

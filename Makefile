@@ -11,7 +11,8 @@ CPPFLAGS=-I $(BOOST_INC) \
          -I $(ROOT_INC) \
 	 -I $(LARSIM_INC) \
 	 -I $(GENIE_INC) \
-         -I $(HEP_CONCURRENCY_INC)
+         -I $(HEP_CONCURRENCY_INC) \
+         -D__LARSOFT__
 
 CXX=g++
 CXXFLAGS=-std=c++17 -Wall -Werror -pedantic -g -I.
@@ -27,12 +28,10 @@ LDFLAGS=$(shell root-config --libs) \
 
 CXXROOTONLY=$(shell root-config --cxx)
 
-CXXFLAGSROOTONLY=$(shell root-config --cflags) -D__NO_LARSOFT__
+CXXFLAGSROOTONLY=$(shell root-config --cflags)
 
 LDFLAGSROOTONLY=$(shell root-config --libs)
 
-
-all: plot_kinematics plot_kinematics_nuistr
 
 plot_kinematics: plot_kinematics.cpp filter.cpp distributions.cpp
 	@echo Building $@

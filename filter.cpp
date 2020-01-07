@@ -1,5 +1,5 @@
 #include <string>
-#ifndef __NO_LARSOFT__
+#ifdef __LARSOFT__
 #include "GENIE/Framework/GHEP/GHepStatus.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCNeutrino.h"
@@ -47,15 +47,14 @@ namespace filters {
     title = nu + (cc == enums::kCC ? "CC" : "NC") + inttype;
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   bool NuMode::operator()(const simb::MCTruth& truth) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     return (nu.Nu().PdgCode() == pdg &&
             nu.CCNC() == cc &&
             nu.Mode() == mode);
   }
-  #endif
-
+  #else
   bool NuMode::operator()(const NuisTree& nuistr) {
     int _cc_tmp = nuistr.GetCCNCEnum();
     int _mode_tmp = nuistr.GetGENIEMode();
@@ -63,7 +62,7 @@ namespace filters {
             _cc_tmp == cc &&
             _mode_tmp == mode);
   }
-
+  #endif
 
   CC1Pi::CC1Pi(int _pdg, bool _charged)
       : pdg(_pdg), charged(_charged) {
@@ -71,7 +70,7 @@ namespace filters {
     title = nu + "CC1#pi" + (charged ? "^{#pm}" : "");
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   bool CC1Pi::operator()(const simb::MCTruth& truth) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     if (nu.Nu().PdgCode() != pdg || nu.CCNC() != simb::kCC) {
@@ -100,8 +99,7 @@ namespace filters {
 
     return (npi == 1);
   }
-  #endif
-
+  #else
   bool CC1Pi::operator()(const NuisTree& nuistr) {
     if (nuistr.PDGnu != pdg) return false;
 
@@ -109,6 +107,6 @@ namespace filters {
     if (!charged && (nuistr.flagCC1pip || nuistr.flagCC1pim || nuistr.flagCC1pi0)) return true;
 
     return false;
-  };
-
+  }
+  #endif
 }  // namespace filters

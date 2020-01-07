@@ -8,6 +8,7 @@
 #include "TH3F.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TLorentzVector.h"
 #include "distributions.h"
 #include "filter.h"
 #include <iostream>
@@ -56,7 +57,7 @@ namespace distributions {
                     20, 0, 2);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void Q2::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().QSqr(), w);
   }
@@ -67,61 +68,533 @@ namespace distributions {
   }
 
 
-  W::W(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("W, ") + _filter->title;
-    std::string hname = "hw_" + name;
+  TheoristsW::TheoristsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Theorists W = sqrt(p.p + 2p.q - Q^2), ") + _filter->title;
+    std::string hname = "hthw_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";W (GeV);Events").c_str(),
+                    (title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events").c_str(),
                     20, 0, 2);
   }
 
-  #ifndef __NO_LARSOFT__
-  void W::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  #ifdef __LARSOFT__
+  void TheoristsW::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+
+    TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
+
+    float Q2 = q.Mag2()*-1;
+
+    // To get 4-vector p we need the struck nucleon
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code = 11, this is the struc nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    TLorentzVector p = truth.GetParticle(i_nuc).Momentum();
+
+    float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - Q2);
+
+    dynamic_cast<TH1F*>(hist)->Fill(w_theorist, w);
+  }
+  #endif
+
+  void TheoristsW::Fill(const NuisTree& nuistr) {
+    // Find neutrino and nucleon in list of initial state particles
+    int i_nuc = -999;
+    int i_nu = -999;
+    for (int i=0; i<nuistr.ninitp; i++) {
+      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+        // check this is the only initial nucleon we've found
+        assert(i_nuc==-999);
+        i_nuc = i;
+      }
+      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+        // check this is the only neutrino we've found
+        assert(i_nu==-999);
+        i_nu = i;
+      }
+    }
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_nuc!=-999);
+    assert (i_nu!=-999);
+    assert (i_lep!=-999);
+
+    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+
+    TLorentzVector q = k-kprime;
+    // Sanity check: q should match saved values in tree!
+    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+
+    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+    float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - nuistr.Q2);
+
+    dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight);
+  }
+
+
+  ExperimentalistsW::ExperimentalistsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2), ") + _filter->title;
+    std::string hname = "hexpw_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events").c_str(),
+                    20, 0.5, 1.5);
+  }
+
+  #ifdef __LARSOFT__
+  void ExperimentalistsW::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().W(), w);
   }
   #endif
 
-  void W::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_genie,nuistr.Weight);
+  void ExperimentalistsW::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight);
   }
 
 
-  BjorkenX::BjorkenX(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Bjorken x, ") + _filter->title;
-    std::string hname = "hbx_" + name;
+  TheoristsBjorkenX::TheoristsBjorkenX(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Theorists Bjorken x = Q^2/(2p.q), ") + _filter->title;
+    std::string hname = "hthbx_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Bjorken x;Events").c_str(),
-                    30, 0, 3);
+                    (title + ";Theorists Bjorken x = Q^2/(2p.q);Events").c_str(),
+                    10, 0, 1);
   }
 
-  #ifndef __NO_LARSOFT__
-  void BjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  #ifdef __LARSOFT__
+  void TheoristsBjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+
+    TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
+
+    float Q2 = q.Mag2()*-1;
+
+    // To get 4-vector p we need the struck nucleon
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code = 11, this is the struc nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    TLorentzVector p = truth.GetParticle(i_nuc).Momentum();
+
+    float x = Q2/(2*p.Dot(q));
+
+    dynamic_cast<TH1F*>(hist)->Fill(x, w);
+  }
+  #endif
+
+  void TheoristsBjorkenX::Fill(const NuisTree& nuistr) {
+    // Find neutrino and nucleon in list of initial state particles
+    int i_nuc = -999;
+    int i_nu = -999;
+    for (int i=0; i<nuistr.ninitp; i++) {
+      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+        // check this is the only initial nucleon we've found
+        assert(i_nuc==-999);
+        i_nuc = i;
+      }
+      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+        // check this is the only neutrino we've found
+        assert(i_nu==-999);
+        i_nu = i;
+      }
+    }
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_nuc!=-999);
+    assert (i_nu!=-999);
+    assert (i_lep!=-999);
+
+    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+
+    TLorentzVector q = k-kprime;
+    // Sanity check: q should match saved values in tree!
+    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+
+    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+    float x = nuistr.Q2/(2*p.Dot(q));
+
+    dynamic_cast<TH1F*>(hist)->Fill(x, nuistr.Weight);
+  }
+
+
+  ExperimentalistsBjorkenX::ExperimentalistsBjorkenX(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Experimentalists Bjorken x = Q^2/(2Mq0), ") + _filter->title;
+    std::string hname = "hexpbx_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Experimentalists Bjorken x = Q^2/(2Mq0);Events").c_str(),
+                    15, 0, 1.5);
+  }
+
+  #ifdef __LARSOFT__
+  void ExperimentalistsBjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().X(), w);
   }
   #endif
 
-  void BjorkenX::Fill(const NuisTree& nuistr) {
+  void ExperimentalistsBjorkenX::Fill(const NuisTree& nuistr) {
     dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight);
   }
 
 
-  InelasticityY::InelasticityY(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Inelasticity y, ") + _filter->title;
-    std::string hname = "hinely_" + name;
+  TheoristsInelasticityY::TheoristsInelasticityY(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Theorists Inelasticity y = (p.q)/(p.k), ") + _filter->title;
+    std::string hname = "hthinely_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Inelasticity y;Events").c_str(),
+                    (title + ";Theorists Inelasticity y = (p.q)/(p.k);Events").c_str(),
                     20, 0, 1);
   }
 
-  #ifndef __NO_LARSOFT__
-  void InelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  #ifdef __LARSOFT__
+  void TheoristsInelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+
+    TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
+
+    // To get 4-vector p we need the struck nucleon
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code = 11, this is the struc nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    TLorentzVector p = truth.GetParticle(i_nuc).Momentum();
+
+    TLorentzVector k = nu.Nu().Momentum();
+
+    float y = (p.Dot(q))/(p.Dot(k));
+
+    dynamic_cast<TH1F*>(hist)->Fill(y, w);
+  }
+  #endif
+
+  void TheoristsInelasticityY::Fill(const NuisTree& nuistr) {
+    // Find neutrino and nucleon in list of initial state particles
+    int i_nuc = -999;
+    int i_nu = -999;
+    for (int i=0; i<nuistr.ninitp; i++) {
+      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+        // check this is the only initial nucleon we've found
+        assert(i_nuc==-999);
+        i_nuc = i;
+      }
+      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+        // check this is the only neutrino we've found
+        assert(i_nu==-999);
+        i_nu = i;
+      }
+    }
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_nuc!=-999);
+    assert (i_nu!=-999);
+    assert (i_lep!=-999);
+
+    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+
+    TLorentzVector q = k-kprime;
+    // Sanity check: q should match saved values in tree!
+    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+
+    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+    float y = (p.Dot(q))/(p.Dot(k));
+
+    dynamic_cast<TH1F*>(hist)->Fill(y, nuistr.Weight);
+  }
+
+
+  ExperimentalistsInelasticityY::ExperimentalistsInelasticityY(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Experimentalists Inelasticity y = 1-(Elep/Enu), ") + _filter->title;
+    std::string hname = "hexpinely_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Experimentalists Inelasticity y = 1-(Elep/Enu);Events").c_str(),
+                    20, 0, 1);
+  }
+
+  #ifdef __LARSOFT__
+  void ExperimentalistsInelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Y(), w);
   }
   #endif
 
-  void InelasticityY::Fill(const NuisTree& nuistr) {
+  void ExperimentalistsInelasticityY::Fill(const NuisTree& nuistr) {
     dynamic_cast<TH1F*>(hist)->Fill(nuistr.y, nuistr.Weight);
   }
+
+
+  TheoristsNu::TheoristsNu(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Theorists nu = p.q/sqrt(p^2), ") + _filter->title;
+    std::string hname = "hthnu_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Theorists nu = p.q/sqrt(p^2);Events").c_str(),
+                    20, 0, 1);
+  }
+
+  #ifdef __LARSOFT__
+  void TheoristsNu::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+
+    TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
+
+    // To get 4-vector p we need the struck nucleon
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code = 11, this is the struc nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    TLorentzVector p = truth.GetParticle(i_nuc).Momentum();
+
+    float nu_theorist = p.Dot(q)/TMath::Sqrt(p.Mag2());
+
+    dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, w);
+  }
+  #endif
+
+  void TheoristsNu::Fill(const NuisTree& nuistr) {
+    // Find neutrino and nucleon in list of initial state particles
+    int i_nuc = -999;
+    int i_nu = -999;
+    for (int i=0; i<nuistr.ninitp; i++) {
+      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+        // check this is the only initial nucleon we've found
+        assert(i_nuc==-999);
+        i_nuc = i;
+      }
+      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+        // check this is the only neutrino we've found
+        assert(i_nu==-999);
+        i_nu = i;
+      }
+    }
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_nuc!=-999);
+    assert (i_nu!=-999);
+    assert (i_lep!=-999);
+
+    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+
+    TLorentzVector q = k-kprime;
+    // Sanity check: q should match saved values in tree!
+    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+
+    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+    float nu_theorist = (p.Dot(q))/(p.Mag2());
+
+    dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight);
+  }
+
+
+  ExperimentalistsNu::ExperimentalistsNu(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Experimentalists nu = Enu-Elep = q0, ") + _filter->title;
+    std::string hname = "hexpnu_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Experimentalists nu = Enu-Elep = q0;Events").c_str(),
+                    20, 0, 1);
+  }
+
+  #ifdef __LARSOFT__
+  void ExperimentalistsNu::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+    float q0 = nu.Nu().E() - nu.Lepton().E();
+    dynamic_cast<TH1F*>(hist)->Fill(q0, w);
+  }
+  #endif
+
+  void ExperimentalistsNu::Fill(const NuisTree& nuistr) {
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight);
+  }
+
+
+  BindingE::BindingE(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+    title = std::string("Binding Energy from energy balance (GeV), ") + _filter->title;
+    std::string hname = "hbe_" + name;
+    hist = new TH1F(hname.c_str(),
+                    (title + ";Binding Energy from energy balance (GeV);Events").c_str(),
+                    50, 0, 0.1);
+  }
+
+  #ifdef __LARSOFT__
+  void BindingE::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+    constexpr double TARGET_MASS = 37.215526; // 40Ar, GeV
+    constexpr double NEUTRON_MASS = 0.93956541; // GeV
+    // constexpr double PROTON_MASS = 0.93827208; // GeV
+
+    const simb::MCNeutrino& nu = truth.GetNeutrino();
+
+    // To get 4-vector p we need the struck nucleon
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code = 11, this is the struc nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    TLorentzVector p4v = nu.Nu().Momentum(); // neutrino
+    TLorentzVector p4Ni = truth.GetParticle(i_nuc).Momentum(); // initial hit nucleon
+    TLorentzVector p4l = nu.Lepton().Momentum(); // lepton
+    TLorentzVector p4i(0., 0., 0., TARGET_MASS); // target
+
+    // Final nucleon 4-momentum: p + k = p' + k' -> p' = p + k - k' -> p' = p + q
+    TLorentzVector p4Nf = p4Ni + p4v - p4l;
+
+    // Recoil nucleus 4-momentum
+    TLorentzVector p4f = p4v + p4i - p4l - p4Nf;
+    // Recoiling nucleus mass (takes into account any excitation energy implied
+    // by the initial bound nucleon 4-momentum)
+    double mf = p4f.M();
+    // Kinetic energy of the recoiling nucleus
+    double Tf = p4f.E() - mf;
+
+    // Binding energy from hit nucleon total energy
+    // double Eb_from_En = NEUTRON_MASS - p4Ni.E() - Tf;
+    // Binding energy from full-event energy conservation
+    double reco_Eb = p4v.E() + NEUTRON_MASS - p4Nf.E() - p4l.E() - Tf;
+
+    std::cout << p4v.E() << ", " << p4Nf.E() << ", " << p4l.E() << ": " << reco_Eb << std::endl;
+
+    dynamic_cast<TH1F*>(hist)->Fill(reco_Eb, w);
+  }
+  #endif
+
+  void BindingE::Fill(const NuisTree& nuistr) {
+    constexpr double TARGET_MASS = 37.215526; // 40Ar, GeV
+    constexpr double NEUTRON_MASS = 0.93956541; // GeV
+    // constexpr double PROTON_MASS = 0.93827208; // GeV
+    // Find neutrino and nucleon in list of initial state particles
+    int i_nuc = -999;
+    int i_nu = -999;
+    for (int i=0; i<nuistr.ninitp; i++) {
+      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+        // check this is the only initial nucleon we've found
+        assert(i_nuc==-999);
+        i_nuc = i;
+      }
+      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+        // check this is the only neutrino we've found
+        assert(i_nu==-999);
+        i_nu = i;
+      }
+    }
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_nuc!=-999);
+    assert (i_nu!=-999);
+    assert (i_lep!=-999);
+
+    TLorentzVector p4v(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]); // neutrino
+    TLorentzVector p4Ni(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]); // initial hit nucleon
+    TLorentzVector p4l(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]); // lepton
+    TLorentzVector p4i(0., 0., 0., TARGET_MASS); // target
+
+    // Final nucleon 4-momentum: p + k = p' + k' -> p' = p + k - k' -> p' = p + q
+    TLorentzVector p4Nf = p4Ni + p4v - p4l;
+
+    // Recoil nucleus 4-momentum
+    TLorentzVector p4f = p4v + p4i - p4l - p4Nf;
+    // Recoiling nucleus mass (takes into account any excitation energy implied
+    // by the initial bound nucleon 4-momentum)
+    double mf = p4f.M();
+    // Kinetic energy of the recoiling nucleus
+    double Tf = p4f.E() - mf;
+
+    // Binding energy from hit nucleon total energy
+    // double Eb_from_En = NEUTRON_MASS - p4Ni.E() - Tf;
+    // Binding energy from full-event energy conservation
+    double reco_Eb = p4v.E() + NEUTRON_MASS - p4Nf.E() - p4l.E() - Tf;
+
+    dynamic_cast<TH1F*>(hist)->Fill(reco_Eb, nuistr.Weight);
+  }
+
 
 
   PLep::PLep(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
@@ -132,7 +605,7 @@ namespace distributions {
                     20, 0, 2);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void PLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Lepton().P(), w);
   }
@@ -141,8 +614,8 @@ namespace distributions {
   void PLep::Fill(const NuisTree& nuistr) {
     // Find final-state lepton in stack
     int i_lep=-999;
-    for (size_t i=0; i<nuistr.nfsp; i++){
-      if (nuistr.fsp_pdg[i]==nuistr.PDGLep){
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
         // check this is the only lepton we've found
         if (i_lep!=-999){
           // previously found another lepton -- error!
@@ -167,7 +640,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(cos(truth.GetNeutrino().Lepton().Momentum().Theta()), w);
   }
@@ -186,7 +659,7 @@ namespace distributions {
                     48, 0, 1.2, 48, 0, 1.2);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void Q0Q3::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
@@ -208,7 +681,7 @@ namespace distributions {
                     50, 0, 0.5, 50, 0, 0.5);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void LeadPKEQ0::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
@@ -250,7 +723,7 @@ namespace distributions {
                     20, 0, 2, 50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void PThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
     float p = lep.P();
@@ -262,7 +735,7 @@ namespace distributions {
   void PThetaLep::Fill(const NuisTree& nuistr) {
     // Find final-state lepton in stack
     int i_lep=-999;
-    for (size_t i=0; i<nuistr.nfsp; i++){
+    for (int i=0; i<nuistr.nfsp; i++){
       if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
         // check this is the only lepton we've found
         assert(i_lep==-999);
@@ -286,7 +759,7 @@ namespace distributions {
                     20, 0, 1, 20, 0, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void Pke::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float plead = 0;
     float psub = 0;
@@ -340,7 +813,7 @@ namespace distributions {
                     20, 0, 2);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void PPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float plead = 0;
     int nprot = 0;
@@ -398,7 +871,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ThetaPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t np = 0;
     float plead = 0;
@@ -461,7 +934,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ThetaLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
@@ -539,7 +1012,7 @@ namespace distributions {
                     20, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void dPhiLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
@@ -616,7 +1089,7 @@ namespace distributions {
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 20, 0, 20);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void Mult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t nf = 0;
     mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
@@ -666,7 +1139,7 @@ namespace distributions {
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 20, 0, 20);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void IMult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t nf = -999;
 
@@ -712,7 +1185,7 @@ namespace distributions {
                     20, 0, 2);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void PPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float plead = 0;
 
@@ -761,7 +1234,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ThetaPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     size_t npi = 0;
     float plead = 0;
@@ -823,7 +1296,7 @@ namespace distributions {
                     50, -1, 1);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ThetaLepPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
@@ -900,7 +1373,7 @@ namespace distributions {
                     50, -2.5, 2.5);
   }
 
-  #ifndef __NO_LARSOFT__
+  #ifdef __LARSOFT__
   void ECons::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
     float pmass = TDatabasePDG::Instance()->GetParticle(2212)->Mass();
     float nmass = TDatabasePDG::Instance()->GetParticle(2112)->Mass();
