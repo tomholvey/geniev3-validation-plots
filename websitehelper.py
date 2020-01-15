@@ -19,12 +19,13 @@ def make_html_allplots(sample,subdir):
     f.write('<h2 class="page-title">'+sample+', '+subdir+'</h2>\n')
 
     # Now put in all the plots in the directory
-    plots = glob.glob('/web/sites/m/microboone-sim.fnal.gov/data/' + sample + '/' + subdir +'/*.pdf')
+    plots = glob.glob('/web/sites/m/microboone-sim.fnal.gov/htdocs/data/' + sample + '/' + subdir +'/*.png')
     for plot in plots:
         plotname = os.path.basename(plot)
         #f.write('<a '+plotname+'><img src="'+plot+' alt='+plotname+' style="border: none; width: 400px;"/></a><br /><br />\n')
-        # f.write('<figure>\n <img src="'+plot[len('/web/sites/m/microboone-sim.fnal.gov/'):]+'" alt="'+plotname+'" style="border: none; width: 400px;" />\n <figcaption>\n '+plotname+'\n </figcaption>\n </figure>\n')
-        f.write('<figure>\n <img src="'+plot[len('/web/sites/m/microboone-sim.fnal.gov/'):]+'" alt="style="border: none; width: 400px;" />\n </figure>\n')
+        # f.write('<figure>\n <img src="'+plot[len('/web/sites/m/microboone-sim.fnal.gov/htdocs/'):]+'" alt="'+plotname+'" style="border: none; width: 400px;" />\n <figcaption>\n '+plotname+'\n </figcaption>\n </figure>\n')
+
+        f.write('<figure>\n <a href="'+plot[len('/web/sites/m/microboone-sim.fnal.gov/htdocs/'):]+'" alt="'+plotname+'"> <img src="'+plot[len('/web/sites/m/microboone-sim.fnal.gov/htdocs/'):]+'" alt="'+plotname+'" style="border: none; width: 400px;" >\n </figure>\n')
         f.write('\n')
 
     #f.write('  <?php\n')

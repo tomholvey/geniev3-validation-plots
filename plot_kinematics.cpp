@@ -195,7 +195,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Save histograms (to file and PDF)
+  // Save histograms (to file and png)
   TFile* fout = new TFile(outfile.c_str(), "recreate");
   for (Distribution* dist : dists) {
     if (dist->hist->GetEntries() > 0) {

@@ -42,7 +42,7 @@ void Distribution::Save(TCanvas* c) {
   c = (c == NULL ? new TCanvas("c1", "", 500, 500) : c);
   c->cd();
   hist->Draw("colz");
-  c->SaveAs((std::string("hist_") + name + ".pdf").c_str());
+  c->SaveAs((std::string("hist_") + name + ".png").c_str());
   if (own_canvas) delete c;
 }
 

@@ -49,7 +49,7 @@ if __name__ == '__main__':
             ov.append(fv[i].Get(k.GetName()))
             assert(ov[i])
             ov[i].SetLineColor(color[i])
-            ov[i].SetLineWidth(2)
+            ov[i].SetLineWidth(4)
             ov[i].SetLineStyle(style[i])
 
             if normalize and ov[i].Integral()!=0:
@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 ov[i].Scale(1.0/ov[i].Integral())
 
 
-        c = ROOT.TCanvas('c', '', 500, 500)
+        c = ROOT.TCanvas('c', '', 1500, 1500)
         c.SetLeftMargin(0.15)
 
         if ov[0].IsA() == ROOT.TH1F.Class():
@@ -81,19 +81,27 @@ if __name__ == '__main__':
                 l.AddEntry(ov[i],legendtitle[i])
             l.Draw()
 
-            plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.pdf'
+            plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.png'
             c.SaveAs(plotname)
 
         elif ov[0].IsA() == ROOT.TH2F.Class():
             c.SetRightMargin(0.17)
+            # First do a loop through all these plots to find the maximum z value and set all plots to have the same z scale
+            zmax=0;
+            for i in range(len(ov)):
+                if (ov[i].GetMaximum() > zmax):
+                    zmax = ov[i].GetMaximum()
             for i in range(len(ov)):
                 # Draw distribution as-is (comparisons are hard for 2D plots)
+                #c.SetLogz()
                 ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
                 ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
+                #ov[i].SetMinimum(0)
+                #ov[i].SetMaximum(zmax)
                 ov[i].Draw('colz')
                 ov[i].GetZaxis().SetTitleOffset(1.15)
 
-                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
+                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.png'
                 c.SaveAs(plotname)
 
                 # Draw ratio to the first one given in arguments
@@ -102,7 +110,7 @@ if __name__ == '__main__':
                 # ov[i].Draw('colz')
                 # #ov[i].GetZaxis().SetRangeUser(0,2)
                 #
-                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
+                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.png'
                 # c.SaveAs(plotname)
 
         del c
