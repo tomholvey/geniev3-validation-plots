@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("nue_ccres_multpi0", filt_num_ccres, 111),
     new distributions::Mult("nue_ccres_multkp", filt_num_ccres, 321),
     new distributions::Mult("nue_ccres_multkm", filt_num_ccres, -321),
-    new distributions::Mult("nue_ccres_multk0", filt_num_ccres, 311)
+    new distributions::Mult("nue_ccres_multk0", filt_num_ccres, 311),
 
     // numNC
     new distributions::Q2("num_nc_q2", filt_num_nc),
