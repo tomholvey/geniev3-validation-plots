@@ -65,7 +65,7 @@ namespace filters {
     int _mode_tmp = nuistr.GetGENIEMode();
     if (mode==enums::kUndefined){
       return (nuistr.PDGnu == pdg &&
-              _cc_tmp == cc;
+              _cc_tmp == cc);
     }
     return (nuistr.PDGnu == pdg &&
             _cc_tmp == cc &&
