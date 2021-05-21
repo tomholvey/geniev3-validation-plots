@@ -47,14 +47,14 @@ if __name__ == '__main__':
         print('OBJ %s' % k.GetName())
         for i in range(len(fv)):
             ov.append(fv[i].Get(k.GetName()))
-            assert(ov[i])
-            ov[i].SetLineColor(color[i])
-            ov[i].SetLineWidth(4)
-            ov[i].SetLineStyle(style[i])
+            if(ov[i]):
+                ov[i].SetLineColor(color[i])
+                ov[i].SetLineWidth(4)
+                ov[i].SetLineStyle(style[i])
 
-            if normalize and ov[i].Integral()!=0:
-                # print('normalizing')
-                ov[i].Scale(1.0/ov[i].Integral())
+                if normalize and ov[i].Integral()!=0:
+                    # print('normalizing')
+                    ov[i].Scale(1.0/ov[i].Integral())
 
 
         c = ROOT.TCanvas('c', '', 1500, 1500)
@@ -63,11 +63,12 @@ if __name__ == '__main__':
         if ov[0].IsA() == ROOT.TH1F.Class():
             ov[0].Draw('e1')
             for i in range(len(ov)):
-                ov[i].Draw('e1 same')
+                if (ov[i]): 
+                    ov[i].Draw('e1 same')
 
             ymax = ov[0].GetMaximum()
             for i in range(len(ov)):
-                if ov[i].GetMaximum() > ymax:
+                if (ov[i] and ov[i].GetMaximum() > ymax):
                     ymax = ov[i].GetMaximum()
             ymax *= 1.5
 
@@ -89,18 +90,19 @@ if __name__ == '__main__':
             # First do a loop through all these plots to find the maximum z value and set all plots to have the same z scale
             zmax=0;
             for i in range(len(ov)):
-                if (ov[i].GetMaximum() > zmax):
+                if (ov[i] and ov[i].GetMaximum() > zmax):
                     zmax = ov[i].GetMaximum()
             for i in range(len(ov)):
-                # Draw distribution as-is (comparisons are hard for 2D plots)
-                #c.SetLogz()
-                ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
-                ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
-                #ov[i].SetMinimum(0)
-                #ov[i].SetMaximum(zmax)
-                ov[i].Draw('colz')
-                ov[i].GetZaxis().SetTitleOffset(1.15)
-
+                if (ov[i]):
+                    # Draw distribution as-is (comparisons are hard for 2D plots)
+                    #c.SetLogz()
+                    ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
+                    ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
+                    #ov[i].SetMinimum(0)
+                    #ov[i].SetMaximum(zmax)
+                    ov[i].Draw('colz')
+                    ov[i].GetZaxis().SetTitleOffset(1.15)
+                    
                 plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.png'
                 c.SaveAs(plotname)
 
