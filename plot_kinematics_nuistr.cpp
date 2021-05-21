@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("num_nc_multpi0", filt_num_nc, 111),
     new distributions::Mult("num_nc_multkp", filt_num_nc, 321),
     new distributions::Mult("num_nc_multkm", filt_num_nc, -321),
-    new distributions::Mult("num_nc_multk0", filt_num_nc, 311)
+    new distributions::Mult("num_nc_multk0", filt_num_nc, 311),
 
     // nueNC
     new distributions::Q2("nue_nc_q2", filt_nue_nc),
