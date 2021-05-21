@@ -61,13 +61,13 @@ int main(int argc, char* argv[]) {
 
 
   // Define event filters
-  filters::NuMode* filt_num_ccqe = new filters::NuMode(14, simb::kCC, simb::kQE);
-  filters::NuMode* filt_nue_ccqe = new filters::NuMode(12, simb::kCC, simb::kQE);
-  filters::NuMode* filt_num_ccmec = new filters::NuMode(14, simb::kCC, simb::kMEC);
-  filters::NuMode* filt_num_ccres = new filters::NuMode(14, simb::kCC, simb::kRes);
+  filters::NuMode* filt_num_ccqe = new filters::NuMode(14, enums::kCC, enums::kQE);
+  filters::NuMode* filt_nue_ccqe = new filters::NuMode(12, enums::kCC, enums::kQE);
+  filters::NuMode* filt_num_ccmec = new filters::NuMode(14, enums::kCC, enums::kMEC);
+  filters::NuMode* filt_num_ccres = new filters::NuMode(14, enums::kCC, enums::kRes);
 
-  filters::NuMode* filt_num_nc = new filters::NuMode(14, simb::kNC, enums::kUndefined);
-  filters::NuMode* filt_nue_nc = new filters::NuMode(12, simb::kNC, enums::kUndefined);
+  filters::NuMode* filt_num_nc = new filters::NuMode(14, enums::kNC, enums::kUndefined);
+  filters::NuMode* filt_nue_nc = new filters::NuMode(12, enums::kNC, enums::kUndefined);
 
   // Define distributions (plots)
   std::vector<Distribution*> dists = {
