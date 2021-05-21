@@ -7,6 +7,7 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "gallery/ValidHandle.h"
 #include "canvas/Persistency/Common/FindMany.h"
 #include "canvas/Utilities/InputTag.h"
-#include "nusimdata/SimulationBase/GTruth.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCNeutrino.h"
 #include "distributions.h"
@@ -31,7 +31,9 @@ int main(int argc, char* argv[]) {
   // Parse command-line arguments
   if (argc < 3) {
     std::cout << "Usage: " << argv[0] << " "
-              << "OUTPUT.root INPUT.root [INPUT2.root ...]" << std::endl;
+              << "OUTPUT.root INPUT.root [INPUT2.root ...]" << std::endl
+	      << "Or: " << argv[0] << " "
+	      << "OUTPUT.root -f INPUTLIST.root" << std::endl;  
     return 0;
   }
 
@@ -41,9 +43,22 @@ int main(int argc, char* argv[]) {
   std::string outfile = argv[1];
   std::vector<std::string> filename;
   for (int i=2; i<argc; i++) {
-    std::cout << "FILE " << argv[i] << std::endl;
-    filename.push_back(argv[i]);
+    std::string arg = argv[i];
+    if (arg == "-f"){
+      std::ifstream inputlist(argv[i+1]);
+      std::string line;
+      while (getline (inputlist, line)){
+	  std::cout << "FILE " << line << std::endl;
+	  filename.push_back(line);
+	}
+      i++;
+    }
+    else{
+      std::cout << "FILE " << arg << std::endl;
+      filename.push_back(arg);
+    }
   }
+
 
   // Define event filters
   filters::NuMode* filt_num_ccqe = new filters::NuMode(14, simb::kQE, simb::kCC);
@@ -175,21 +190,22 @@ int main(int argc, char* argv[]) {
     nevents++;
 
     gallery::Handle<std::vector<simb::MCTruth> > mctruths;
-    ev.getByLabel({"generator"}, mctruths);
-
-    art::FindMany<simb::GTruth> gtruths(mctruths, ev, "generator");
+    ev.getByLabel({"generator::HepMCNuWro"}, mctruths);
+    if (mctruths.isValid()){
+      //std::cout << "Looking at NuWro events." << std::endl;
+    }
+    else{
+      std::cout << "Looking at GENIE events" << std::endl;
+      ev.getByLabel({"generator"},mctruths);
+    }
 
     for (size_t i=0, ntruth=mctruths->size(); i<ntruth; i++) {
-      std::vector<const simb::GTruth*> vgtruths;
-      gtruths.get(i, vgtruths);
-      assert(vgtruths.size() == 1);
 
       const simb::MCTruth& mctruth = mctruths->at(i);
-      const simb::GTruth& gtruth = *(vgtruths[0]);
 
       for (Distribution* dist : dists) {
         if ((*dist->filter)(mctruth)) {
-          dist->Fill(mctruth, gtruth);
+          dist->Fill(mctruth);
         }
       }
     }
