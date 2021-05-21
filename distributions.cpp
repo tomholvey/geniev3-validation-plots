@@ -58,7 +58,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void Q2::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void Q2::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().QSqr(), w);
   }
   #endif
@@ -77,7 +77,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void TheoristsW::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void TheoristsW::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
 
     TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
@@ -89,6 +89,7 @@ namespace distributions {
     // Check particle 2 - if status code = 11, this is the struc nucleon
     // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1.
     int i_nuc = -999;
+
     if (truth.GetParticle(2).StatusCode() == 11){
       i_nuc = 2;
     }
@@ -96,6 +97,7 @@ namespace distributions {
       i_nuc = 1;
     }
     int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+
     assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
 
     TLorentzVector p = truth.GetParticle(i_nuc).Momentum();
@@ -161,13 +163,19 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ExperimentalistsW::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ExperimentalistsW::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().W(), w);
   }
   #endif
 
   void ExperimentalistsW::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight);
+
+    float Q2 = nuistr.Q2;
+    float q0 = nuistr.q0;
+    float M = 0.93956541; // neutron mass GeV
+    float W = TMath::Sqrt(M*M + 2*M*q0 - Q2);
+    dynamic_cast<TH1F*>(hist)->Fill(W,nuistr.Weight);
   }
 
 
@@ -180,7 +188,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void TheoristsBjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void TheoristsBjorkenX::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
 
     TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
@@ -264,13 +272,19 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ExperimentalistsBjorkenX::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ExperimentalistsBjorkenX::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().X(), w);
   }
   #endif
 
   void ExperimentalistsBjorkenX::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight);
+
+    float Q2 = nuistr.Q2;
+    float q0 = nuistr.q0;
+    float M = 0.93956541; // neutron mass GeV                                                                               
+    float x = Q2/(2*M*q0);
+    dynamic_cast<TH1F*>(hist)->Fill(x,nuistr.Weight);
   }
 
 
@@ -283,7 +297,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void TheoristsInelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void TheoristsInelasticityY::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
 
     TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
@@ -367,7 +381,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ExperimentalistsInelasticityY::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ExperimentalistsInelasticityY::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Y(), w);
   }
   #endif
@@ -386,7 +400,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void TheoristsNu::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void TheoristsNu::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
 
     TLorentzVector q = nu.Nu().Momentum() - nu.Lepton().Momentum();
@@ -449,11 +463,11 @@ namespace distributions {
 
     TLorentzVector q = k-kprime;
     // Sanity check: q should match saved values in tree!
-    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+    assert((q.Mag2()*-1 - nuistr.Q2) < 1e-4);
 
     TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
 
-    float nu_theorist = (p.Dot(q))/(p.Mag2());
+    float nu_theorist = (p.Dot(q))/(p.Mag());
 
     dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight);
   }
@@ -468,7 +482,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ExperimentalistsNu::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ExperimentalistsNu::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
     dynamic_cast<TH1F*>(hist)->Fill(q0, w);
@@ -489,7 +503,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void BindingE::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void BindingE::Fill(const simb::MCTruth& truth, float w) {
     constexpr double TARGET_MASS = 37.215526; // 40Ar, GeV
     constexpr double NEUTRON_MASS = 0.93956541; // GeV
     // constexpr double PROTON_MASS = 0.93827208; // GeV
@@ -531,7 +545,7 @@ namespace distributions {
     // Binding energy from full-event energy conservation
     double reco_Eb = p4v.E() + NEUTRON_MASS - p4Nf.E() - p4l.E() - Tf;
 
-    std::cout << p4v.E() << ", " << p4Nf.E() << ", " << p4l.E() << ": " << reco_Eb << std::endl;
+    //std::cout << p4v.E() << ", " << p4Nf.E() << ", " << p4l.E() << ": " << reco_Eb << std::endl;
 
     dynamic_cast<TH1F*>(hist)->Fill(reco_Eb, w);
   }
@@ -606,7 +620,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void PLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void PLep::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(truth.GetNeutrino().Lepton().P(), w);
   }
   #endif
@@ -641,13 +655,29 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ThetaLep::Fill(const simb::MCTruth& truth, float w) {
     dynamic_cast<TH1F*>(hist)->Fill(cos(truth.GetNeutrino().Lepton().Momentum().Theta()), w);
   }
   #endif
 
   void ThetaLep::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.CosLep,nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.CosLep,nuistr.Weight);
+
+    // Find lepton  in list of final state particles
+    int i_lep = -999;
+    for (int i=0; i<nuistr.nfsp; i++) {
+      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+        // check this is the only lepton we've found
+        assert(i_lep==-999);
+        i_lep = i;
+      }
+    }
+
+    assert (i_lep!=-999);
+
+    TVector3 p3l(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]); // lepton
+    float costh = p3l.Unit().Dot(TVector3(0,0,1));
+    dynamic_cast<TH1F*>(hist)->Fill(costh,nuistr.Weight);
   }
 
 
@@ -660,7 +690,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void Q0Q3::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void Q0Q3::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
     float q3 = (nu.Nu().Momentum().Vect() - nu.Lepton().Momentum().Vect()).Mag();
@@ -682,7 +712,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void LeadPKEQ0::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void LeadPKEQ0::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
     float q0 = nu.Nu().E() - nu.Lepton().E();
 
@@ -724,7 +754,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void PThetaLep::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void PThetaLep::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
     float p = lep.P();
     float ct = cos(lep.Momentum().Theta());
@@ -760,7 +790,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void Pke::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void Pke::Fill(const simb::MCTruth& truth, float w) {
     float plead = 0;
     float psub = 0;
 
@@ -814,7 +844,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void PPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void PPLead::Fill(const simb::MCTruth& truth, float w) {
     float plead = 0;
     int nprot = 0;
 
@@ -872,7 +902,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ThetaPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ThetaPLead::Fill(const simb::MCTruth& truth, float w) {
     size_t np = 0;
     float plead = 0;
     float ctlead = 0;
@@ -935,7 +965,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ThetaLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ThetaLepPLead::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
     size_t np = 0;
@@ -1013,7 +1043,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void dPhiLepPLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void dPhiLepPLead::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
     size_t np = 0;
@@ -1090,7 +1120,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void Mult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void Mult::Fill(const simb::MCTruth& truth, float w) {
     size_t nf = 0;
     mass = TDatabasePDG::Instance()->GetParticle(pdg)->Mass();
 
@@ -1140,19 +1170,16 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void IMult::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void IMult::Fill(const simb::MCTruth& truth, float w) {
     size_t nf = -999;
 
-    switch (pdg) {
-      case 2212: nf = gtruth.fNumProton; break;
-      case 2112: nf = gtruth.fNumNeutron; break;
-      case  211: nf = gtruth.fNumPiPlus; break;
-      case -211: nf = gtruth.fNumPiMinus; break;
-      case  111: nf = gtruth.fNumPi0; break;
-      default:
-        std::cerr << "IMult::Fill: Unknown PDG " << pdg << std::endl;
-        assert(false);
-        break;
+    assert(pdg == 2212 || pdg == 2112 || pdg == 211 || pdg == -211 || pdg ==111);
+
+    for (int i=0; i<truth.NParticles(); i++){
+      const simb::MCParticle &p = truth.GetParticle(i);
+      if (p.PdgCode() == pdg && p.StatusCode() == genie::kIStHadronInTheNucleus){
+	nf++;
+      }
     }
 
     dynamic_cast<TH1F*>(hist)->Fill(nf, w);
@@ -1186,7 +1213,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void PPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void PPiLead::Fill(const simb::MCTruth& truth, float w) {
     float plead = 0;
 
     for (int i=0; i<truth.NParticles(); i++) {
@@ -1235,7 +1262,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ThetaPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ThetaPiLead::Fill(const simb::MCTruth& truth, float w) {
     size_t npi = 0;
     float plead = 0;
     float ctlead = 0;
@@ -1297,7 +1324,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ThetaLepPiLead::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ThetaLepPiLead::Fill(const simb::MCTruth& truth, float w) {
     const simb::MCParticle& lep = truth.GetNeutrino().Lepton();
 
     size_t npi = 0;
@@ -1374,7 +1401,7 @@ namespace distributions {
   }
 
   #ifdef __LARSOFT__
-  void ECons::Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w) {
+  void ECons::Fill(const simb::MCTruth& truth, float w) {
     float pmass = TDatabasePDG::Instance()->GetParticle(2212)->Mass();
     float nmass = TDatabasePDG::Instance()->GetParticle(2112)->Mass();
 
@@ -1386,17 +1413,34 @@ namespace distributions {
 
     // Target nucleus rest mass
     float tgtmass;
-    TParticlePDG* tgtparticle = TDatabasePDG::Instance()->GetParticle(gtruth.ftgtPDG);
+    int tgtpdg = nu.Target();
+    TParticlePDG* tgtparticle = TDatabasePDG::Instance()->GetParticle(tgtpdg);
     if (tgtparticle) {
       tgtmass = tgtparticle->Mass();
     }
     else {
-      tgtmass = gtruth.ftgtZ * pmass + (gtruth.ftgtA - gtruth.ftgtZ) * nmass;
+      int tgtZ = IonPdgCodeToZ(tgtpdg);
+      int tgtA = IonPdgCodeToA(tgtpdg);
+
+      tgtmass = tgtZ * pmass + (tgtA - tgtZ) * nmass;
     }
 
     // Struck nucleon KE
-    float nucmass = TDatabasePDG::Instance()->GetParticle(nu.HitNuc())->Mass();
-    float enuc = gtruth.fHitNucP4.E() - nucmass;
+    // Get the struck nucleon from the particle stack
+    // Check particle 2 - if status code == 11, this is the struck nucleon
+    // If status code != 11, we are looking at an interaction with a free nucleon, which will be saved by GENIE as particle 1
+    int i_nuc = -999;
+    if (truth.GetParticle(2).StatusCode() == 11){
+      i_nuc = 2;
+    }
+    else{
+      i_nuc = 1;
+    }
+    int nuc_pdg = truth.GetParticle(i_nuc).PdgCode();
+    assert(nuc_pdg==2212 || nuc_pdg==2112 || nuc_pdg==1000010010 || nuc_pdg==1000000010);
+
+    float nucmass = TDatabasePDG::Instance()->GetParticle(nuc_pdg)->Mass();
+    float enuc = truth.GetParticle(i_nuc).Momentum().E() - nucmass;
 
     // Total
     float ei = enu + tgtmass + enuc;

@@ -39,7 +39,7 @@ struct Distribution {
 
   /** Fill the distribution histogram */
   #ifdef __LARSOFT__
-  virtual void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0) = 0;
+  virtual void Fill(const simb::MCTruth& truth, float w=1.0) = 0;
   #endif
   virtual void Fill(const NuisTree& nuistr) = 0;
 
@@ -62,7 +62,7 @@ namespace distributions {
   struct Q2 : public Distribution {
     Q2(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-      void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+      void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -72,7 +72,7 @@ namespace distributions {
   struct TheoristsW : public Distribution {
     TheoristsW(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -81,7 +81,7 @@ namespace distributions {
   struct ExperimentalistsW : public Distribution {
     ExperimentalistsW(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -91,7 +91,7 @@ namespace distributions {
   struct TheoristsBjorkenX : public Distribution {
     TheoristsBjorkenX(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -101,7 +101,7 @@ namespace distributions {
   struct ExperimentalistsBjorkenX : public Distribution {
     ExperimentalistsBjorkenX(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -111,7 +111,7 @@ namespace distributions {
   struct TheoristsInelasticityY : public Distribution {
     TheoristsInelasticityY(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -121,7 +121,7 @@ namespace distributions {
   struct ExperimentalistsInelasticityY : public Distribution {
     ExperimentalistsInelasticityY(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -131,7 +131,7 @@ namespace distributions {
   struct TheoristsNu : public Distribution {
     TheoristsNu(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -141,7 +141,7 @@ namespace distributions {
   struct ExperimentalistsNu : public Distribution {
     ExperimentalistsNu(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -151,7 +151,7 @@ namespace distributions {
   struct BindingE : public Distribution {
     BindingE(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -161,7 +161,7 @@ namespace distributions {
   struct PLep : public Distribution {
     PLep(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -171,7 +171,7 @@ namespace distributions {
   struct ThetaLep : public Distribution {
     ThetaLep(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -181,7 +181,7 @@ namespace distributions {
   struct Q0Q3 : public Distribution {
     Q0Q3(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -191,7 +191,7 @@ namespace distributions {
   struct PThetaLep : public Distribution {
     PThetaLep(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -201,7 +201,7 @@ namespace distributions {
   struct LeadPKEQ0 : public Distribution {
     LeadPKEQ0(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -211,7 +211,7 @@ namespace distributions {
   struct Pke : public Distribution {
     Pke(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -221,7 +221,7 @@ namespace distributions {
   struct ThetaPLead : public Distribution {
     ThetaPLead(std::string _name, Filter* _filter, float _ethreshold=0);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
@@ -232,7 +232,7 @@ namespace distributions {
   struct PPLead : public Distribution {
     PPLead(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
@@ -242,7 +242,7 @@ namespace distributions {
   struct ThetaLepPLead : public Distribution {
     ThetaLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
@@ -253,7 +253,7 @@ namespace distributions {
   struct dPhiLepPLead : public Distribution {
     dPhiLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
@@ -264,7 +264,7 @@ namespace distributions {
   struct Mult : public Distribution {
     Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold=0);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     int pdg;  //!< Particle PDG code
@@ -277,7 +277,7 @@ namespace distributions {
   struct IMult : public Distribution {
     IMult(std::string _name, Filter* _filter, int _pdg);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     int pdg;  //!< Particle PDG code
@@ -288,7 +288,7 @@ namespace distributions {
   struct PPiLead : public Distribution {
     PPiLead(std::string _name, Filter* _filter, bool _charged=false);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
@@ -299,7 +299,7 @@ namespace distributions {
   struct ThetaPiLead : public Distribution {
     ThetaPiLead(std::string _name, Filter* _filter, bool _charged=false);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
@@ -310,7 +310,7 @@ namespace distributions {
   struct ThetaLepPiLead : public Distribution {
     ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged=false);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
@@ -321,7 +321,7 @@ namespace distributions {
   struct ECons : public Distribution {
     ECons(std::string _name, Filter* _filter);
     #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, const simb::GTruth& gtruth, float w=1.0);
+    void Fill(const simb::MCTruth& truth, float w=1.0);
     #endif
     void Fill(const NuisTree& nuistr);
   };
