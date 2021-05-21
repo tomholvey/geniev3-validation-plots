@@ -158,6 +158,58 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("nue_ccres_multkp", filt_num_ccres, 321),
     new distributions::Mult("nue_ccres_multkm", filt_num_ccres, -321),
     new distributions::Mult("nue_ccres_multk0", filt_num_ccres, 311)
+
+    // numNC
+    new distributions::Q2("num_nc_q2", filt_num_nc),
+    new distributions::Q0Q3("num_nc_q0q3", filt_num_nc),
+    new distributions::TheoristsW("num_nc_thw", filt_num_nc),
+    new distributions::TheoristsBjorkenX("num_nc_thbjorkenx", filt_num_nc),
+    new distributions::TheoristsInelasticityY("num_nc_thinely", filt_num_nc),
+    new distributions::ExperimentalistsW("num_nc_expw", filt_num_nc),
+    new distributions::ExperimentalistsBjorkenX("num_nc_expbjorkenx", filt_num_nc),
+    new distributions::ExperimentalistsInelasticityY("num_nc_expinely", filt_num_nc),
+    new distributions::TheoristsNu("num_nc_thnu",filt_num_nc),
+    new distributions::ExperimentalistsNu("num_nc_expnu",filt_num_nc),
+    new distributions::PPLead("num_nc_pp", filt_num_nc),
+    new distributions::ThetaPLead("num_nc_tp", filt_num_nc),
+    new distributions::ThetaPLead("num_nc_tp_40MeV", filt_num_nc, 0.04),
+    new distributions::ThetaLepPLead("num_nc_tlepp", filt_num_nc),
+    new distributions::ThetaLepPLead("num_nc_tlepp_40MeV", filt_num_nc, 0.04),
+    new distributions::Mult("num_nc_multp", filt_num_nc, 2212),
+    new distributions::Mult("num_nc_multp_30MeV", filt_num_nc, 2212, 0.03),
+    new distributions::Mult("num_nc_multn", filt_num_nc, 2112),
+    new distributions::Mult("num_nc_multpip", filt_num_nc, 211),
+    new distributions::Mult("num_nc_multpim", filt_num_nc, -211),
+    new distributions::Mult("num_nc_multpi0", filt_num_nc, 111),
+    new distributions::Mult("num_nc_multkp", filt_num_nc, 321),
+    new distributions::Mult("num_nc_multkm", filt_num_nc, -321),
+    new distributions::Mult("num_nc_multk0", filt_num_nc, 311)
+
+    // nueNC
+    new distributions::Q2("nue_nc_q2", filt_nue_nc),
+    new distributions::Q0Q3("nue_nc_q0q3", filt_nue_nc),
+    new distributions::TheoristsW("nue_nc_thw", filt_nue_nc),
+    new distributions::TheoristsBjorkenX("nue_nc_thbjorkenx", filt_nue_nc),
+    new distributions::TheoristsInelasticityY("nue_nc_thinely", filt_nue_nc),
+    new distributions::ExperimentalistsW("nue_nc_expw", filt_nue_nc),
+    new distributions::ExperimentalistsBjorkenX("nue_nc_expbjorkenx", filt_nue_nc),
+    new distributions::ExperimentalistsInelasticityY("nue_nc_expinely", filt_nue_nc),
+    new distributions::TheoristsNu("nue_nc_thnu",filt_nue_nc),
+    new distributions::ExperimentalistsNu("nue_nc_expnu",filt_nue_nc),
+    new distributions::PPLead("nue_nc_pp", filt_nue_nc),
+    new distributions::ThetaPLead("nue_nc_tp", filt_nue_nc),
+    new distributions::ThetaPLead("nue_nc_tp_40MeV", filt_nue_nc, 0.04),
+    new distributions::ThetaLepPLead("nue_nc_tlepp", filt_nue_nc),
+    new distributions::ThetaLepPLead("nue_nc_tlepp_40MeV", filt_nue_nc, 0.04),
+    new distributions::Mult("nue_nc_multp", filt_nue_nc, 2212),
+    new distributions::Mult("nue_nc_multp_30MeV", filt_nue_nc, 2212, 0.03),
+    new distributions::Mult("nue_nc_multn", filt_nue_nc, 2112),
+    new distributions::Mult("nue_nc_multpip", filt_nue_nc, 211),
+    new distributions::Mult("nue_nc_multpim", filt_nue_nc, -211),
+    new distributions::Mult("nue_nc_multpi0", filt_nue_nc, 111),
+    new distributions::Mult("nue_nc_multkp", filt_nue_nc, 321),
+    new distributions::Mult("nue_nc_multkm", filt_nue_nc, -321),
+    new distributions::Mult("nue_nc_multk0", filt_nue_nc, 311)
   };
 
   size_t nevents = 0;
