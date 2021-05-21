@@ -18,8 +18,10 @@ CXX=g++
 CXXFLAGS=-std=c++17 -Wall -Werror -pedantic -g -I.
 
 LDFLAGS=$(shell root-config --libs) \
+	-lEG \
         -L $(CANVAS_LIB) -l canvas \
         -L $(CETLIB_LIB) -l cetlib \
+	-L $(CETLIB_EXCEPT_LIB) -l cetlib_except \
         -L $(GALLERY_LIB) -l gallery \
         -L $(NUSIMDATA_LIB) -l nusimdata_SimulationBase \
         -L $(LARCOREOBJ_LIB) -l larcoreobj_SummaryData \
