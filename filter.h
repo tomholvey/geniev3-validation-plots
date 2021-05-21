@@ -64,7 +64,6 @@ namespace filters {
   class NuMode : public Filter {
   public:
     NuMode(int _pdg, int _cc, int _mode);
-    NuMode(int _pdg, int _cc);
     #ifdef __LARSOFT__
     virtual bool operator()(const simb::MCTruth& truth);
     #else

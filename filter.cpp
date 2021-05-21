@@ -31,6 +31,7 @@ std::string Filter::GetNuMode(int mode) {
     case enums::kDIS: inttype = "DIS"; break;
     case enums::kCoh: inttype = "Coh"; break;
     case enums::kMEC: inttype = "MEC"; break;
+    case enums::kUndefined: inttype = "INC"; break;
     default: break;
   }
 
@@ -40,20 +41,17 @@ std::string Filter::GetNuMode(int mode) {
 
 namespace filters {
 
-  NuMode::NuMode(int _pdg, int _cc, int _mode=-999)
+  NuMode::NuMode(int _pdg, int _cc, int _mode)
       : pdg(_pdg), mode(_mode), cc(_cc) {
     std::string nu = Filter::GetNuType(pdg);
-    std::string inttype = "inc";
-    if (mode!=-999){
-      inttype = Filter::GetNuMode(mode);
-    }
+    std::string inttype = Filter::GetNuMode(mode);
     title = nu + (cc == enums::kCC ? "CC" : "NC") + inttype;
   }
 
   #ifdef __LARSOFT__
   bool NuMode::operator()(const simb::MCTruth& truth) {
     const simb::MCNeutrino& nu = truth.GetNeutrino();
-    if (mode==-999){
+    if (mode==enums::kUndefined){
       return (nu.Nu().PdgCode() == pdg &&
               nu.CCNC() == cc);
     }
@@ -65,7 +63,7 @@ namespace filters {
   bool NuMode::operator()(const NuisTree& nuistr) {
     int _cc_tmp = nuistr.GetCCNCEnum();
     int _mode_tmp = nuistr.GetGENIEMode();
-    if (mode==-999){
+    if (mode==enums::kUndefined){
       return (nuistr.PDGnu == pdg &&
               _cc_tmp == cc;
     }

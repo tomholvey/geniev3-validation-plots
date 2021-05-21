@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
   filters::NuMode* filt_num_ccmec = new filters::NuMode(14, simb::kCC, simb::kMEC);
   filters::NuMode* filt_num_ccres = new filters::NuMode(14, simb::kCC, simb::kRes);
 
-  filters::NuMode* filt_num_nc = new filters::NuMode(14, simb::kNC);
-  filters::NuMode* filt_nue_nc = new filters::NuMode(12, simb::kNC);
+  filters::NuMode* filt_num_nc = new filters::NuMode(14, simb::kNC, simb::kUndefined);
+  filters::NuMode* filt_nue_nc = new filters::NuMode(12, simb::kNC, simb::kUndefined);
 
   // Define distributions (plots)
   std::vector<Distribution*> dists = {
