@@ -7,7 +7,6 @@
  */
 
 #include <iostream>
-#include <fstream>
 #include <map>
 #include <string>
 #include <vector>
@@ -18,22 +17,15 @@
 #include "TH3F.h"
 #include "TMath.h"
 #include "TStyle.h"
-#include "gallery/Event.h"
-#include "gallery/ValidHandle.h"
-#include "canvas/Persistency/Common/FindMany.h"
-#include "canvas/Utilities/InputTag.h"
-#include "nusimdata/SimulationBase/MCTruth.h"
-#include "nusimdata/SimulationBase/MCNeutrino.h"
+#include "NuisTree.h"
 #include "distributions.h"
 #include "filter.h"
 
 int main(int argc, char* argv[]) {
   // Parse command-line arguments
-  if (argc < 3) {
+  if (argc != 3) {
     std::cout << "Usage: " << argv[0] << " "
-              << "OUTPUT.root INPUT.root [INPUT2.root ...]" << std::endl
-	      << "Or: " << argv[0] << " "
-	      << "OUTPUT.root -f INPUTLIST.root" << std::endl;
+              << "OUTPUT.root INPUT.root" << std::endl;
     return 0;
   }
 
@@ -41,30 +33,18 @@ int main(int argc, char* argv[]) {
   gStyle->SetHistLineColor(kBlack);
 
   std::string outfile = argv[1];
-  std::vector<std::string> filename;
-  for (int i=2; i<argc; i++) {
-    std::string arg = argv[i];
-    if (arg == "-f"){
-      std::ifstream inputlist(argv[i+1]);
-      std::string line;
-      while (getline (inputlist, line)){
-	  std::cout << "FILE " << line << std::endl;
-	  filename.push_back(line);
-	}
-      i++;
-    }
-    else{
-      std::cout << "FILE " << arg << std::endl;
-      filename.push_back(arg);
-    }
-  }
+  std::string infile = argv[2];
 
+  // Get tree from input file
+  TFile *fin = new TFile(infile.c_str(),"READ");
+  TTree *intree = (TTree*)fin->Get("FlatTree_VARS");
+  NuisTree nuistr(intree);
 
   // Define event filters
   filters::NuMode* filt_num_ccqe = new filters::NuMode(14, enums::kCC, enums::kQE);
   filters::NuMode* filt_nue_ccqe = new filters::NuMode(12, enums::kCC, enums::kQE);
-  filters::NuMode* filt_num_ccmec = new filters::NuMode(14, enums::kCC, enums::kMEC);
-  filters::NuMode* filt_num_ccres = new filters::NuMode(14, enums::kCC, enums::kRes);
+  filters::NuMode* filt_num_ccmec = new filters::NuMode(14,  enums::kCC,enums::kMEC);
+  filters::NuMode* filt_num_ccres = new filters::NuMode(14,  enums::kCC,enums::kRes);
 
   filters::NuMode* filt_num_nc = new filters::NuMode(14, enums::kNC, enums::kUndefined);
   filters::NuMode* filt_nue_nc = new filters::NuMode(12, enums::kNC, enums::kUndefined);
@@ -235,43 +215,26 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("nue_nc_multk0", filt_nue_nc, 311)
   };
 
-  size_t nevents = 0;
-
   // Event loop
-  for (gallery::Event ev(filename) ; !ev.atEnd(); ev.next()) {
-    if (nevents % 100 == 0) {
-      std::cout << "EVENT " << nevents << std::endl;
+  for (int ievent=0; ievent<nuistr.GetEntries(); ievent++) {
+    if (ievent % 10000 == 0) {
+      std::cout << "EVENT " << ievent << std::endl;
     }
-    nevents++;
+    nuistr.GetEntry(ievent);
 
-    gallery::Handle<std::vector<simb::MCTruth> > mctruths;
-    ev.getByLabel({"generator::HepMCNuWro"}, mctruths);
-    if (mctruths.isValid()){
-      //std::cout << "Looking at NuWro events." << std::endl;
-    }
-    else{
-      std::cout << "Looking at GENIE events" << std::endl;
-      ev.getByLabel({"generator"},mctruths);
-    }
-
-    for (size_t i=0, ntruth=mctruths->size(); i<ntruth; i++) {
-
-      const simb::MCTruth& mctruth = mctruths->at(i);
-
-      for (Distribution* dist : dists) {
-        if ((*dist->filter)(mctruth)) {
-          dist->Fill(mctruth);
-        }
+    for (Distribution* dist : dists) {
+      if ((*dist->filter)(nuistr)) {
+        dist->Fill(nuistr);
       }
     }
-  }
+  } // end event loop
 
   // Save histograms (to file and png)
   TFile* fout = new TFile(outfile.c_str(), "recreate");
   for (Distribution* dist : dists) {
     if (dist->hist->GetEntries() > 0) {
       dist->Write();
-      dist->Save();
+      // dist->Save();
     }
   }
   fout->Close();

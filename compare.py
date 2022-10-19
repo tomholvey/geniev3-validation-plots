@@ -82,7 +82,7 @@ if __name__ == '__main__':
                 l.AddEntry(ov[i],legendtitle[i])
             l.Draw()
 
-            plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.png'
+            plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.pdf'
             c.SaveAs(plotname)
 
         elif ov[0].IsA() == ROOT.TH2F.Class():
@@ -103,7 +103,7 @@ if __name__ == '__main__':
                     ov[i].Draw('colz')
                     ov[i].GetZaxis().SetTitleOffset(1.15)
                     
-                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.png'
+                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
                 c.SaveAs(plotname)
 
                 # Draw ratio to the first one given in arguments
@@ -112,7 +112,7 @@ if __name__ == '__main__':
                 # ov[i].Draw('colz')
                 # #ov[i].GetZaxis().SetRangeUser(0,2)
                 #
-                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.png'
+                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
                 # c.SaveAs(plotname)
 
         del c

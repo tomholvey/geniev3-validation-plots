@@ -73,12 +73,12 @@ NuisTree::NuisTree(TTree *intree):
     tr->SetBranchAddress("flagNC1pim",&flagNC1pim);
     tr->SetBranchAddress("flagCC1pi0",&flagCC1pi0);
     tr->SetBranchAddress("flagNC1pi0",&flagNC1pi0);
-};
+}
 
 int NuisTree::GetCCNCEnum() const{
   if ((bool)iscc==true) return enums::kCC;
   else return enums::kNC;
-};
+}
 
 
 
@@ -130,4 +130,4 @@ int NuisTree::GetGENIEMode() const{
       return enums::kUndefined;
       break;
   }
-};
+}
