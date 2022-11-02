@@ -9,13 +9,6 @@
 
 #include <string>
 #include "NuisTree.h"
-#ifdef __LARSOFT__
-#include "nusimdata/SimulationBase/GTruth.h"
-#include "nusimdata/SimulationBase/MCTruth.h"
-#include "nusimdata/SimulationBase/MCNeutrino.h"
-#include "nusimdata/SimulationBase/MCParticle.h"
-#include "GENIE/Framework/GHEP/GHepStatus.h"
-#endif
 
 class Filter;
 class TCanvas;
@@ -38,9 +31,6 @@ struct Distribution {
                TH1* _hist, Filter* _filter);
 
   /** Fill the distribution histogram */
-  #ifdef __LARSOFT__
-  virtual void Fill(const simb::MCTruth& truth, float w=1.0) = 0;
-  #endif
   virtual void Fill(const NuisTree& nuistr) = 0;
 
   /** Write to a ROOT file. */
@@ -61,9 +51,6 @@ namespace distributions {
   /** Q2 distribution */
   struct Q2 : public Distribution {
     Q2(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-      void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -71,18 +58,12 @@ namespace distributions {
   /** Theorists' W distribution, W = sqrt(p'^2) = sqrt(p^2 + 2p.q - Q2) (where p is the 4-momentum of the initial nucleon, p' is the 4-momentum of the outgoing nucleon, q is 4-momentum pnu-plep, and Q2 = -q^2) */
   struct TheoristsW : public Distribution {
     TheoristsW(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
   /** Experimentalists' W distribution, W = sqrt(M^2 + 2*M*q0 - Q^2) (where M is the mass of the hit nucleon, q0 = Enu-Elep, q is the 4-momentum pnu-plep, and Q^2 = -q.q) */
   struct ExperimentalistsW : public Distribution {
     ExperimentalistsW(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -90,9 +71,6 @@ namespace distributions {
   /** Theorist's Bjorken x distribution, x = Q^2/(2p.q) (where p is the 4-momentum of the initial nucleon and q is 4-momentum pnu-plep) */
   struct TheoristsBjorkenX : public Distribution {
     TheoristsBjorkenX(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -100,9 +78,6 @@ namespace distributions {
   /** Experimentalists' Bjorken x distribution, x = Q^2/(2M*(Enu-Elep)) */
   struct ExperimentalistsBjorkenX : public Distribution {
     ExperimentalistsBjorkenX(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -110,9 +85,6 @@ namespace distributions {
   /** Theorists' Inelasticity y distribution, y = (p.q)/(p.k) (where p is the 4-momentum of the initial nucleon, q is 4-momentum pnu-plep, and k is the 4-momentum of the neutrino) */
   struct TheoristsInelasticityY : public Distribution {
     TheoristsInelasticityY(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -120,9 +92,6 @@ namespace distributions {
   /** Experimentalists' Inelasticity y distribution, y = 1-(Elep/Enu) */
   struct ExperimentalistsInelasticityY : public Distribution {
     ExperimentalistsInelasticityY(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -130,9 +99,6 @@ namespace distributions {
   /** Theorists' nu distribution, nu = (p.q)/(sqrt(p^2)) (where p is the 4-momentum of the initial nucleon and q is 4-momentum pnu-plep) */
   struct TheoristsNu : public Distribution {
     TheoristsNu(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -140,9 +106,6 @@ namespace distributions {
   /** Experimentalists' nu distribution, nu = Enu-Elep = q0 */
   struct ExperimentalistsNu : public Distribution {
     ExperimentalistsNu(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -150,9 +113,6 @@ namespace distributions {
   /** Experimentalists' nu distribution, nu = Enu-Elep = q0 */
   struct BindingE : public Distribution {
     BindingE(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -160,9 +120,6 @@ namespace distributions {
   /** Lepton momentum distribution */
   struct PLep : public Distribution {
     PLep(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -170,9 +127,6 @@ namespace distributions {
   /** Lepton angle distribution */
   struct ThetaLep : public Distribution {
     ThetaLep(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -180,9 +134,6 @@ namespace distributions {
   /** q0/q3 distribution */
   struct Q0Q3 : public Distribution {
     Q0Q3(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -190,9 +141,6 @@ namespace distributions {
   /** Lepton p/theta distribution */
   struct PThetaLep : public Distribution {
     PThetaLep(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -200,9 +148,6 @@ namespace distributions {
   /** Leading proton KE vs. q0 distribution */
   struct LeadPKEQ0 : public Distribution {
     LeadPKEQ0(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -210,9 +155,6 @@ namespace distributions {
   /** Leading/subleading proton KE */
   struct Pke : public Distribution {
     Pke(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -220,9 +162,6 @@ namespace distributions {
   /** Leading proton costheta */
   struct ThetaPLead : public Distribution {
     ThetaPLead(std::string _name, Filter* _filter, float _ethreshold=0);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
   };
@@ -231,9 +170,6 @@ namespace distributions {
   /** Leading proton momentum */
   struct PPLead : public Distribution {
     PPLead(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 
@@ -241,9 +177,6 @@ namespace distributions {
   /** Leading proton costheta */
   struct ThetaLepPLead : public Distribution {
     ThetaLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
   };
@@ -252,9 +185,6 @@ namespace distributions {
   /** Leading proton costheta */
   struct dPhiLepPLead : public Distribution {
     dPhiLepPLead(std::string _name, Filter* _filter, float _ethreshold=0);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     float ethreshold;  //!< KE threshold (GeV)
   };
@@ -263,9 +193,6 @@ namespace distributions {
   /** Final state particle multiplicity */
   struct Mult : public Distribution {
     Mult(std::string _name, Filter* _filter, int _pdg, float _ethreshold=0);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     int pdg;  //!< Particle PDG code
     float ethreshold;  //!< KE threshold (GeV)
@@ -276,9 +203,6 @@ namespace distributions {
   /** Intermediate state particle multiplicity */
   struct IMult : public Distribution {
     IMult(std::string _name, Filter* _filter, int _pdg);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     int pdg;  //!< Particle PDG code
   };
@@ -287,9 +211,6 @@ namespace distributions {
   /** Leading pion momentum */
   struct PPiLead : public Distribution {
     PPiLead(std::string _name, Filter* _filter, bool _charged=false);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
   };
@@ -298,9 +219,6 @@ namespace distributions {
   /** Leading pion angle */
   struct ThetaPiLead : public Distribution {
     ThetaPiLead(std::string _name, Filter* _filter, bool _charged=false);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
   };
@@ -309,9 +227,6 @@ namespace distributions {
   /** Leading pion/lepton angle */
   struct ThetaLepPiLead : public Distribution {
     ThetaLepPiLead(std::string _name, Filter* _filter, bool _charged=false);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
     bool charged;  //!< Consider only charged pions
   };
@@ -320,9 +235,6 @@ namespace distributions {
   /** Energy conservation. WIP, may not be possible within LArSoft. */
   struct ECons : public Distribution {
     ECons(std::string _name, Filter* _filter);
-    #ifdef __LARSOFT__
-    void Fill(const simb::MCTruth& truth, float w=1.0);
-    #endif
     void Fill(const NuisTree& nuistr);
   };
 

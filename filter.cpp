@@ -1,9 +1,4 @@
 #include <string>
-#ifdef __LARSOFT__
-#include "GENIE/Framework/GHEP/GHepStatus.h"
-#include "nusimdata/SimulationBase/MCTruth.h"
-#include "nusimdata/SimulationBase/MCNeutrino.h"
-#endif
 #include "filter.h"
 
 std::string Filter::GetNuType(int pdg) {
@@ -48,18 +43,6 @@ namespace filters {
     title = nu + (cc == enums::kCC ? "CC" : "NC") + inttype;
   }
 
-  #ifdef __LARSOFT__
-  bool NuMode::operator()(const simb::MCTruth& truth) {
-    const simb::MCNeutrino& nu = truth.GetNeutrino();
-    if (mode==enums::kUndefined){
-      return (nu.Nu().PdgCode() == pdg &&
-              nu.CCNC() == cc);
-    }
-    return (nu.Nu().PdgCode() == pdg &&
-            nu.CCNC() == cc &&
-            nu.Mode() == mode);
-  }
-  #else
   bool NuMode::operator()(const NuisTree& nuistr) {
     int _cc_tmp = nuistr.GetCCNCEnum();
     int _mode_tmp = nuistr.GetGENIEMode();
@@ -71,7 +54,6 @@ namespace filters {
             _cc_tmp == cc &&
             _mode_tmp == mode);
   }
-  #endif
 
   CC1Pi::CC1Pi(int _pdg, bool _charged)
       : pdg(_pdg), charged(_charged) {
@@ -79,36 +61,6 @@ namespace filters {
     title = nu + "CC1#pi" + (charged ? "^{#pm}" : "");
   }
 
-  #ifdef __LARSOFT__
-  bool CC1Pi::operator()(const simb::MCTruth& truth) {
-    const simb::MCNeutrino& nu = truth.GetNeutrino();
-    if (nu.Nu().PdgCode() != pdg || nu.CCNC() != simb::kCC) {
-      return false;
-    }
-
-    // Count final state pions
-    size_t npi = 0;
-
-    for (int i=0; i<truth.NParticles(); i++) {
-      const simb::MCParticle& part = truth.GetParticle(i);
-      if (part.StatusCode() != genie::kIStStableFinalState) {
-        continue;
-      }
-
-      if (abs(part.PdgCode()) == 211) {
-        npi++;
-      }
-      else if (part.PdgCode() == 111) {
-        if (charged) {
-          return false;
-        }
-        npi++;
-      }
-    }
-
-    return (npi == 1);
-  }
-  #else
   bool CC1Pi::operator()(const NuisTree& nuistr) {
     if (nuistr.PDGnu != pdg) return false;
 
@@ -117,5 +69,4 @@ namespace filters {
 
     return false;
   }
-  #endif
 }  // namespace filters
