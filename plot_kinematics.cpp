@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
   // Define distributions (plots)
   std::vector<Distribution*> dists = {
     // numCCQE
+	new distributions::EmissPmiss("num_ccqe_EmissPmiss", filt_num_ccqe),
+	new distributions::Pmiss("num_ccqe_pmiss", filt_num_ccqe),
+	new distributions::Emiss("num_ccqe_emiss", filt_num_ccqe),
     new distributions::Q2("num_ccqe_q2", filt_num_ccqe),
     new distributions::Q0Q3("num_ccqe_q0q3", filt_num_ccqe),
     new distributions::LeadPKEQ0("num_ccqe_pkeq0", filt_num_ccqe),
@@ -85,7 +88,10 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("num_ccqe_multk0", filt_num_ccqe, 311),
 
     // nueCCQE
-    new distributions::Q2("nue_ccqe_q2", filt_nue_ccqe),
+	new distributions::EmissPmiss("nue_ccqe_EmissPmiss", filt_nue_ccqe),
+	new distributions::Pmiss("nue_ccqe_pmiss", filt_num_ccqe),
+	new distributions::Emiss("nue_ccqe_emiss", filt_num_ccqe),
+	new distributions::Q2("nue_ccqe_q2", filt_nue_ccqe),
     new distributions::Q0Q3("nue_ccqe_q0q3", filt_nue_ccqe),
     new distributions::ECons("nue_ccqe_econs", filt_nue_ccqe),
     new distributions::LeadPKEQ0("nue_ccqe_pkeq0", filt_nue_ccqe),
@@ -119,6 +125,9 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("nue_ccqe_multk0", filt_nue_ccqe, 311),
 
     // numCCMEC
+	new distributions::EmissPmiss("num_ccmec_EmissPmiss", filt_num_ccmec),
+	new distributions::Pmiss("num_ccmec_pmiss", filt_num_ccmec),
+	new distributions::Emiss("num_ccmec_emiss", filt_num_ccmec),
     new distributions::Q0Q3("num_ccmec_q0q3", filt_num_ccmec),
     new distributions::Pke("num_ccmec_ppp", filt_num_ccmec),
     new distributions::PPLead("num_ccmec_pp", filt_num_ccmec),
@@ -130,6 +139,9 @@ int main(int argc, char* argv[]) {
     new distributions::dPhiLepPLead("num_ccmec_dphilp_40MeV", filt_num_ccmec, 0.04),
 
     // numCCRes
+	new distributions::EmissPmiss("num_ccres_EmissPmiss", filt_num_ccres),
+	new distributions::Pmiss("num_ccres_pmiss", filt_num_ccres),
+	new distributions::Emiss("num_ccres_emiss", filt_num_ccres),
     new distributions::Q0Q3("num_ccres_q0q3", filt_num_ccres),
     new distributions::TheoristsW("num_ccres_thw", filt_num_ccres),
     new distributions::TheoristsBjorkenX("num_ccres_thbjorkenx", filt_num_ccres),
@@ -163,9 +175,12 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("nue_ccres_multk0", filt_num_ccres, 311),
 
     // numNC
+	new distributions::EmissPmiss("num_nc_EmissPmiss", filt_num_nc),
+	new distributions::Pmiss("num_nc_pmiss", filt_num_nc),
+	new distributions::Emiss("num_nc_emiss", filt_num_nc),
     new distributions::Q2("num_nc_q2", filt_num_nc),
     new distributions::Q0Q3("num_nc_q0q3", filt_num_nc),
-    new distributions::TheoristsW("num_nc_thw", filt_num_nc),
+	new distributions::TheoristsW("num_nc_thw", filt_num_nc),
     new distributions::TheoristsBjorkenX("num_nc_thbjorkenx", filt_num_nc),
     new distributions::TheoristsInelasticityY("num_nc_thinely", filt_num_nc),
     new distributions::ExperimentalistsW("num_nc_expw", filt_num_nc),
@@ -189,6 +204,9 @@ int main(int argc, char* argv[]) {
     new distributions::Mult("num_nc_multk0", filt_num_nc, 311),
 
     // nueNC
+	new distributions::EmissPmiss("nue_nc_EmissPmiss", filt_nue_nc),
+	new distributions::Pmiss("nue_nc_pmiss", filt_nue_nc),
+	new distributions::Emiss("nue_nc_emiss", filt_nue_nc),
     new distributions::Q2("nue_nc_q2", filt_nue_nc),
     new distributions::Q0Q3("nue_nc_q0q3", filt_nue_nc),
     new distributions::TheoristsW("nue_nc_thw", filt_nue_nc),
