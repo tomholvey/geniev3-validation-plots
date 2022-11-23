@@ -49,6 +49,48 @@ void Distribution::Save(TCanvas* c) {
 
 namespace distributions {
 
+  // 2D Emiss-Pmiss
+  EmissPmiss::EmissPmiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("E_{miss} - p_{miss}, ") + _filter->title;
+	  std::string hname = "hEmissPmiss_" + name;
+	  hist = new TH2F(hname.c_str(),
+					  (title + "; p_{miss}; E_{miss}; Events").c_str(),
+					  25, 0, 300, 40, 25, 70);
+  }
+
+  void EmissPmiss::Fill(const NuisTree& nuistr){
+	  dynamic_cast<TH2F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Emiss, nuistr.Weight);
+  }
+
+  // 1D Emiss
+  Emiss::Emiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("E_{miss}, ") + _filter->title;
+	  std::string hname = "hEmiss_" + name;
+	  hist = new TH1F(hname.c_str(),
+					  (title + " ; E_{miss}; Events").c_str(),
+					   40, 25, 70);
+  }
+
+  void Emiss::Fill(const NuisTree& nuistr){
+	  std::cout << "Filling Emiss with : " << nuistr.Emiss << std::endl;
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss, nuistr.Weight);
+  }
+
+  // 1D Pmiss 
+  Pmiss::Pmiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("p_{miss}, ") + _filter->title;
+	  std::string hname = "hPmiss_" + name;
+	  hist = new TH1F(hname.c_str(),
+					  (title + " ; p_{miss}; Events").c_str(),
+						25, 0, 300);
+  }
+
+  void Pmiss::Fill(const NuisTree& nuistr){
+	  std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Weight);
+  }
+
+  
   Q2::Q2(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
     title = std::string("Q^{2}, ") + _filter->title;
     std::string hname = "hq2_" + name;

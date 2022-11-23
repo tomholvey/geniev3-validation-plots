@@ -16,6 +16,10 @@ public:
   int GetCCNCEnum() const;
   int GetGENIEMode() const;
 
+  // Add Emiss and Pmiss
+  float Emiss;
+  TVector3* pmiss;
+  
   int Mode;
   int PDGnu;
   Char_t iscc; // 1 if CC event, 0 if NC (for some reason this is stored as a char in the nuisance tree, not a bool. We will have to convert it into a bool to use it...)

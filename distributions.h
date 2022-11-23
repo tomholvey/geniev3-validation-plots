@@ -48,6 +48,25 @@ struct Distribution {
 
 namespace distributions {
 
+  /** 2D Emiss-Pmiss distribution, the ground state **/
+  struct EmissPmiss : public Distribution {
+	  EmissPmiss(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+
+  /** 1D Emiss **/
+  struct Emiss : public Distribution {
+	  Emiss(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+
+  /** 1D Pmiss **/
+  struct Pmiss : public Distribution {
+	  Pmiss(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  
   /** Q2 distribution */
   struct Q2 : public Distribution {
     Q2(std::string _name, Filter* _filter);

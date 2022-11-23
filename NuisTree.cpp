@@ -4,7 +4,11 @@
 NuisTree::NuisTree(TTree *intree):
   tr(intree)
   {
-    tr->SetBranchAddress("Mode",&Mode);
+    // Add in EMiss and PMiss
+	tr->SetBranchAddress("Emiss", &Emiss);
+	tr->SetBranchAddress("pmiss", &pmiss);
+	
+	tr->SetBranchAddress("Mode",&Mode);
     tr->SetBranchAddress("PDGnu",&PDGnu);
     tr->SetBranchAddress("cc",&iscc);
     tr->SetBranchAddress("tgt",&tgt);
