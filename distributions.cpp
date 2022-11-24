@@ -72,7 +72,7 @@ namespace distributions {
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
-	  std::cout << "Filling Emiss with : " << nuistr.Emiss << std::endl;
+	  //std::cout << "Filling Emiss with : " << nuistr.Emiss << std::endl;
 	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss, nuistr.Weight);
   }
 
@@ -86,7 +86,7 @@ namespace distributions {
   }
 
   void Pmiss::Fill(const NuisTree& nuistr){
-	  std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
+	  //std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
 	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Weight);
   }
 
@@ -118,11 +118,17 @@ namespace distributions {
     int i_nuc = -999;
     int i_nu = -999;
     for (int i=0; i<nuistr.ninitp; i++) {
-      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+	  // Look for initial state proton/neutron, nucleus for Coh
+	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
         // check this is the only initial nucleon we've found
         assert(i_nuc==-999);
         i_nuc = i;
       }
+	  // Or NC 2p2h 
+	  else if (nuistr.Mode == 53) {
+		  assert(i_nuc = -999);
+		  i_nuc = i;
+	  }
       if (nuistr.initp_pdg[i]==nuistr.PDGnu){
         // check this is the only neutrino we've found
         assert(i_nu==-999);
@@ -133,14 +139,19 @@ namespace distributions {
     // Find lepton  in list of final state particles
     int i_lep = -999;
     for (int i=0; i<nuistr.nfsp; i++) {
-      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+	  if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
         // check this is the only lepton we've found
         assert(i_lep==-999);
         i_lep = i;
       }
     }
 
-    assert (i_nuc!=-999);
+	if (i_nuc == -999){
+		// Should only be for reverse muon decay and elastic electron scattering
+		// Very rare!!
+		return;
+	}
+	assert (i_nuc!=-999);
     assert (i_nu!=-999);
     assert (i_lep!=-999);
 
@@ -191,11 +202,16 @@ namespace distributions {
     int i_nuc = -999;
     int i_nu = -999;
     for (int i=0; i<nuistr.ninitp; i++) {
-      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
         // check this is the only initial nucleon we've found
         assert(i_nuc==-999);
         i_nuc = i;
       }
+	  // Or NC 2p2h 
+	  else if (nuistr.Mode == 53) {
+		  assert(i_nuc = -999);
+		  i_nuc = i;
+	  }
       if (nuistr.initp_pdg[i]==nuistr.PDGnu){
         // check this is the only neutrino we've found
         assert(i_nu==-999);
@@ -212,7 +228,10 @@ namespace distributions {
         i_lep = i;
       }
     }
-
+	
+	if (i_nuc == -999){
+		return;
+	}
     assert (i_nuc!=-999);
     assert (i_nu!=-999);
     assert (i_lep!=-999);
@@ -264,11 +283,16 @@ namespace distributions {
     int i_nuc = -999;
     int i_nu = -999;
     for (int i=0; i<nuistr.ninitp; i++) {
-      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
         // check this is the only initial nucleon we've found
         assert(i_nuc==-999);
         i_nuc = i;
       }
+	  // Or NC 2p2h 
+	  else if (nuistr.Mode == 53) {
+		  assert(i_nuc = -999);
+		  i_nuc = i;
+	  }
       if (nuistr.initp_pdg[i]==nuistr.PDGnu){
         // check this is the only neutrino we've found
         assert(i_nu==-999);
@@ -285,7 +309,10 @@ namespace distributions {
         i_lep = i;
       }
     }
-
+	
+	if (i_nuc == -999){
+		return;
+	}
     assert (i_nuc!=-999);
     assert (i_nu!=-999);
     assert (i_lep!=-999);
@@ -331,11 +358,16 @@ namespace distributions {
     int i_nuc = -999;
     int i_nu = -999;
     for (int i=0; i<nuistr.ninitp; i++) {
-      if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112){
+	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
         // check this is the only initial nucleon we've found
         assert(i_nuc==-999);
         i_nuc = i;
       }
+	  // Or NC 2p2h 
+	  else if (nuistr.Mode == 53) {
+		  assert(i_nuc = -999);
+		  i_nuc = i;
+	  }
       if (nuistr.initp_pdg[i]==nuistr.PDGnu){
         // check this is the only neutrino we've found
         assert(i_nu==-999);
@@ -352,7 +384,10 @@ namespace distributions {
         i_lep = i;
       }
     }
-
+	
+	if (i_nuc == -999){
+		return;
+	}
     assert (i_nuc!=-999);
     assert (i_nu!=-999);
     assert (i_lep!=-999);
