@@ -33,6 +33,7 @@ Distribution::Distribution(std::string _name, std::string _title,
 
 void Distribution::Write() {
   std::cout << "WRITE " << hist->GetName() << std::endl;
+  hist->Scale(1, "width");
   hist->Write();
 }
 
@@ -54,12 +55,12 @@ namespace distributions {
 	  title = std::string("E_{miss} - p_{miss}, ") + _filter->title;
 	  std::string hname = "hEmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
-					  (title + "; p_{miss}; E_{miss}; Events").c_str(),
+					  (title + "; p_{miss} (MeV); E_{miss} (MeV); Events").c_str(),
 					  25, 0, 300, 40, 25, 70);
   }
 
   void EmissPmiss::Fill(const NuisTree& nuistr){
-	  dynamic_cast<TH2F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Emiss, nuistr.Weight);
+	  dynamic_cast<TH2F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Emiss, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   // 1D Emiss
@@ -67,13 +68,13 @@ namespace distributions {
 	  title = std::string("E_{miss}, ") + _filter->title;
 	  std::string hname = "hEmiss_" + name;
 	  hist = new TH1F(hname.c_str(),
-					  (title + " ; E_{miss}; Events").c_str(),
+					  (title + " ; E_{miss} (MeV); Events").c_str(),
 					   40, 25, 70);
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
 	  //std::cout << "Filling Emiss with : " << nuistr.Emiss << std::endl;
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss, nuistr.Weight);
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   // 1D Pmiss 
@@ -81,13 +82,13 @@ namespace distributions {
 	  title = std::string("p_{miss}, ") + _filter->title;
 	  std::string hname = "hPmiss_" + name;
 	  hist = new TH1F(hname.c_str(),
-					  (title + " ; p_{miss}; Events").c_str(),
+					  (title + " ; p_{miss} (MeV); Events").c_str(),
 						25, 0, 300);
   }
 
   void Pmiss::Fill(const NuisTree& nuistr){
 	  //std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Weight);
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   
@@ -100,7 +101,7 @@ namespace distributions {
   }
 
   void Q2::Fill(const NuisTree& nuistr){
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -166,7 +167,7 @@ namespace distributions {
 
     float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - nuistr.Q2);
 
-    dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -179,13 +180,13 @@ namespace distributions {
   }
 
   void ExperimentalistsW::Fill(const NuisTree& nuistr) {
-    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight*(nuistr.fScaleFactor*1E38));
 
     float Q2 = nuistr.Q2;
     float q0 = nuistr.q0;
     float M = 0.93956541; // neutron mass GeV
     float W = TMath::Sqrt(M*M + 2*M*q0 - Q2);
-    dynamic_cast<TH1F*>(hist)->Fill(W,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(W,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -247,7 +248,7 @@ namespace distributions {
 
     float x = nuistr.Q2/(2*p.Dot(q));
 
-    dynamic_cast<TH1F*>(hist)->Fill(x, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(x, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -260,13 +261,13 @@ namespace distributions {
   }
 
   void ExperimentalistsBjorkenX::Fill(const NuisTree& nuistr) {
-    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.x, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 
     float Q2 = nuistr.Q2;
     float q0 = nuistr.q0;
     float M = 0.93956541; // neutron mass GeV                                                                               
     float x = Q2/(2*M*q0);
-    dynamic_cast<TH1F*>(hist)->Fill(x,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(x,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -328,7 +329,7 @@ namespace distributions {
 
     float y = (p.Dot(q))/(p.Dot(k));
 
-    dynamic_cast<TH1F*>(hist)->Fill(y, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(y, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -341,7 +342,7 @@ namespace distributions {
   }
 
   void ExperimentalistsInelasticityY::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.y, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.y, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -403,7 +404,7 @@ namespace distributions {
 
     float nu_theorist = (p.Dot(q))/(p.Mag());
 
-    dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -416,7 +417,7 @@ namespace distributions {
   }
 
   void ExperimentalistsNu::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -483,7 +484,7 @@ namespace distributions {
     // Binding energy from full-event energy conservation
     double reco_Eb = p4v.E() + NEUTRON_MASS - p4Nf.E() - p4l.E() - Tf;
 
-    dynamic_cast<TH1F*>(hist)->Fill(reco_Eb, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(reco_Eb, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -513,7 +514,7 @@ namespace distributions {
     TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
     float p = pv.Mag();
 
-    dynamic_cast<TH1F*>(hist)->Fill(p,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(p,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -526,7 +527,7 @@ namespace distributions {
   }
 
   void ThetaLep::Fill(const NuisTree& nuistr) {
-    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.CosLep,nuistr.Weight);
+    //dynamic_cast<TH1F*>(hist)->Fill(nuistr.CosLep,nuistr.Weight*(nuistr.fScaleFactor*1E38));
 
     // Find lepton  in list of final state particles
     int i_lep = -999;
@@ -542,7 +543,7 @@ namespace distributions {
 
     TVector3 p3l(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]); // lepton
     float costh = p3l.Unit().Dot(TVector3(0,0,1));
-    dynamic_cast<TH1F*>(hist)->Fill(costh,nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(costh,nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -555,7 +556,7 @@ namespace distributions {
   }
 
   void Q0Q3::Fill(const NuisTree& nuistr) {
-    dynamic_cast<TH2F*>(hist)->Fill(nuistr.q3, nuistr.q0, nuistr.Weight);
+    dynamic_cast<TH2F*>(hist)->Fill(nuistr.q3, nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -578,7 +579,7 @@ namespace distributions {
       }
     }
 
-    dynamic_cast<TH2F*>(hist)->Fill(KElead, nuistr.q0, nuistr.Weight);
+    dynamic_cast<TH2F*>(hist)->Fill(KElead, nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -605,7 +606,7 @@ namespace distributions {
     TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
     float p = pv.Mag();
 
-    dynamic_cast<TH2F*>(hist)->Fill(p, nuistr.CosLep, nuistr.Weight);
+    dynamic_cast<TH2F*>(hist)->Fill(p, nuistr.CosLep, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -637,7 +638,7 @@ namespace distributions {
       }
     }
 
-    dynamic_cast<TH2F*>(hist)->Fill(KElead, KEsub, nuistr.Weight);
+    dynamic_cast<TH2F*>(hist)->Fill(KElead, KEsub, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   PPLead::PPLead(std::string _name, Filter* _filter)
@@ -666,7 +667,7 @@ namespace distributions {
     }
 
     if (nprot>0){
-      dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight);
+      dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
     }
   }
 
@@ -701,7 +702,7 @@ namespace distributions {
       }
 
       if (np > 0) {
-        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight);
+        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
       }
   }
 
@@ -749,7 +750,7 @@ namespace distributions {
         TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
         TVector3 pv_leadingp(nuistr.fsp_px[i_leadingp],nuistr.fsp_py[i_leadingp],nuistr.fsp_pz[i_leadingp]);
         ctlep = cos(pv_lep.Angle(pv_leadingp));
-        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight);
+        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight*(nuistr.fScaleFactor*1E38));
       }
   }
 
@@ -797,7 +798,7 @@ namespace distributions {
         TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
         TVector3 pv_leadingp(nuistr.fsp_px[i_leadingp],nuistr.fsp_py[i_leadingp],nuistr.fsp_pz[i_leadingp]);
         dphilep = pv_lep.DeltaPhi(pv_leadingp);
-        dynamic_cast<TH1F*>(hist)->Fill(dphilep, nuistr.Weight);
+        dynamic_cast<TH1F*>(hist)->Fill(dphilep, nuistr.Weight*(nuistr.fScaleFactor*1E38));
       }
   }
 
@@ -832,7 +833,7 @@ namespace distributions {
       }
     }
 
-    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -858,7 +859,7 @@ namespace distributions {
     //   }
     // }
 
-    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -885,7 +886,7 @@ namespace distributions {
       }
     }
 
-    dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 
@@ -918,7 +919,7 @@ namespace distributions {
       }
 
       if (npi > 0) {
-        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight);
+        dynamic_cast<TH1F*>(hist)->Fill(ctlead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
       }
   }
 
@@ -965,7 +966,7 @@ namespace distributions {
         TVector3 pv_lep(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
         TVector3 pv_leadingpi(nuistr.fsp_px[i_leadingpi],nuistr.fsp_py[i_leadingpi],nuistr.fsp_pz[i_leadingpi]);
         ctlep = cos(pv_lep.Angle(pv_leadingpi));
-        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight);
+        dynamic_cast<TH1F*>(hist)->Fill(ctlep, nuistr.Weight*(nuistr.fScaleFactor*1E38));
       }
   }
 
@@ -983,7 +984,7 @@ namespace distributions {
     // It's not clear that we can recreate this plot with NUISANCE trees (and I'm worried that if we try we will end up with inconsistencies of O(binding energy) with the GENIE implementation that could cause a lot of confusion) so don't try. Just fill with 0s -- if we need to make a similar plot to this in the future, can think through exactly what we want to show and whether that's possible to implement with the NUISANCE trees
     float de = 0;
 
-    dynamic_cast<TH1F*>(hist)->Fill(de, nuistr.Weight);
+    dynamic_cast<TH1F*>(hist)->Fill(de, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
 }  // namespace distributions
