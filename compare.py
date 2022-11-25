@@ -52,11 +52,6 @@ if __name__ == '__main__':
                 ov[i].SetLineWidth(4)
                 ov[i].SetLineStyle(style[i])
 
-                if normalize and ov[i].Integral()!=0:
-                    # print('normalizing')
-                    ov[i].Scale(1.0/ov[i].Integral())
-
-
         c = ROOT.TCanvas('c', '', 1500, 1500)
         c.SetLeftMargin(0.15)
 
