@@ -22,6 +22,10 @@
 #include "filter.h"
 
 int main(int argc, char* argv[]) {
+  double NDFHC_IntFlux = 0.0083914105;
+  double NDRHC_IntFlux =  0.0075538875;
+  double NucleonTonneScale = 6.02831;
+  
   // Parse command-line arguments
   if (argc != 3) {
     std::cout << "Usage: " << argv[0] << " "
@@ -251,7 +255,19 @@ int main(int argc, char* argv[]) {
   TFile* fout = new TFile(outfile.c_str(), "recreate");
   for (Distribution* dist : dists) {
     if (dist->hist->GetEntries() > 0) {
-      dist->Write();
+	  if (nuistr.PDGnu == 12 || nuistr.PDGnu == 14){
+		  // Scale by DUNE numu FHC ND flux to get interactions per nucleon per POT
+		  dist->hist->Scale(NDFHC_IntFlux * 1E-4);
+		  // Scale by Ar atoms * 1 year POT * 1E-38
+		  dist->hist->Scale(NucleonTonneScale * 1E12);
+	  }
+	  else if (nuistr.PDGnu == -12 || nuistr.PDGnu == -14){
+		  // Scale by DUNE numubar RHC ND flux to get interactions per nucleon per POT
+		  dist->hist->Scale(NDRHC_IntFlux * 1E-4 );
+		  // Scale by Ar atoms * 1 year POT * 1E-38
+		  dist->hist->Scale(NucleonTonneScale * 1E12);
+	  }
+	  dist->Write();
       // dist->Save();
     }
   }
