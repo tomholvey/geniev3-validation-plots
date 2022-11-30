@@ -54,7 +54,7 @@ namespace distributions {
 	  title = std::string("E_{miss} - p_{miss}, ") + _filter->title;
 	  std::string hname = "hEmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
-					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/10^{21} POT").c_str(),
+					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
 					  25, 0., 0.3, 40, 0.25, 0.7);
   }
 
@@ -67,7 +67,7 @@ namespace distributions {
 	  title = std::string("E_{miss}, ") + _filter->title;
 	  std::string hname = "hEmiss_" + name;
 	  hist = new TH1F(hname.c_str(),
-					  (title + " ; E_{miss} (GeV); Events/tonne/10^{21} POT").c_str(),
+					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
 					   40, 0.25, 0.70);
   }
 
@@ -81,7 +81,7 @@ namespace distributions {
 	  title = std::string("p_{miss}, ") + _filter->title;
 	  std::string hname = "hPmiss_" + name;
 	  hist = new TH1F(hname.c_str(),
-					  (title + " ; p_{miss} (GeV); Events/tonne/10^{21} POT").c_str(),
+					  (title + " ; p_{miss} (GeV); Events/tonne/year").c_str(),
 						25, 0, 0.3);
   }
 
@@ -95,7 +95,7 @@ namespace distributions {
     title = std::string("Q^{2}, ") + _filter->title;
     std::string hname = "hq2_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Q^{2} (GeV^{2});Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Q^{2} (GeV^{2});Events/tonne/year").c_str(),
                     20, 0, 2);
   }
 
@@ -108,7 +108,7 @@ namespace distributions {
     title = std::string("Theorists W = sqrt(p.p + 2p.q - Q^2), ") + _filter->title;
     std::string hname = "hthw_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
                     20, 0, 2);
   }
 
@@ -174,7 +174,7 @@ namespace distributions {
     title = std::string("Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2), ") + _filter->title;
     std::string hname = "hexpw_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
                     20, 0.5, 1.5);
   }
 
@@ -193,7 +193,7 @@ namespace distributions {
     title = std::string("Theorists Bjorken x = Q^2/(2p.q), ") + _filter->title;
     std::string hname = "hthbx_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists Bjorken x = Q^2/(2p.q);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Theorists Bjorken x = Q^2/(2p.q);Events/tonne/year").c_str(),
                     10, 0, 1);
   }
 
@@ -255,7 +255,7 @@ namespace distributions {
     title = std::string("Experimentalists Bjorken x = Q^2/(2Mq0), ") + _filter->title;
     std::string hname = "hexpbx_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Experimentalists Bjorken x = Q^2/(2Mq0);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Experimentalists Bjorken x = Q^2/(2Mq0);Events/tonne/year").c_str(),
                     15, 0, 1.5);
   }
 
@@ -274,7 +274,7 @@ namespace distributions {
     title = std::string("Theorists Inelasticity y = (p.q)/(p.k), ") + _filter->title;
     std::string hname = "hthinely_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists Inelasticity y = (p.q)/(p.k);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Theorists Inelasticity y = (p.q)/(p.k);Events/tonne/year").c_str(),
                     20, 0, 1);
   }
 
@@ -336,7 +336,7 @@ namespace distributions {
     title = std::string("Experimentalists Inelasticity y = 1-(Elep/Enu), ") + _filter->title;
     std::string hname = "hexpinely_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Experimentalists Inelasticity y = 1-(Elep/Enu);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Experimentalists Inelasticity y = 1-(Elep/Enu);Events/tonne/year").c_str(),
                     20, 0, 1);
   }
 
@@ -349,7 +349,7 @@ namespace distributions {
     title = std::string("Theorists nu = p.q/sqrt(p^2), ") + _filter->title;
     std::string hname = "hthnu_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists nu = p.q/sqrt(p^2);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Theorists nu = p.q/sqrt(p^2);Events/tonne/year").c_str(),
                     20, 0, 1);
   }
 
@@ -411,7 +411,7 @@ namespace distributions {
     title = std::string("Experimentalists nu = Enu-Elep = q0, ") + _filter->title;
     std::string hname = "hexpnu_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Experimentalists nu = Enu-Elep = q0;Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Experimentalists nu = Enu-Elep = q0;Events/tonne/year").c_str(),
                     20, 0, 1);
   }
 
@@ -424,7 +424,7 @@ namespace distributions {
     title = std::string("Binding Energy from energy balance (GeV), ") + _filter->title;
     std::string hname = "hbe_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";Binding Energy from energy balance (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Binding Energy from energy balance (GeV);Events/tonne/year").c_str(),
                     50, 0, 0.1);
   }
 
@@ -492,7 +492,7 @@ namespace distributions {
     title = std::string("p_{lep}, ") + _filter->title;
     std::string hname = "hpl_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";p_{lep} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";p_{lep} (GeV);Events/tonne/year").c_str(),
                     20, 0, 2);
   }
 
@@ -521,7 +521,7 @@ namespace distributions {
     title = std::string("cos#theta_{lep}, ") + _filter->title;
     std::string hname = "htl_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";cos#theta_{lep};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";cos#theta_{lep};Events/tonne/year").c_str(),
                     50, -1, 1);
   }
 
@@ -550,7 +550,7 @@ namespace distributions {
     title = std::string("q^{0}/q^{3}, ") + _filter->title;
     std::string hname = "hq0q3_" + name;
     hist = new TH2F(hname.c_str(),
-                    (title + ";q^{0} (GeV);q^{3} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";q^{0} (GeV);q^{3} (GeV);Events/tonne/year").c_str(),
                     48, 0, 1.2, 48, 0, 1.2);
   }
 
@@ -563,7 +563,7 @@ namespace distributions {
     title = std::string("Leading p KE vs. q^{0}, ") + _filter->title;
     std::string hname = "hpkeq0_" + name;
     hist = new TH2F(hname.c_str(),
-                    (title + ";Leading proton KE (GeV);q^{0} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Leading proton KE (GeV);q^{0} (GeV);Events/tonne/year").c_str(),
                     50, 0, 0.5, 50, 0, 0.5);
   }
 
@@ -586,7 +586,7 @@ namespace distributions {
     title = std::string("Lepton p/#theta, ") + _filter->title;
     std::string hname = "hptl_" + name;
     hist = new TH2F(hname.c_str(),
-                    (title + ";p_{lep};cos#theta_{lep};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";p_{lep};cos#theta_{lep};Events/tonne/year").c_str(),
                     20, 0, 2, 50, -1, 1);
   }
 
@@ -613,7 +613,7 @@ namespace distributions {
     title = std::string("Proton KE, ") + _filter->title;
     std::string hname = "hpke_" + name;
     hist = new TH2F(hname.c_str(),
-                    (title + ";Leading proton KE T_{p1} (GeV);Subleading proton KE T_{p2} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";Leading proton KE T_{p1} (GeV);Subleading proton KE T_{p2} (GeV);Events/tonne/year").c_str(),
                     20, 0, 1, 20, 0, 1);
   }
 
@@ -645,7 +645,7 @@ namespace distributions {
     title = std::string("Leading p, p_{p}, ") + _filter->title;
     std::string hname = "hpp_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";p_{p} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";p_{p} (GeV);Events/tonne/year").c_str(),
                     20, 0, 2);
   }
 
@@ -677,7 +677,7 @@ namespace distributions {
     if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "htp_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";cos#theta_{p};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";cos#theta_{p};Events/tonne/year").c_str(),
                     50, -1, 1);
   }
 
@@ -712,7 +712,7 @@ namespace distributions {
     if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "htlepp_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";cos#theta_{lep,p};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";cos#theta_{lep,p};Events/tonne/year").c_str(),
                     50, -1, 1);
   }
 
@@ -760,7 +760,7 @@ namespace distributions {
     if (ethreshold > 0) title += std::string(", KE_{p} > ") + std::to_string(ethreshold*1000) + std::string(" MeV");
     std::string hname = "hdphilp_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";#Delta#phi_{lep,p};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";#Delta#phi_{lep,p};Events/tonne/year").c_str(),
                     20, -1, 1);
   }
 
@@ -867,7 +867,7 @@ namespace distributions {
     title = std::string("Leading #pi, p_{#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
     std::string hname = "hppi_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";p_{#pi} (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";p_{#pi} (GeV);Events/tonne/year").c_str(),
                     20, 0, 2);
   }
 
@@ -894,7 +894,7 @@ namespace distributions {
     title = std::string("Leading #pi, cos#theta_{#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
     std::string hname = "htpi_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";cos#theta_{#pi};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";cos#theta_{#pi};Events/tonne/year").c_str(),
                     50, -1, 1);
   }
 
@@ -928,7 +928,7 @@ namespace distributions {
     title = std::string("Leading #pi, cos#theta_{lep,#pi") + (charged ? "#pm" : "") + "}, " + _filter->title;
     std::string hname = "htlpi_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";cos#theta_{lep,#pi};Events/tonne/10^{21} POT").c_str(),
+                    (title + ";cos#theta_{lep,#pi};Events/tonne/year").c_str(),
                     50, -1, 1);
   }
 
@@ -975,7 +975,7 @@ namespace distributions {
     title = std::string("Energy balance, ") + _filter->title;
     std::string hname = "hecons_" + name;
     hist = new TH1F(hname.c_str(),
-                    (title + ";#DeltaE (GeV);Events/tonne/10^{21} POT").c_str(),
+                    (title + ";#DeltaE (GeV);Events/tonne/year").c_str(),
                     50, -2.5, 2.5);
   }
 
