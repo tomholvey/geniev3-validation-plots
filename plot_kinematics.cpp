@@ -22,9 +22,10 @@
 #include "filter.h"
 
 int main(int argc, char* argv[]) {
-  double NDFHC_IntFlux = 0.0083914105;
-  double NDRHC_IntFlux =  0.0075538875;
-  double NucleonTonneScale = 6.02831;
+  double NDFHC_IntFlux = 0.0010489263;
+  double NDRHC_IntFlux =  0.00094423594;
+  //double NucleonTonneScale = 6.02831;
+  double NucleonTonneScale = 5.98;
   
   // Parse command-line arguments
   if (argc != 3) {
@@ -259,13 +260,13 @@ int main(int argc, char* argv[]) {
 		  // Scale by DUNE numu FHC ND flux to get interactions per nucleon per POT
 		  dist->hist->Scale(NDFHC_IntFlux * 1E-4);
 		  // Scale by Ar atoms * 1 year POT * 1E-38
-		  dist->hist->Scale(NucleonTonneScale * 1E12);
+		  dist->hist->Scale(NucleonTonneScale * 1.1E12);
 	  }
 	  else if (nuistr.PDGnu == -12 || nuistr.PDGnu == -14){
 		  // Scale by DUNE numubar RHC ND flux to get interactions per nucleon per POT
 		  dist->hist->Scale(NDRHC_IntFlux * 1E-4 );
 		  // Scale by Ar atoms * 1 year POT * 1E-38
-		  dist->hist->Scale(NucleonTonneScale * 1E12);
+		  dist->hist->Scale(NucleonTonneScale * 1.1E12);
 	  }
 	  dist->Write();
       // dist->Save();
