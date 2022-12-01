@@ -45,7 +45,7 @@ public:
   float W_genie;
   float x;
   float y;
-  float Eav;
+  float Erecoil_minerva;
   float EavAlt;
   float pnreco_c;
   int nfsp;

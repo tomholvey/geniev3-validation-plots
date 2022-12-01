@@ -33,7 +33,7 @@ NuisTree::NuisTree(TTree *intree):
     tr->SetBranchAddress("W_genie",&W_genie);
     tr->SetBranchAddress("x",&x);
     tr->SetBranchAddress("y",&y);
-    tr->SetBranchAddress("Eav",&Eav);
+    tr->SetBranchAddress("Erecoil_minerva",&Erecoil_minerva);
     tr->SetBranchAddress("EavAlt",&EavAlt);
     tr->SetBranchAddress("pnreco_C",&pnreco_c);
     tr->SetBranchAddress("nfsp",&nfsp);
