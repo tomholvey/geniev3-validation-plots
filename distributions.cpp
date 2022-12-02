@@ -170,7 +170,7 @@ namespace distributions {
     std::string hname = "h1D_ThW_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
-                    30, 0, 3);
+                    30, .5, 2);
   }
 
 
@@ -236,7 +236,7 @@ namespace distributions {
     std::string hname = "h1D_expW_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
-                    30, 0., 3);
+                    30, 0.5, 2);
   }
 
   void ExperimentalistsW::Fill(const NuisTree& nuistr) {
