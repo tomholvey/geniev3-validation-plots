@@ -138,6 +138,20 @@ namespace distributions {
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
+	// q0 reco --------------------------------------------------------------------------------------------------//
+	q0Reco::q0Reco(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. q0, ") + _filter->title;
+		std::string hname = "h1D_q0Reco_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + "; Reco. q^{0} (GeV); Events/tonne/year").c_str(),
+						30, 0, 3.);
+	}
+
+	void q0Reco::Fill(const NuisTree& nuistr){
+		float q0Reco = -1* (nuistr.ELep - (nuistr.ELep + nuistr.Erecoil_minerva));
+		dynamic_cast<TH1F*>(hist)->Fill(q0Reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
 	// q3 -----------------------------------------------------------------------------------------------------//
 	q3::q3(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 		title = std::string("q3, ") + _filter->title;
@@ -151,6 +165,39 @@ namespace distributions {
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
+	// q3 reco --------------------------------------------------------------------------------------------------//
+	q3Reco::q3Reco(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. q3, ") + _filter->title;
+		std::string hname = "h1D_q3Reco_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + "; Reco. q^{3} (GeV); Events/tonne/year").c_str(),
+						30, 0., 3.);
+	}
+
+	void q3Reco::Fill(const NuisTree& nuistr){
+		// Find final-state lepton in stack
+		int i_lep=-999;
+		for (int i=0; i<nuistr.nfsp; i++){
+			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+			// check this is the only lepton we've found
+				if (i_lep!=-999){
+				// previously found another lepton -- error!
+				}
+			i_lep = i;
+			}
+		}
+
+		// Now get lepton momentum from components.
+		TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+		float p = pv.Mag();
+		float Erec = nuistr.ELep + nuistr.Erecoil_minerva;
+
+		float q3_reco = TMath::Sqrt(p*p + Erec*Erec - p*nuistr.CosLep);
+
+		dynamic_cast<TH1F*>(hist)->Fill(q3_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+
 	// Q2 -------------------------------------------------------------------------------------------------------//
 	Q2::Q2(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 		title = std::string("Q^{2}, ") + _filter->title;
@@ -162,6 +209,39 @@ namespace distributions {
 
 	void Q2::Fill(const NuisTree& nuistr){
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// Q2 Reco ----------------------------------------------------------------------------------------------------//
+	Q2Reco::Q2Reco(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. Q^{2}, ") + _filter->title;
+		std::string hname = "h1D_RecoQ2_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + ";Reco. Q^{2} (GeV^2); Events/tonne/year").c_str(),
+						30, 0. ,3);
+	}
+
+	void Q2Reco::Fill(const NuisTree& nuistr){
+		// Find final-state lepton in stack
+		int i_lep=-999;
+		for (int i=0; i<nuistr.nfsp; i++){
+			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+			// check this is the only lepton we've found
+				if (i_lep!=-999){
+				// previously found another lepton -- error!
+				}
+			i_lep = i;
+			}
+		}
+
+		// Now get lepton momentum from components.
+		TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+		float p = pv.Mag();
+		
+		// Q2_reco = 2*Erec*(E_lep - p_lep*costheta_lep)
+		float Erec = nuistr.ELep + nuistr.Erecoil_minerva;
+		float Q2_reco = 2*Erec*(nuistr.ELep - p*nuistr.CosLep);
+
+		dynamic_cast<TH1F*>(hist)->Fill(Q2_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
 	// Theorists W ---------------------------------------------------------------------------------------------------------//
@@ -513,7 +593,7 @@ namespace distributions {
 	  std::string hname = "h1D_Erec_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; E_{rec} (GeV); Events/tonne/year").c_str(),
-					  60, 0., 30.);
+					  50, 0., 5.);
   }
 
   void Erec::Fill(const NuisTree& nuistr){
@@ -983,7 +1063,7 @@ namespace distributions {
 	  std::string hname = "h2D_ErecYrec_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; E_{rec} (GeV); y_{rec}; Events/tonne/year").c_str(),
-					  60, 0., 30., 20, 0., 1.);
+					  60, 0., 5., 20, 0., 1.);
   }
 
   void ErecYrec::Fill(const NuisTree& nuistr){
@@ -1050,7 +1130,7 @@ namespace distributions {
 	  std::string hname = "h2D_plepT_plepL_" + name;
 	  hist = new TH2F(hname.c_str(),
 	                  (title + "; p_{lep}^{L} (GeV);p_{lep}^{T} (GeV);Events/tonne/year").c_str(),
-					  20, 0., 2., 20, 0., 2.);
+					  40, 0., 1.5, 40, 0., 1.5);
   }
 
   void PLep_TL::Fill(const NuisTree& nuistr){
@@ -1105,7 +1185,7 @@ namespace distributions {
     std::string hname = "h2D_Q2_W_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + "; W (GeV); Q^2 (GeV^2) ;Events/tonne/year").c_str(),
-                    30, 0, 3, 40, 0.5, 3);
+                    50, 0.5, 1.5, 40, 0.5, 3);
   }
 
   void Q2W::Fill(const NuisTree& nuistr){

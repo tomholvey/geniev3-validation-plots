@@ -60,9 +60,21 @@ namespace distributions {
 	  void Fill(const NuisTree& nuistr);
   };
 
+  // q0 Reco
+  struct q0Reco : public Distribution {
+	  q0Reco(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
   // q3
   struct q3 : public Distribution {
 	  q3(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  // q3 Reco
+  struct q3Reco : public Distribution {
+	  q3Reco(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
 
@@ -75,6 +87,12 @@ namespace distributions {
   /** Q2 */
   struct Q2 : public Distribution {
     Q2(std::string _name, Filter* _filter);
+    void Fill(const NuisTree& nuistr);
+  };
+  
+  /** Reco Q2 */
+  struct Q2Reco : public Distribution {
+    Q2Reco(std::string _name, Filter* _filter);
     void Fill(const NuisTree& nuistr);
   };
 

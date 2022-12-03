@@ -12,16 +12,13 @@ style = [1,9,2,3,4]
 normalize = False
 
 if __name__ == '__main__':
-    if len(sys.argv) < 5:
-        print('Usage: %s normalize (true/false) input1.root legendtitle1 input2.root legendtitle2 [input3.root legendtitle3 input4.root legendtitle4 input5.root legendtitle5]' % sys.argv[0])
+    if len(sys.argv) < 4:
+        print('Usage: %s  input1.root legendtitle1 input2.root legendtitle2 [input3.root legendtitle3 input4.root legendtitle4 input5.root legendtitle5]' % sys.argv[0])
         sys.exit(0)
 
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetPalette(ROOT.kBird)
     ROOT.gROOT.SetBatch(True)
-
-    normalize = sys.argv[1]
-    print(normalize)
 
     i = 0
     fv = []
