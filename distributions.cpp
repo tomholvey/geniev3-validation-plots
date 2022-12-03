@@ -15,233 +15,233 @@
 
 // From GENIE: Decoding Z from the PDG code (PDG ion code convention: 10LZZZAAAI)
 int IonPdgCodeToZ(int ion_pdgc) {
-  int Z = (ion_pdgc/10000) - 1000*(ion_pdgc/10000000); // don't factor out!
-  return Z;
+	int Z = (ion_pdgc/10000) - 1000*(ion_pdgc/10000000); // don't factor out!
+	return Z;
 }
 
 // From GENIE: Decoding A from the PDG code (PDG ion code convention: 10LZZZAAAI)
 int IonPdgCodeToA(int ion_pdgc) {
-  int A = (ion_pdgc/10) - 1000*(ion_pdgc/10000); // don't factor out!
-  return A;
+	int A = (ion_pdgc/10) - 1000*(ion_pdgc/10000); // don't factor out!
+	return A;
 }
 
 
 Distribution::Distribution(std::string _name, std::string _title,
-             TH1* _hist, Filter* _filter)
-    : hist(_hist), filter(_filter), name(_name), title(_title) {}
+		TH1* _hist, Filter* _filter)
+	: hist(_hist), filter(_filter), name(_name), title(_title) {}
 
 
-void Distribution::Write() {
-  std::cout << "WRITE " << hist->GetName() << std::endl;
-  hist->Write();
-}
+	void Distribution::Write() {
+		std::cout << "WRITE " << hist->GetName() << std::endl;
+		hist->Write();
+	}
 
 
 void Distribution::Save(TCanvas* c) {
-  bool own_canvas = c == NULL;
-  c = (c == NULL ? new TCanvas("c1", "", 500, 500) : c);
-  c->cd();
-  hist->Draw("colz");
-  c->SaveAs((std::string("hist_") + name + ".png").c_str());
-  if (own_canvas) delete c;
+	bool own_canvas = c == NULL;
+	c = (c == NULL ? new TCanvas("c1", "", 500, 500) : c);
+	c->cd();
+	hist->Draw("colz");
+	c->SaveAs((std::string("hist_") + name + ".png").c_str());
+	if (own_canvas) delete c;
 }
 
 
 namespace distributions {
 
-  // 1D Distributions
-  // Enu_true ------------------------------------------------------------------------------------------------------------------//
-  Enu_true::Enu_true(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-	  title = std::string("True Neutrino Energy, ") + _filter->title;
-	  std::string hname = "h1D_Enu_" + name;
-	  hist = new TH1F(hname.c_str(),
-					  (title + "; E_{#nu}^{true} (GeV); Events/tonne/year").c_str(),
-					  60, 0., 30.);
-  }
-
-  void Enu_true::Fill(const NuisTree& nuistr){
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Enu_true, nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
-
-  // Theorists nu/q0 -----------------------------------------------------------------------------------------------------------//
-  TheoristsNu::TheoristsNu(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Theorists nu = p.q/sqrt(p^2), ") + _filter->title;
-    std::string hname = "hthnu_" + name;
-    hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists nu = p.q/sqrt(p^2);Events/tonne/year").c_str(),
-                    20, 0, 1);
-  }
-
-  void TheoristsNu::Fill(const NuisTree& nuistr) {
-    // Find neutrino and nucleon in list of initial state particles
-    int i_nuc = -999;
-    int i_nu = -999;
-    for (int i=0; i<nuistr.ninitp; i++) {
-	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
-        // check this is the only initial nucleon we've found
-        assert(i_nuc==-999);
-        i_nuc = i;
-      }
-	  // Or NC 2p2h 
-	  else if (nuistr.Mode == 53) {
-		  assert(i_nuc = -999);
-		  i_nuc = i;
-	  }
-      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
-        // check this is the only neutrino we've found
-        assert(i_nu==-999);
-        i_nu = i;
-      }
-    }
-
-    // Find lepton  in list of final state particles
-    int i_lep = -999;
-    for (int i=0; i<nuistr.nfsp; i++) {
-      if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
-        // check this is the only lepton we've found
-        assert(i_lep==-999);
-        i_lep = i;
-      }
-    }
-	
-	if (i_nuc == -999){
-		return;
+	// 1D Distributions
+	// Enu_true ------------------------------------------------------------------------------------------------------------------//
+	Enu_true::Enu_true(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("True Neutrino Energy, ") + _filter->title;
+		std::string hname = "h1D_Enu_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + "; E_{#nu}^{true} (GeV); Events/tonne/year").c_str(),
+				50, 0., 5.);
 	}
-    assert (i_nuc!=-999);
-    assert (i_nu!=-999);
-    assert (i_lep!=-999);
 
-    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
-    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
-
-    TLorentzVector q = k-kprime;
-    // Sanity check: q should match saved values in tree!
-    assert((q.Mag2()*-1 - nuistr.Q2) < 1e-4);
-
-    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
-
-    float nu_theorist = (p.Dot(q))/(p.Mag());
-
-    dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
-  
-  // q0/Experimentalists nu ----------------------------------------------------------------------------------//
-  q0::q0(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-	  title = std::string("q0, ") + _filter->title;
-	  std::string hname = "h1D_q0_" + name;
-	  hist = new TH1F(hname.c_str(),
-					  (title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
-					  20, 0., 10.);
-  }
-
-  void q0::Fill(const NuisTree& nuistr){
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
-
-  // q3 -----------------------------------------------------------------------------------------------------//
-  q3::q3(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-	  title = std::string("q3, ") + _filter->title;
-	  std::string hname = "h1D_q3_" + name;
-	  hist = new TH1F(hname.c_str(),
-					  (title + " ; q^{3} (GeV); Events/tonne/year").c_str(),
-					  20, 0., 10.);
-  }
-
-  void q3::Fill(const NuisTree& nuistr){
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
-
-  // Q2 -------------------------------------------------------------------------------------------------------//
-  Q2::Q2(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Q^{2}, ") + _filter->title;
-    std::string hname = "h1D_Q2_" + name;
-    hist = new TH1F(hname.c_str(),
-                    (title + ";Q^{2} (GeV^{2});Events/tonne/year").c_str(),
-                    50, 0, 5);
-  }
-
-  void Q2::Fill(const NuisTree& nuistr){
-    dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
-
-  // Theorists W ---------------------------------------------------------------------------------------------------------//
-  TheoristsW::TheoristsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Theorists W = sqrt(p.p + 2p.q - Q^2), ") + _filter->title;
-    std::string hname = "h1D_ThW_" + name;
-    hist = new TH1F(hname.c_str(),
-                    (title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
-                    30, .5, 2);
-  }
-
-
-  void TheoristsW::Fill(const NuisTree& nuistr) {
-    // Find neutrino and nucleon in list of initial state particles
-    int i_nuc = -999;
-    int i_nu = -999;
-    for (int i=0; i<nuistr.ninitp; i++) {
-	  // Look for initial state proton/neutron, nucleus for Coh
-	  if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
-        // check this is the only initial nucleon we've found
-        assert(i_nuc==-999);
-        i_nuc = i;
-      }
-	  // Or NC 2p2h 
-	  else if (nuistr.Mode == 53) {
-		  assert(i_nuc = -999);
-		  i_nuc = i;
-	  }
-      if (nuistr.initp_pdg[i]==nuistr.PDGnu){
-        // check this is the only neutrino we've found
-        assert(i_nu==-999);
-        i_nu = i;
-      }
-    }
-
-    // Find lepton  in list of final state particles
-    int i_lep = -999;
-    for (int i=0; i<nuistr.nfsp; i++) {
-	  if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
-        // check this is the only lepton we've found
-        assert(i_lep==-999);
-        i_lep = i;
-      }
-    }
-
-	if (i_nuc == -999){
-		// Should only be for reverse muon decay and elastic electron scattering
-		// Very rare!!
-		return;
+	void Enu_true::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.Enu_true, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
-	assert (i_nuc!=-999);
-    assert (i_nu!=-999);
-    assert (i_lep!=-999);
 
-    TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
-    TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+	// Theorists nu/q0 -----------------------------------------------------------------------------------------------------------//
+	TheoristsNu::TheoristsNu(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("Theorists nu = p.q/sqrt(p^2), ") + _filter->title;
+		std::string hname = "hthnu_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + ";Theorists nu = p.q/sqrt(p^2);Events/tonne/year").c_str(),
+				20, 0, 1);
+	}
 
-    TLorentzVector q = k-kprime;
-    // Sanity check: q should match saved values in tree!
-    assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+	void TheoristsNu::Fill(const NuisTree& nuistr) {
+		// Find neutrino and nucleon in list of initial state particles
+		int i_nuc = -999;
+		int i_nu = -999;
+		for (int i=0; i<nuistr.ninitp; i++) {
+			if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
+				// check this is the only initial nucleon we've found
+				assert(i_nuc==-999);
+				i_nuc = i;
+			}
+			// Or NC 2p2h 
+			else if (nuistr.Mode == 53) {
+				assert(i_nuc = -999);
+				i_nuc = i;
+			}
+			if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+				// check this is the only neutrino we've found
+				assert(i_nu==-999);
+				i_nu = i;
+			}
+		}
 
-    TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+		// Find lepton  in list of final state particles
+		int i_lep = -999;
+		for (int i=0; i<nuistr.nfsp; i++) {
+			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+				// check this is the only lepton we've found
+				assert(i_lep==-999);
+				i_lep = i;
+			}
+		}
 
-    float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - nuistr.Q2);
+		if (i_nuc == -999){
+			return;
+		}
+		assert (i_nuc!=-999);
+		assert (i_nu!=-999);
+		assert (i_lep!=-999);
 
-    dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
+		TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+		TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
 
-  // Experimentalists W --------------------------------------------------------------------------------------------------//
-  ExperimentalistsW::ExperimentalistsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-    title = std::string("Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2), ") + _filter->title;
-    std::string hname = "h1D_expW_" + name;
-    hist = new TH1F(hname.c_str(),
-                    (title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
-                    30, 0.5, 2);
-  }
+		TLorentzVector q = k-kprime;
+		// Sanity check: q should match saved values in tree!
+		assert((q.Mag2()*-1 - nuistr.Q2) < 1e-4);
 
-  void ExperimentalistsW::Fill(const NuisTree& nuistr) {
-    // below what previous DIRT validations did
-	//dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight*(nuistr.fScaleFactor*1E38));
+		TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+		float nu_theorist = (p.Dot(q))/(p.Mag());
+
+		dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// q0/Experimentalists nu ----------------------------------------------------------------------------------//
+	q0::q0(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("q0, ") + _filter->title;
+		std::string hname = "h1D_q0_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
+				30, 0., 3.);
+	}
+
+	void q0::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// q3 -----------------------------------------------------------------------------------------------------//
+	q3::q3(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("q3, ") + _filter->title;
+		std::string hname = "h1D_q3_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + " ; q^{3} (GeV); Events/tonne/year").c_str(),
+				30, 0., 3.);
+	}
+
+	void q3::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// Q2 -------------------------------------------------------------------------------------------------------//
+	Q2::Q2(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("Q^{2}, ") + _filter->title;
+		std::string hname = "h1D_Q2_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + ";Q^{2} (GeV^{2});Events/tonne/year").c_str(),
+				30, 0, 3);
+	}
+
+	void Q2::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.Q2,nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// Theorists W ---------------------------------------------------------------------------------------------------------//
+	TheoristsW::TheoristsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("Theorists W = sqrt(p.p + 2p.q - Q^2), ") + _filter->title;
+		std::string hname = "h1D_ThW_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
+				30, .5, 2);
+	}
+
+
+	void TheoristsW::Fill(const NuisTree& nuistr) {
+		// Find neutrino and nucleon in list of initial state particles
+		int i_nuc = -999;
+		int i_nu = -999;
+		for (int i=0; i<nuistr.ninitp; i++) {
+			// Look for initial state proton/neutron, nucleus for Coh
+			if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
+				// check this is the only initial nucleon we've found
+				assert(i_nuc==-999);
+				i_nuc = i;
+			}
+			// Or NC 2p2h 
+			else if (nuistr.Mode == 53) {
+				assert(i_nuc = -999);
+				i_nuc = i;
+			}
+			if (nuistr.initp_pdg[i]==nuistr.PDGnu){
+				// check this is the only neutrino we've found
+				assert(i_nu==-999);
+				i_nu = i;
+			}
+		}
+
+		// Find lepton  in list of final state particles
+		int i_lep = -999;
+		for (int i=0; i<nuistr.nfsp; i++) {
+			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+				// check this is the only lepton we've found
+				assert(i_lep==-999);
+				i_lep = i;
+			}
+		}
+
+		if (i_nuc == -999){
+			// Should only be for reverse muon decay and elastic electron scattering
+			// Very rare!!
+			return;
+		}
+		assert (i_nuc!=-999);
+		assert (i_nu!=-999);
+		assert (i_lep!=-999);
+
+		TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
+		TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
+
+		TLorentzVector q = k-kprime;
+		// Sanity check: q should match saved values in tree!
+		assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
+
+		TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
+
+		float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - nuistr.Q2);
+
+		dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// Experimentalists W --------------------------------------------------------------------------------------------------//
+	ExperimentalistsW::ExperimentalistsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2), ") + _filter->title;
+		std::string hname = "h1D_expW_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
+				60, 0.5, 2);
+	}
+
+	void ExperimentalistsW::Fill(const NuisTree& nuistr) {
+		// below what previous DIRT validations did
+		//dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight*(nuistr.fScaleFactor*1E38));
 
     float Q2 = nuistr.Q2;
     float q0 = nuistr.q0;
@@ -485,7 +485,7 @@ namespace distributions {
 	  std::string hname = "h1D_ErecRelBias_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; Relative Reco. E_{#nu} Bias; Events/tonne/year").c_str(),
-					  20, -1., 1.);
+					  100, -1., 1.);
   }
 
   void ErecRelBias::Fill(const NuisTree& nuistr){
@@ -499,7 +499,7 @@ namespace distributions {
 	  std::string hname = "h1D_ErecAbsBias_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; Absolute Reco. E_{#nu} Bias (GeV); Events/tonne/year").c_str(),
-					  50, -1., 1.);
+					  100, -1., 1.);
   }
 
   void ErecAbsBias::Fill(const NuisTree& nuistr){
@@ -527,7 +527,7 @@ namespace distributions {
 	  std::string hname = "h1D_Emiss_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
-					   40, 0.25, 0.70);
+					   40, 0., 0.1);
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
@@ -586,7 +586,7 @@ namespace distributions {
     std::string hname = "h1D_LeadP_T_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";Leading proton KE T_{p} (GeV);Events/tonne/year").c_str(),
-                    20, 0, 1);
+                    30, 0, 1);
   }
 
   void PLead_KE::Fill(const NuisTree& nuistr) { 
@@ -680,7 +680,7 @@ namespace distributions {
     std::string hname = "h1D_LeadN_T_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";Leading neutron KE T_{n} (GeV);Events/tonne/year").c_str(),
-                    20, 0, 1);
+                    30, 0, 1);
   }
 
   void NLead_KE::Fill(const NuisTree& nuistr) {
@@ -745,7 +745,7 @@ namespace distributions {
     std::string hname = "h1D_LeadPi_p_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";p_{#pi} (GeV);Events/tonne/year").c_str(),
-                    20, 0, 2);
+                    50, 0, 2);
   }
 
   void PPiLead::Fill(const NuisTree& nuistr) {
@@ -806,7 +806,7 @@ namespace distributions {
     snprintf(spdg, 100, "%i", pdg);
     title = std::string("Multiplicity, PDG ") + spdg + ", " + _filter->title;
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
-    hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 20, 0, 20);
+    hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 15, 0, 15);
   }
 
   void Mult::Fill(const NuisTree& nuistr) {
@@ -839,7 +839,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      60, 0, 3);
+                      60, 0, 1);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt
@@ -997,7 +997,7 @@ namespace distributions {
 	  std::string hname = "hEmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
-					  25, 0., 0.3, 40, 0.25, 0.7);
+					  25, 0., 0.3, 40, 0., 0.1);
   }
 
   void EmissPmiss::Fill(const NuisTree& nuistr){
@@ -1105,7 +1105,7 @@ namespace distributions {
     std::string hname = "h2D_Q2_W_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + "; W (GeV); Q^2 (GeV^2) ;Events/tonne/year").c_str(),
-                    50, 0, 5, 40, 0.5, 3);
+                    30, 0, 3, 40, 0.5, 3);
   }
 
   void Q2W::Fill(const NuisTree& nuistr){
@@ -1131,7 +1131,7 @@ namespace distributions {
 	  std::string hname = "h2D_etru_erec_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + " ; E_{#nu}; E_{reco.}; Events/tonne/year").c_str(),
-					  60, 0, 30., 60, 0., 30.);
+					  50, 0, 5., 50, 0., 5.);
   }
 
   void Enu_Erec::Fill(const NuisTree& nuistr){
