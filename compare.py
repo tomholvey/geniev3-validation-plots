@@ -4,6 +4,7 @@
 # A. Mastbaum <mastbaum@uchicago.edu>, 2018/12/20
 
 import sys
+import os
 import ROOT
 
 color = [ROOT.kRed,ROOT.kBlue,ROOT.kOrange-3,ROOT.kMagenta+2,ROOT.kGreen+2]
@@ -77,11 +78,11 @@ if __name__ == '__main__':
                 l.AddEntry(ov[i],legendtitle[i])
             l.Draw()
 
-            plotname = '_'.join(['cmp'] + k.GetName().split('_')[1:]) + '.pdf'
+            plotname = '_'.join(['1DComp'] + k.GetName().split('_')[1:]) + '.pdf'
             c.SaveAs(plotname)
 
         elif ov[0].IsA() == ROOT.TH2F.Class():
-            c.SetRightMargin(0.17)
+            c.SetRightMargin(0.27)
             # First do a loop through all these plots to find the maximum z value and set all plots to have the same z scale
             zmax=0;
             for i in range(len(ov)):
@@ -92,13 +93,14 @@ if __name__ == '__main__':
                     # Draw distribution as-is (comparisons are hard for 2D plots)
                     #c.SetLogz()
                     ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
-                    ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
+                    #ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
+                    #ov[i].GetZaxis().SetTitle(legendtitle[i])
                     #ov[i].SetMinimum(0)
                     #ov[i].SetMaximum(zmax)
                     ov[i].Draw('colz')
-                    ov[i].GetZaxis().SetTitleOffset(1.15)
+                    ov[i].GetZaxis().SetTitleOffset(1.25)
                     
-                plotname = '_'.join(['nocmp2d'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
+                plotname = '_'.join(['2D'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
                 c.SaveAs(plotname)
 
                 # Draw ratio to the first one given in arguments
@@ -111,3 +113,7 @@ if __name__ == '__main__':
                 # c.SaveAs(plotname)
 
         del c
+
+os.system("pdfunite 1D* AllPlots_1D.pdf")
+os.system("pdfunite 2D* AllPlots_2D.pdf")
+os.system("rm 1D* 2D*")
