@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include "TCanvas.h"
 #include "TDatabasePDG.h"
@@ -222,6 +221,7 @@ namespace distributions {
 
 	void Q2Reco::Fill(const NuisTree& nuistr){
 		// Find final-state lepton in stack
+		float m_lep = 0;
 		int i_lep=-999;
 		for (int i=0; i<nuistr.nfsp; i++){
 			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
@@ -229,6 +229,16 @@ namespace distributions {
 				if (i_lep!=-999){
 				// previously found another lepton -- error!
 				}
+			// Set lepton mass (e, mu or tau) 
+			if (nuistr.fsp_pdg[i] == 11 || nuistr.fsp_pdg[i] == -11){
+				m_lep = 0.000511;
+			}
+			else if (nuistr.fsp_pdg[i] == 13 || nuistr.fsp_pdg[i] == -13){
+				m_lep = 0.10567;
+			}
+			else if (nuistr.fsp_pdg[i] == 15 || nuistr.fsp_pdg[i] == -15){
+				m_lep = 1.7769;
+			}
 			i_lep = i;
 			}
 		}
@@ -237,9 +247,9 @@ namespace distributions {
 		TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
 		float p = pv.Mag();
 		
-		// Q2_reco = 2*Erec*(E_lep - p_lep*costheta_lep)
+		// Q2_reco = 2*Erec*(E_lep - p_lep*costheta_lep) - m_lep^2 
 		float Erec = nuistr.ELep + nuistr.Erecoil_minerva;
-		float Q2_reco = 2*Erec*(nuistr.ELep - p*nuistr.CosLep);
+		float Q2_reco = 2*Erec*(nuistr.ELep - p*nuistr.CosLep) - m_lep*m_lep;
 
 		dynamic_cast<TH1F*>(hist)->Fill(Q2_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
@@ -252,7 +262,6 @@ namespace distributions {
 				(title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
 				30, .5, 2);
 	}
-
 
 	void TheoristsW::Fill(const NuisTree& nuistr) {
 		// Find neutrino and nucleon in list of initial state particles
@@ -913,6 +922,28 @@ namespace distributions {
     dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
+  Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
+      : Distribution(_name, _filter), ethreshold(_ethreshold) {
+    title = std::string("Multiplicity, Nucleons ") + _filter->title;
+    std::string hname = std::string("h1D_multNucleons_") + name;
+    hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 15, 0, 15);
+  }
+
+  void Mult_Nucl::Fill(const NuisTree& nuistr) {
+    size_t nf = 0;
+
+    for (int i=0; i<nuistr.nfsp; i++){
+      if (nuistr.fsp_pdg[i] == 2112 && (nuistr.fsp_E[i] - 0.939565) > ethreshold){
+        nf++;
+      }
+      else if (nuistr.fsp_pdg[i] == 2212 && (nuistr.fsp_E[i] - 0.938272) > ethreshold){
+        nf++;
+      }
+    }
+
+    dynamic_cast<TH1F*>(hist)->Fill(nf, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+  }
+  
   // TKI variables ------------------------------------------------------------------------------------------------------//
   tki_dpt::tki_dpt(std::string _name, Filter* _filter) : Distribution(_name, _filter){
 	  title = std::string("dp_{T}, ") + _filter->title;

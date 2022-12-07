@@ -9,7 +9,6 @@ import ROOT
 
 color = [ROOT.kRed,ROOT.kBlue,ROOT.kOrange-3,ROOT.kMagenta+2,ROOT.kGreen+2]
 style = [1,9,2,3,4]
-normalize = False
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
@@ -24,10 +23,10 @@ if __name__ == '__main__':
     fv = []
     legendtitle = []
     for arg in sys.argv:
-        if i<2:
+        if i<1:
             i = i+1
             continue
-        if i%2 == 0:
+        if i%2 != 0:
             fv.append(ROOT.TFile(arg))
             print('Adding to comparison: %s' % arg)
         else:
@@ -47,17 +46,20 @@ if __name__ == '__main__':
             ov.append(fv[i].Get(k.GetName()))
             if(ov[i]):
                 ov[i].SetLineColor(color[i])
+                ov[i].SetMarkerStyle(21)
+                #ov[0].SetFillColorAlpha(color[0], 0.2)
                 ov[i].SetLineWidth(4)
                 ov[i].SetLineStyle(style[i])
 
         c = ROOT.TCanvas('c', '', 1500, 1500)
         c.SetLeftMargin(0.15)
 
+        ov[0].Sumw2()
         if ov[0].IsA() == ROOT.TH1F.Class():
-            ov[0].Draw('e1')
+            ov[0].Draw("E")
             for i in range(len(ov)):
                 if (ov[i]): 
-                    ov[i].Draw('e1 same')
+                    ov[i].Draw('hist same')
 
             ymax = ov[0].GetMaximum()
             for i in range(len(ov)):
@@ -111,6 +113,18 @@ if __name__ == '__main__':
 
         del c
 
-os.system("pdfunite 1D* AllPlots_1D.pdf")
-os.system("pdfunite 2D* AllPlots_2D.pdf")
+os.system("pdfunite 1D*numu_ccqe* Numu_CCQE_1D.pdf")
+os.system("pdfunite 1D*numu_ccmec* Numu_CCMEC_1D.pdf")
+os.system("pdfunite 1D*numu_ccdis* Numu_CCDIS_1D.pdf")
+os.system("pdfunite 1D*numu_nc* Numu_NC_1D.pdf")
+os.system("pdfunite 1D*nue_ccqe* Nue_CCQE_1D.pdf")
+os.system("pdfunite 1D*nue_nc* Nue_NC_1D.pdf")
+
+os.system("pdfunite 2D*numu_ccqe* Numu_CCQE_2D.pdf")
+os.system("pdfunite 2D*numu_ccmec* Numu_CCMEC_2D.pdf")
+os.system("pdfunite 2D*numu_ccdis* Numu_CCDIS_2D.pdf")
+os.system("pdfunite 2D*numu_nc* Numu_NC_2D.pdf")
+os.system("pdfunite 2D*nue_ccqe* Nue_CCQE_2D.pdf")
+os.system("pdfunite 1D*nue_nc* Nue_NC_2D.pdf")
+
 os.system("rm 1D* 2D*")

@@ -244,6 +244,12 @@ namespace distributions {
     float mass;  //!< Particle mass (from PDG database lookup)
   };
 
+  struct Mult_Nucl : public Distribution {
+    Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold=0);
+    void Fill(const NuisTree& nuistr);
+    float ethreshold;  //!< KE threshold (GeV)
+  };
+  
   /** TKI dpt */
   struct tki_dpt : public Distribution {
     tki_dpt(std::string _name, Filter* _filter);
