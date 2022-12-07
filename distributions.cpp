@@ -29,7 +29,6 @@ Distribution::Distribution(std::string _name, std::string _title,
 		TH1* _hist, Filter* _filter)
 	: hist(_hist), filter(_filter), name(_name), title(_title) {}
 
-
 	void Distribution::Write() {
 		std::cout << "WRITE " << hist->GetName() << std::endl;
 		hist->Write();
@@ -44,7 +43,6 @@ void Distribution::Save(TCanvas* c) {
 	c->SaveAs((std::string("hist_") + name + ".png").c_str());
 	if (own_canvas) delete c;
 }
-
 
 namespace distributions {
 
@@ -126,11 +124,11 @@ namespace distributions {
 
 	// q0/Experimentalists nu ----------------------------------------------------------------------------------//
 	q0::q0(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-		title = std::string("q0, ") + _filter->title;
+		title = std::string("q^{0}, ") + _filter->title;
 		std::string hname = "h1D_q0_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
-				30, 0., 3.);
+				50, 0., 1.5);
 	}
 
 	void q0::Fill(const NuisTree& nuistr){
@@ -143,7 +141,7 @@ namespace distributions {
 		std::string hname = "h1D_q0Reco_" + name;
 		hist = new TH1F(hname.c_str(),
 						(title + "; Reco. q^{0} (GeV); Events/tonne/year").c_str(),
-						30, 0, 3.);
+						50, 0, 1.5);
 	}
 
 	void q0Reco::Fill(const NuisTree& nuistr){
@@ -325,7 +323,7 @@ namespace distributions {
 		std::string hname = "h1D_expW_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
-				60, 0.5, 2);
+				60, 0.5, 1.5);
 	}
 
 	void ExperimentalistsW::Fill(const NuisTree& nuistr) {
@@ -545,7 +543,7 @@ namespace distributions {
     std::string hname = "h1D_cosThetaLep_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{lep};Events/tonne/year").c_str(),
-                    50, -1, 1);
+                    25, 0, 1);
   }
 
   void ThetaLep::Fill(const NuisTree& nuistr) {
@@ -574,7 +572,7 @@ namespace distributions {
 	  std::string hname = "h1D_ErecRelBias_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; Relative Reco. E_{#nu} Bias; Events/tonne/year").c_str(),
-					  100, -1., 1.);
+					  100, -0.2, 0.2);
   }
 
   void ErecRelBias::Fill(const NuisTree& nuistr){
@@ -588,7 +586,7 @@ namespace distributions {
 	  std::string hname = "h1D_ErecAbsBias_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; Absolute Reco. E_{#nu} Bias (GeV); Events/tonne/year").c_str(),
-					  100, -1., 1.);
+					  40, -0.2, 0.2);
   }
 
   void ErecAbsBias::Fill(const NuisTree& nuistr){
@@ -616,7 +614,7 @@ namespace distributions {
 	  std::string hname = "h1D_Emiss_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
-					   40, 0., 0.1);
+					   40, 0.02, 0.07);
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
@@ -630,7 +628,7 @@ namespace distributions {
 	  std::string hname = "h1D_pmiss_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + " ; p_{miss} (GeV); Events/tonne/year").c_str(),
-						25, 0, 0.3);
+						40, 0, 0.4);
   }
 
   void Pmiss::Fill(const NuisTree& nuistr){
@@ -834,12 +832,12 @@ namespace distributions {
     std::string hname = "h1D_LeadPi_p_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";p_{#pi} (GeV);Events/tonne/year").c_str(),
-                    50, 0, 2);
+                    50, 0.04, 0.1);
   }
 
   void PPiLead::Fill(const NuisTree& nuistr) {
 
-    // Loop through final-state particles and find leading proton (defined by highest KE)
+    // Loop through final-state particles and find leading pion (defined by highest KE)
     float plead = 0;
     for (int i=0; i<nuistr.nfsp; i++){
       if (abs(nuistr.fsp_pdg[i]) == 211 || (!charged && nuistr.fsp_pdg[i] == 111)){
@@ -850,7 +848,7 @@ namespace distributions {
         }
       }
     }
-
+	std::cout << "Pion momentum = " << plead << std::endl;
     dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
  
@@ -950,7 +948,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      60, 0, 1);
+                      60, 0,0.5);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt
@@ -974,7 +972,7 @@ namespace distributions {
 	  std::string hname = "h1D_dphit_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + ";d#phi_{T};Events/tonne/year").c_str(),
-					  20, 0, TMath::Pi());
+					  20, 0, .5*TMath::Pi());
   }
 
   void tki_dphit::Fill(const NuisTree& nuistr){ // dphi_T
@@ -1040,7 +1038,7 @@ namespace distributions {
 	  std::string hname = "h1D_pmuL_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + ";p_{l}^{L} (GeV);Events/tonne/year").c_str(),
-					  20, 0, 2.);
+					  50, 0, 5.);
   }
   
   void pmuL::Fill(const NuisTree& nuistr){
@@ -1108,7 +1106,7 @@ namespace distributions {
 	  std::string hname = "hEmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
-					  25, 0., 0.3, 40, 0., 0.1);
+					  40, 0., 0.4, 40, 0.02, 0.07);
   }
 
   void EmissPmiss::Fill(const NuisTree& nuistr){
@@ -1134,7 +1132,7 @@ namespace distributions {
     std::string hname = "h2D_plep_thetalep_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + ";p_{lep} (GeV);cos#theta_{lep};Events/tonne/year").c_str(),
-                    20, 0, 2, 50, -1, 1);
+                    20, 0, 2, 25, 0, 1);
   }
 
   void PThetaLep::Fill(const NuisTree& nuistr) {
@@ -1161,7 +1159,7 @@ namespace distributions {
 	  std::string hname = "h2D_plepT_plepL_" + name;
 	  hist = new TH2F(hname.c_str(),
 	                  (title + "; p_{lep}^{L} (GeV);p_{lep}^{T} (GeV);Events/tonne/year").c_str(),
-					  40, 0., 1.5, 40, 0., 1.5);
+					  50, 0., 5, 40, 0., 1.5);
   }
 
   void PLep_TL::Fill(const NuisTree& nuistr){

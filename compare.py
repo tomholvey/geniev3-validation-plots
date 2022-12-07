@@ -115,14 +115,14 @@ if __name__ == '__main__':
 
 os.system("pdfunite 1D*numu_ccqe* Numu_CCQE_1D.pdf")
 os.system("pdfunite 1D*numu_ccmec* Numu_CCMEC_1D.pdf")
-os.system("pdfunite 1D*numu_ccdis* Numu_CCDIS_1D.pdf")
+os.system("pdfunite 1D*numu_ccres* Numu_CCRES_1D.pdf")
 os.system("pdfunite 1D*numu_nc* Numu_NC_1D.pdf")
 os.system("pdfunite 1D*nue_ccqe* Nue_CCQE_1D.pdf")
 os.system("pdfunite 1D*nue_nc* Nue_NC_1D.pdf")
 
 os.system("pdfunite 2D*numu_ccqe* Numu_CCQE_2D.pdf")
 os.system("pdfunite 2D*numu_ccmec* Numu_CCMEC_2D.pdf")
-os.system("pdfunite 2D*numu_ccdis* Numu_CCDIS_2D.pdf")
+os.system("pdfunite 2D*numu_ccres* Numu_CCRES_2D.pdf")
 os.system("pdfunite 2D*numu_nc* Numu_NC_2D.pdf")
 os.system("pdfunite 2D*nue_ccqe* Nue_CCQE_2D.pdf")
 os.system("pdfunite 1D*nue_nc* Nue_NC_2D.pdf")
