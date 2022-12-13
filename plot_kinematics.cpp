@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 	new distributions::TheoristsNu("numu_ccqe", filt_numu_ccqe),
 	new distributions::Q2("numu_ccqe", filt_numu_ccqe),
 	new distributions::Q2Reco("numu_ccqe", filt_numu_ccqe),
-	new distributions::TheoristsW("numu_ccqe", filt_numu_ccqe),
+	//new distributions::TheoristsW("numu_ccqe", filt_numu_ccqe),
 	new distributions::ExperimentalistsW("numu_ccqe", filt_numu_ccqe),
 	new distributions::TheoristsBjorkenX("numu_ccqe", filt_numu_ccqe),
 	new distributions::ExperimentalistsBjorkenX("numu_ccqe", filt_numu_ccqe),

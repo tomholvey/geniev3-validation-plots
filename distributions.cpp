@@ -832,7 +832,7 @@ namespace distributions {
     std::string hname = "h1D_LeadPi_p_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";p_{#pi} (GeV);Events/tonne/year").c_str(),
-                    50, 0.04, 0.1);
+                    30, 0., 3.);
   }
 
   void PPiLead::Fill(const NuisTree& nuistr) {
@@ -1227,7 +1227,7 @@ namespace distributions {
     std::string hname = "h2D_x_y_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + "; Bjorken x; Inel. y ;Events/tonne/year").c_str(),
-                    20, 0, 1, 20, 0., 1);
+                    50, 0, 1, 50, 0., 1);
   }
 
   void BjorkenX_InelY::Fill(const NuisTree& nuistr){
