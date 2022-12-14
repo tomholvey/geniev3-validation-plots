@@ -172,7 +172,7 @@ namespace distributions {
 	}
 
 	void q3Reco::Fill(const NuisTree& nuistr){
-		// Find final-state lepton in stack
+		float m_lep = 0;
 		int i_lep=-999;
 		for (int i=0; i<nuistr.nfsp; i++){
 			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
@@ -180,6 +180,16 @@ namespace distributions {
 				if (i_lep!=-999){
 				// previously found another lepton -- error!
 				}
+			// Set lepton mass (e, mu or tau) 
+			if (nuistr.fsp_pdg[i] == 11 || nuistr.fsp_pdg[i] == -11){
+				m_lep = 0.000511;
+			}
+			else if (nuistr.fsp_pdg[i] == 13 || nuistr.fsp_pdg[i] == -13){
+				m_lep = 0.10567;
+			}
+			else if (nuistr.fsp_pdg[i] == 15 || nuistr.fsp_pdg[i] == -15){
+				m_lep = 1.7769;
+			}
 			i_lep = i;
 			}
 		}
@@ -187,10 +197,15 @@ namespace distributions {
 		// Now get lepton momentum from components.
 		TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
 		float p = pv.Mag();
+		
+		// Q2_reco = 2*Erec*(E_lep - p_lep*costheta_lep) - m_lep^2 
 		float Erec = nuistr.ELep + nuistr.Erecoil_minerva;
-
-		float q3_reco = TMath::Sqrt(p*p + Erec*Erec - p*nuistr.CosLep);
-
+		float Q2_reco = 2*Erec*(nuistr.ELep - p*nuistr.CosLep) - m_lep*m_lep;
+		float q0Reco = -1* (nuistr.ELep - (nuistr.ELep + nuistr.Erecoil_minerva));
+		
+		float q3_reco = TMath::Sqrt(q0Reco*q0Reco + Q2_reco*Q2_reco);	
+		
+		
 		dynamic_cast<TH1F*>(hist)->Fill(q3_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
@@ -614,7 +629,7 @@ namespace distributions {
 	  std::string hname = "h1D_Emiss_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
-					   40, 0.02, 0.07);
+					   60, 0., 0.06);
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
@@ -848,7 +863,6 @@ namespace distributions {
         }
       }
     }
-	std::cout << "Pion momentum = " << plead << std::endl;
     dynamic_cast<TH1F*>(hist)->Fill(plead, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
  
@@ -1106,7 +1120,7 @@ namespace distributions {
 	  std::string hname = "hEmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
-					  40, 0., 0.4, 40, 0.02, 0.07);
+					  40, 0., 0.4, 60, 0., 0.06);
   }
 
   void EmissPmiss::Fill(const NuisTree& nuistr){
