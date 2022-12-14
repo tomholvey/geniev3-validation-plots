@@ -49,36 +49,42 @@ int main(int argc, char* argv[]) {
   filters::NuMode* filt_numu_ccqe = new filters::NuMode(14, enums::kCC, enums::kQE);
   filters::NuMode* filt_numu_ccmec = new filters::NuMode(14, enums::kCC, enums::kMEC);
   filters::NuMode* filt_numu_ccres = new filters::NuMode(14, enums::kCC, enums::kRes);
+  filters::NuMode* filt_numu_ccdis = new filters::NuMode(14, enums::kCC, enums::kDIS);
   filters::NuMode* filt_numu_nc = new filters::NuMode(14, enums::kNC, enums::kUndefined);
   
   // Anti-Numu (-14)
   filters::NuMode* filt_numubar_ccqe = new filters::NuMode(-14, enums::kCC, enums::kQE);
   filters::NuMode* filt_numubar_ccmec = new filters::NuMode(-14, enums::kCC, enums::kMEC);
   filters::NuMode* filt_numubar_ccres = new filters::NuMode(-14, enums::kCC, enums::kRes);
+  filters::NuMode* filt_numubar_ccdis = new filters::NuMode(-14, enums::kCC, enums::kDIS);
   filters::NuMode* filt_numubar_nc = new filters::NuMode(-14, enums::kNC, enums::kUndefined);
 
   // Nue (12)
   filters::NuMode* filt_nue_ccqe = new filters::NuMode(12, enums::kCC, enums::kQE);
   filters::NuMode* filt_nue_ccmec = new filters::NuMode(12, enums::kCC, enums::kMEC);
   filters::NuMode* filt_nue_ccres = new filters::NuMode(12, enums::kCC, enums::kRes);
+  filters::NuMode* filt_nue_ccdis = new filters::NuMode(12, enums::kCC, enums::kDIS);
   filters::NuMode* filt_nue_nc = new filters::NuMode(12, enums::kNC, enums::kUndefined);
   
   // Anti-Nue (-12)
   filters::NuMode* filt_nuebar_ccqe = new filters::NuMode(-12, enums::kCC, enums::kQE);
   filters::NuMode* filt_nuebar_ccmec = new filters::NuMode(-12, enums::kCC, enums::kMEC);
   filters::NuMode* filt_nuebar_ccres = new filters::NuMode(-12, enums::kCC, enums::kRes);
+  filters::NuMode* filt_nuebar_ccdis = new filters::NuMode(-12, enums::kCC, enums::kDIS);
   filters::NuMode* filt_nuebar_nc = new filters::NuMode(-12, enums::kNC, enums::kUndefined);
   
   // Nutau (16)
   filters::NuMode* filt_nutau_ccqe = new filters::NuMode(16, enums::kCC, enums::kQE);
   filters::NuMode* filt_nutau_ccmec = new filters::NuMode(16, enums::kCC, enums::kMEC);
   filters::NuMode* filt_nutau_ccres = new filters::NuMode(16, enums::kCC, enums::kRes);
+  filters::NuMode* filt_nutau_ccdis = new filters::NuMode(16, enums::kCC, enums::kDIS);
   filters::NuMode* filt_nutau_nc = new filters::NuMode(16, enums::kNC, enums::kUndefined);
 
   // Anti-NuTau (-16)
   filters::NuMode* filt_nutaubar_ccqe = new filters::NuMode(-16, enums::kCC, enums::kQE);
   filters::NuMode* filt_nutaubar_ccmec = new filters::NuMode(-16, enums::kCC, enums::kMEC);
   filters::NuMode* filt_nutaubar_ccres = new filters::NuMode(-16, enums::kCC, enums::kRes);
+  filters::NuMode* filt_nutaubar_ccdis = new filters::NuMode(-16, enums::kCC, enums::kDIS);
   filters::NuMode* filt_nutaubar_nc = new filters::NuMode(-16, enums::kNC, enums::kUndefined);
 
   // Define distributions (plots)
@@ -239,6 +245,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("numu_ccmec", filt_numu_ccmec),
 	new distributions::Enu_Erec("numu_ccmec", filt_numu_ccmec),
 
+	// numuDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("numu_ccdis_enu", filt_numu_ccdis),
+	new distributions::q0("numu_ccdis", filt_numu_ccdis),
+	new distributions::q0Reco("numu_ccdis", filt_numu_ccdis),
+	new distributions::q3("numu_ccdis", filt_numu_ccdis),
+	new distributions::q3Reco("numu_ccdis", filt_numu_ccdis),
+	new distributions::Q2("numu_ccdis", filt_numu_ccdis),
+	new distributions::Q2Reco("numu_ccdis", filt_numu_ccdis),
+	new distributions::ExperimentalistsW("numu_ccdis", filt_numu_ccdis),
+	new distributions::ExperimentalistsBjorkenX("numu_ccdis", filt_numu_ccdis),
+	new distributions::ExperimentalistsInelasticityY("numu_ccdis", filt_numu_ccdis),
+	new distributions::RecoInelasticityY("numu_ccdis", filt_numu_ccdis),
+	new distributions::PLep("numu_ccdis", filt_numu_ccdis),
+	new distributions::ThetaLep("numu_ccdis", filt_numu_ccdis),
+	new distributions::ErecRelBias("numu_ccdis", filt_numu_ccdis),
+	new distributions::ErecAbsBias("numu_ccdis", filt_numu_ccdis),
+	new distributions::Erec("numu_ccdis", filt_numu_ccdis),
+	new distributions::Emiss("numu_ccdis", filt_numu_ccdis),
+	new distributions::Pmiss("numu_ccdis", filt_numu_ccdis),
+	new distributions::PPLead("numu_ccdis", filt_numu_ccdis),
+	new distributions::PLead_KE("numu_ccdis", filt_numu_ccdis),
+	new distributions::ThetaPLead("numu_ccdis", filt_numu_ccdis),
+	new distributions::PNLead("numu_ccdis", filt_numu_ccdis),
+	new distributions::NLead_KE("numu_ccdis", filt_numu_ccdis),
+	new distributions::ThetaNLead("numu_ccdis", filt_numu_ccdis),
+	new distributions::PPiLead("numu_ccdis", filt_numu_ccdis),
+	new distributions::ThetaPiLead("numu_ccdis", filt_numu_ccdis),
+    new distributions::Mult("numu_ccdis_multp", filt_numu_ccdis, 2212),
+    new distributions::Mult("numu_ccdis_multp_30MeV", filt_numu_ccdis, 2212, 0.03),
+    new distributions::Mult("numu_ccdis_multn", filt_numu_ccdis, 2112),
+    new distributions::Mult("numu_ccdis_multpip", filt_numu_ccdis, 211),
+    new distributions::Mult("numu_ccdis_multpim", filt_numu_ccdis, -211),
+    new distributions::Mult("numu_ccdis_multpi0", filt_numu_ccdis, 111),
+    new distributions::Mult("numu_ccdis_multkp", filt_numu_ccdis, 321),
+    new distributions::Mult("numu_ccdis_multkm", filt_numu_ccdis, -321),
+    new distributions::Mult("numu_ccdis_multk0", filt_numu_ccdis, 311),
+    new distributions::Mult_Nucl("numu_ccdis_multNucleons", filt_numu_ccdis),
+	new distributions::tki_dpt("numu_ccdis", filt_numu_ccdis),
+	new distributions::tki_dat("numu_ccdis", filt_numu_ccdis),
+	new distributions::tki_dphit("numu_ccdis", filt_numu_ccdis),
+	new distributions::ErecYrec("numu_ccdis", filt_numu_ccdis),
+	new distributions::EmissPmiss("numu_ccdis", filt_numu_ccdis),
+	new distributions::Q0Q3("numu_ccdis", filt_numu_ccdis),
+	new distributions::PThetaLep("numu_ccdis", filt_numu_ccdis),
+	new distributions::Q2W("numu_ccdis", filt_numu_ccdis),
+	new distributions::BjorkenX_InelY("numu_ccdis", filt_numu_ccdis),
+	new distributions::Enu_Erec("numu_ccdis", filt_numu_ccdis),
+	
 	// numu NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("numu_nc", filt_numu_nc),
 	new distributions::q0("numu_nc", filt_numu_nc),
@@ -447,6 +501,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("numubar_ccmec", filt_numubar_ccmec),
 	new distributions::Enu_Erec("numubar_ccmec", filt_numubar_ccmec),
 
+	// numubarDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("numubar_ccdis_enu", filt_numubar_ccdis),
+	new distributions::q0("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::q0Reco("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::q3("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::q3Reco("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Q2("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Q2Reco("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ExperimentalistsW("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ExperimentalistsBjorkenX("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ExperimentalistsInelasticityY("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::RecoInelasticityY("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PLep("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ThetaLep("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ErecRelBias("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ErecAbsBias("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Erec("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Emiss("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Pmiss("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PPLead("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PLead_KE("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ThetaPLead("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PNLead("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::NLead_KE("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ThetaNLead("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PPiLead("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ThetaPiLead("numubar_ccdis", filt_numubar_ccdis),
+    new distributions::Mult("numubar_ccdis_multp", filt_numubar_ccdis, 2212),
+    new distributions::Mult("numubar_ccdis_multp_30MeV", filt_numubar_ccdis, 2212, 0.03),
+    new distributions::Mult("numubar_ccdis_multn", filt_numubar_ccdis, 2112),
+    new distributions::Mult("numubar_ccdis_multpip", filt_numubar_ccdis, 211),
+    new distributions::Mult("numubar_ccdis_multpim", filt_numubar_ccdis, -211),
+    new distributions::Mult("numubar_ccdis_multpi0", filt_numubar_ccdis, 111),
+    new distributions::Mult("numubar_ccdis_multkp", filt_numubar_ccdis, 321),
+    new distributions::Mult("numubar_ccdis_multkm", filt_numubar_ccdis, -321),
+    new distributions::Mult("numubar_ccdis_multk0", filt_numubar_ccdis, 311),
+    new distributions::Mult_Nucl("numubar_ccdis_multNucleons", filt_numubar_ccdis),
+	new distributions::tki_dpt("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::tki_dat("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::tki_dphit("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::ErecYrec("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::EmissPmiss("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Q0Q3("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::PThetaLep("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Q2W("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::BjorkenX_InelY("numubar_ccdis", filt_numubar_ccdis),
+	new distributions::Enu_Erec("numubar_ccdis", filt_numubar_ccdis),
+	
 	// numubar NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("numubar_nc", filt_numubar_nc),
 	new distributions::q0("numubar_nc", filt_numubar_nc),
@@ -655,6 +757,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nue_ccmec", filt_nue_ccmec),
 	new distributions::Enu_Erec("nue_ccmec", filt_nue_ccmec),
 
+	// nueDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("nue_ccdis_enu", filt_nue_ccdis),
+	new distributions::q0("nue_ccdis", filt_nue_ccdis),
+	new distributions::q0Reco("nue_ccdis", filt_nue_ccdis),
+	new distributions::q3("nue_ccdis", filt_nue_ccdis),
+	new distributions::q3Reco("nue_ccdis", filt_nue_ccdis),
+	new distributions::Q2("nue_ccdis", filt_nue_ccdis),
+	new distributions::Q2Reco("nue_ccdis", filt_nue_ccdis),
+	new distributions::ExperimentalistsW("nue_ccdis", filt_nue_ccdis),
+	new distributions::ExperimentalistsBjorkenX("nue_ccdis", filt_nue_ccdis),
+	new distributions::ExperimentalistsInelasticityY("nue_ccdis", filt_nue_ccdis),
+	new distributions::RecoInelasticityY("nue_ccdis", filt_nue_ccdis),
+	new distributions::PLep("nue_ccdis", filt_nue_ccdis),
+	new distributions::ThetaLep("nue_ccdis", filt_nue_ccdis),
+	new distributions::ErecRelBias("nue_ccdis", filt_nue_ccdis),
+	new distributions::ErecAbsBias("nue_ccdis", filt_nue_ccdis),
+	new distributions::Erec("nue_ccdis", filt_nue_ccdis),
+	new distributions::Emiss("nue_ccdis", filt_nue_ccdis),
+	new distributions::Pmiss("nue_ccdis", filt_nue_ccdis),
+	new distributions::PPLead("nue_ccdis", filt_nue_ccdis),
+	new distributions::PLead_KE("nue_ccdis", filt_nue_ccdis),
+	new distributions::ThetaPLead("nue_ccdis", filt_nue_ccdis),
+	new distributions::PNLead("nue_ccdis", filt_nue_ccdis),
+	new distributions::NLead_KE("nue_ccdis", filt_nue_ccdis),
+	new distributions::ThetaNLead("nue_ccdis", filt_nue_ccdis),
+	new distributions::PPiLead("nue_ccdis", filt_nue_ccdis),
+	new distributions::ThetaPiLead("nue_ccdis", filt_nue_ccdis),
+    new distributions::Mult("nue_ccdis_multp", filt_nue_ccdis, 2212),
+    new distributions::Mult("nue_ccdis_multp_30MeV", filt_nue_ccdis, 2212, 0.03),
+    new distributions::Mult("nue_ccdis_multn", filt_nue_ccdis, 2112),
+    new distributions::Mult("nue_ccdis_multpip", filt_nue_ccdis, 211),
+    new distributions::Mult("nue_ccdis_multpim", filt_nue_ccdis, -211),
+    new distributions::Mult("nue_ccdis_multpi0", filt_nue_ccdis, 111),
+    new distributions::Mult("nue_ccdis_multkp", filt_nue_ccdis, 321),
+    new distributions::Mult("nue_ccdis_multkm", filt_nue_ccdis, -321),
+    new distributions::Mult("nue_ccdis_multk0", filt_nue_ccdis, 311),
+    new distributions::Mult_Nucl("nue_ccdis_multNucleons", filt_nue_ccdis),
+	new distributions::tki_dpt("nue_ccdis", filt_nue_ccdis),
+	new distributions::tki_dat("nue_ccdis", filt_nue_ccdis),
+	new distributions::tki_dphit("nue_ccdis", filt_nue_ccdis),
+	new distributions::ErecYrec("nue_ccdis", filt_nue_ccdis),
+	new distributions::EmissPmiss("nue_ccdis", filt_nue_ccdis),
+	new distributions::Q0Q3("nue_ccdis", filt_nue_ccdis),
+	new distributions::PThetaLep("nue_ccdis", filt_nue_ccdis),
+	new distributions::Q2W("nue_ccdis", filt_nue_ccdis),
+	new distributions::BjorkenX_InelY("nue_ccdis", filt_nue_ccdis),
+	new distributions::Enu_Erec("nue_ccdis", filt_nue_ccdis),
+	
 	// nue NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nue_nc", filt_nue_nc),
 	new distributions::q0("nue_nc", filt_nue_nc),
@@ -863,6 +1013,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nuebar_ccmec", filt_nuebar_ccmec),
 	new distributions::Enu_Erec("nuebar_ccmec", filt_nuebar_ccmec),
 
+	// nuebarDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("nuebar_ccdis_enu", filt_nuebar_ccdis),
+	new distributions::q0("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::q0Reco("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::q3("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::q3Reco("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Q2("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Q2Reco("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ExperimentalistsW("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ExperimentalistsBjorkenX("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ExperimentalistsInelasticityY("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::RecoInelasticityY("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PLep("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ThetaLep("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ErecRelBias("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ErecAbsBias("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Erec("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Emiss("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Pmiss("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PPLead("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PLead_KE("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ThetaPLead("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PNLead("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::NLead_KE("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ThetaNLead("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PPiLead("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ThetaPiLead("nuebar_ccdis", filt_nuebar_ccdis),
+    new distributions::Mult("nuebar_ccdis_multp", filt_nuebar_ccdis, 2212),
+    new distributions::Mult("nuebar_ccdis_multp_30MeV", filt_nuebar_ccdis, 2212, 0.03),
+    new distributions::Mult("nuebar_ccdis_multn", filt_nuebar_ccdis, 2112),
+    new distributions::Mult("nuebar_ccdis_multpip", filt_nuebar_ccdis, 211),
+    new distributions::Mult("nuebar_ccdis_multpim", filt_nuebar_ccdis, -211),
+    new distributions::Mult("nuebar_ccdis_multpi0", filt_nuebar_ccdis, 111),
+    new distributions::Mult("nuebar_ccdis_multkp", filt_nuebar_ccdis, 321),
+    new distributions::Mult("nuebar_ccdis_multkm", filt_nuebar_ccdis, -321),
+    new distributions::Mult("nuebar_ccdis_multk0", filt_nuebar_ccdis, 311),
+    new distributions::Mult_Nucl("nuebar_ccdis_multNucleons", filt_nuebar_ccdis),
+	new distributions::tki_dpt("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::tki_dat("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::tki_dphit("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::ErecYrec("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::EmissPmiss("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Q0Q3("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::PThetaLep("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Q2W("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::BjorkenX_InelY("nuebar_ccdis", filt_nuebar_ccdis),
+	new distributions::Enu_Erec("nuebar_ccdis", filt_nuebar_ccdis),
+	
 	// nuebar NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nuebar_nc", filt_nuebar_nc),
 	new distributions::q0("nuebar_nc", filt_nuebar_nc),
@@ -1022,7 +1220,6 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nutau_ccres", filt_nutau_ccres),
 	new distributions::Enu_Erec("nutau_ccres", filt_nutau_ccres),
 	
-	
 	// nutauMEC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nutau_ccmec_enu", filt_nutau_ccmec),
 	new distributions::q0("nutau_ccmec", filt_nutau_ccmec),
@@ -1071,6 +1268,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nutau_ccmec", filt_nutau_ccmec),
 	new distributions::Enu_Erec("nutau_ccmec", filt_nutau_ccmec),
 
+	// nutauDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("nutau_ccdis_enu", filt_nutau_ccdis),
+	new distributions::q0("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::q0Reco("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::q3("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::q3Reco("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Q2("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Q2Reco("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ExperimentalistsW("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ExperimentalistsBjorkenX("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ExperimentalistsInelasticityY("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::RecoInelasticityY("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PLep("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ThetaLep("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ErecRelBias("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ErecAbsBias("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Erec("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Emiss("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Pmiss("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PPLead("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PLead_KE("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ThetaPLead("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PNLead("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::NLead_KE("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ThetaNLead("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PPiLead("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ThetaPiLead("nutau_ccdis", filt_nutau_ccdis),
+    new distributions::Mult("nutau_ccdis_multp", filt_nutau_ccdis, 2212),
+    new distributions::Mult("nutau_ccdis_multp_30MeV", filt_nutau_ccdis, 2212, 0.03),
+    new distributions::Mult("nutau_ccdis_multn", filt_nutau_ccdis, 2112),
+    new distributions::Mult("nutau_ccdis_multpip", filt_nutau_ccdis, 211),
+    new distributions::Mult("nutau_ccdis_multpim", filt_nutau_ccdis, -211),
+    new distributions::Mult("nutau_ccdis_multpi0", filt_nutau_ccdis, 111),
+    new distributions::Mult("nutau_ccdis_multkp", filt_nutau_ccdis, 321),
+    new distributions::Mult("nutau_ccdis_multkm", filt_nutau_ccdis, -321),
+    new distributions::Mult("nutau_ccdis_multk0", filt_nutau_ccdis, 311),
+    new distributions::Mult_Nucl("nutau_ccdis_multNucleons", filt_nutau_ccdis),
+	new distributions::tki_dpt("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::tki_dat("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::tki_dphit("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::ErecYrec("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::EmissPmiss("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Q0Q3("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::PThetaLep("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Q2W("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::BjorkenX_InelY("nutau_ccdis", filt_nutau_ccdis),
+	new distributions::Enu_Erec("nutau_ccdis", filt_nutau_ccdis),
+	
 	// nutau NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nutau_nc", filt_nutau_nc),
 	new distributions::q0("nutau_nc", filt_nutau_nc),
@@ -1230,7 +1475,6 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nutaubar_ccres", filt_nutaubar_ccres),
 	new distributions::Enu_Erec("nutaubar_ccres", filt_nutaubar_ccres),
 	
-	
 	// nutaubarMEC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nutaubar_ccmec_enu", filt_nutaubar_ccmec),
 	new distributions::q0("nutaubar_ccmec", filt_nutaubar_ccmec),
@@ -1279,6 +1523,54 @@ int main(int argc, char* argv[]) {
 	new distributions::BjorkenX_InelY("nutaubar_ccmec", filt_nutaubar_ccmec),
 	new distributions::Enu_Erec("nutaubar_ccmec", filt_nutaubar_ccmec),
 
+	// nutaubarDIS ------------------------------------------------------------------------//
+	new distributions::Enu_true("nutaubar_ccdis_enu", filt_nutaubar_ccdis),
+	new distributions::q0("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::q0Reco("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::q3("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::q3Reco("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Q2("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Q2Reco("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ExperimentalistsW("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ExperimentalistsBjorkenX("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ExperimentalistsInelasticityY("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::RecoInelasticityY("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PLep("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ThetaLep("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ErecRelBias("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ErecAbsBias("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Erec("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Emiss("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Pmiss("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PPLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PLead_KE("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ThetaPLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PNLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::NLead_KE("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ThetaNLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PPiLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ThetaPiLead("nutaubar_ccdis", filt_nutaubar_ccdis),
+    new distributions::Mult("nutaubar_ccdis_multp", filt_nutaubar_ccdis, 2212),
+    new distributions::Mult("nutaubar_ccdis_multp_30MeV", filt_nutaubar_ccdis, 2212, 0.03),
+    new distributions::Mult("nutaubar_ccdis_multn", filt_nutaubar_ccdis, 2112),
+    new distributions::Mult("nutaubar_ccdis_multpip", filt_nutaubar_ccdis, 211),
+    new distributions::Mult("nutaubar_ccdis_multpim", filt_nutaubar_ccdis, -211),
+    new distributions::Mult("nutaubar_ccdis_multpi0", filt_nutaubar_ccdis, 111),
+    new distributions::Mult("nutaubar_ccdis_multkp", filt_nutaubar_ccdis, 321),
+    new distributions::Mult("nutaubar_ccdis_multkm", filt_nutaubar_ccdis, -321),
+    new distributions::Mult("nutaubar_ccdis_multk0", filt_nutaubar_ccdis, 311),
+    new distributions::Mult_Nucl("nutaubar_ccdis_multNucleons", filt_nutaubar_ccdis),
+	new distributions::tki_dpt("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::tki_dat("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::tki_dphit("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::ErecYrec("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::EmissPmiss("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Q0Q3("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::PThetaLep("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Q2W("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::BjorkenX_InelY("nutaubar_ccdis", filt_nutaubar_ccdis),
+	new distributions::Enu_Erec("nutaubar_ccdis", filt_nutaubar_ccdis),
+	
 	// nutaubar NC ------------------------------------------------------------------------//
 	new distributions::Enu_true("nutaubar_nc", filt_nutaubar_nc),
 	new distributions::q0("nutaubar_nc", filt_nutaubar_nc),
