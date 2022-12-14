@@ -10,13 +10,13 @@ import ROOT
 # Extend to 10 colors
 #color = [ROOT.kBlack, ROOT.kRed+1, ROOT.kBlue+1, ROOT.kGreen+3, ROOT.kMagenta+3, ROOT.kOrange+7,
 #color = [ROOT.kBlack, ROOT.kRed+1, ROOT.kBlue+1, ROOT.kGreen+3, ROOT.kMagenta+3, ROOT.kOrange+7,
-			ROOT.kPink+2, ROOT.kCyan-3, ROOT.kTeal+1, ROOT.kYellow+2]
+#			ROOT.kPink+2, ROOT.kCyan-3, ROOT.kTeal+1, ROOT.kYellow+2]
 
 color = [ROOT.kBlack, ROOT.kBlack, ROOT.kBlue+1, ROOT.kBlue+1, ROOT.kGreen+3, ROOT.kGreen+3,
 		ROOT.kMagenta+3, ROOT.kMagenta+3, ROOT.kOrange+7, ROOT.kOrange+7]
 
 #style = [1,9,2,3,4,6,7,8,5,10]
-style = [1,9,1,9,1,9,1,9,1,9]
+style = [1,3,1,3,1,3,1,3,1,3]
 #color = [ROOT.kRed,ROOT.kBlue,ROOT.kOrange-3,ROOT.kMagenta+2,ROOT.kGreen+2]
 #style = [1,9,2,3,4]
 
