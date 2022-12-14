@@ -94,40 +94,67 @@ int NuisTree::GetGENIEMode() const{
   // 3) NUISANCE modes https://github.com/NUISANCEMC/nuisance/blob/master/src/InputHandler/InteractionModes.h
   switch(Mode){
     case 1: // NUISANCE kCCQE = 1
-    case 51: // NUISANCE kNCELonp = 51
+    case -1:
+	case 51: // NUISANCE kNCELonp = 51
+	case -51:
     case 52: // NUISANCE kNCELonn = 52
+	case -52:
       return enums::kQE;
       break;
     case 11: // NUISANCE kCC1piponp (Res) = 11
+	case -11:
     case 12: // NUISANCE kCC1pi0onn (Res) = 12
+	case -12:
     case 13: // NUISANCE kCC1piponn (Res) = 13
+	case -13:
     case 17: // NUISANCE kCC1gamma (Res) = 17
+	case -17:
     case 22: // NUISANCE kCC1etaonn (Res) = 22
+	case -22:
     case 23: // NUISANCE kCC1kaonp (Res) = 23
+	case -23:
     case 31: // NUISANCE kNC1pi0onn (Res) = 31
+	case -31:
     case 32: // NUISANCE kNC1pi0onp (Res) = 32
+	case -32:
     case 33: // NUISANCE kNC1pimonn (Res) = 33
+	case -33:
     case 34: // NUISANCE kNC1piponp (Res) = 34
+	case -34:
     case 38: // NUISANCE kNC1gamman (Res) = 38
+	case -38:
     case 39: // NUISANCE kNC1gammap (Res) = 39
+	case -39:
     case 42: // NUISANCE kNC1etaonn (Res) = 42
+	case -42:
     case 43: // NUISANCE kNC1etaonp (Res) = 43
+	case -43:
     case 44: // NUISANCE kNC1kaon0 (Res) = 44
+	case -44:
     case 45: // NUISANCE kNC1kaonp (Res) = 45
+	case -45:
       return enums::kRes;
       break;
     case 21: // NUISANCE kCCmultipi (multipi with W<2 GeV, not sure if res or dis but will call DIS) = 21
+	case -21:
     case 26: // NUISANCE kCCDIS = 26
+	case -26:
     case 41: // NUISANCE kNCmultipi (multipi with W<2 GeV, not sure if res or dis but will call DIS) = 41
+	case -41:
     case 46: // NUISANCE kNCDIS = 46
+	case -46:
       return enums::kDIS;
       break;
     case 16: // NUISANCE kCCCoherent = 16
+	case -16:
     case 36: // NUISANCE kNCCoherent = 36
+	case -36:
       return enums::kCoh;
       break;
     case 2: // NUISANCE kCC2p2h = 2
+	case -2:
     case 53: // NUISANCE kNC2p2h = 53
+	case -53:
       return enums::kMEC;
       break;
     default :
