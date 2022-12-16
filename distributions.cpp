@@ -7,6 +7,7 @@
 #include "TH3F.h"
 #include "TMath.h"
 #include "TVector3.h"
+#include "TString.h"
 #include "TLorentzVector.h"
 #include "distributions.h"
 #include "filter.h"
@@ -273,7 +274,7 @@ namespace distributions {
 		std::string hname = "h1D_ThW_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
-				50, .5, 3);
+				100, .5, 5);
 	}
 
 	void TheoristsW::Fill(const NuisTree& nuistr) {
@@ -338,7 +339,7 @@ namespace distributions {
 		std::string hname = "h1D_expW_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
-				100, 0.5, 3);
+				100, 0.5, 5);
 	}
 
 	void ExperimentalistsW::Fill(const NuisTree& nuistr) {
@@ -905,7 +906,7 @@ namespace distributions {
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];
     snprintf(spdg, 100, "%i", pdg);
-    title = std::string("Multiplicity, PDG ") + spdg + ", " + _filter->title;
+    title = std::string("Multiplicity, PDG ") + spdg + Form(", KE > %f", _ethreshold) + _filter->title;
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 15, 0, 15);
   }
@@ -962,7 +963,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      100, 0,1.);
+                      150, 0,1.5);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt
@@ -986,7 +987,7 @@ namespace distributions {
 	  std::string hname = "h1D_dphit_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + ";d#phi_{T};Events/tonne/year").c_str(),
-					  20, 0, .5*TMath::Pi());
+					  20, 0, 1.*TMath::Pi());
   }
 
   void tki_dphit::Fill(const NuisTree& nuistr){ // dphi_T
