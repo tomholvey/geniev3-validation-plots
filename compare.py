@@ -8,8 +8,8 @@ import os
 import ROOT
 
 # Extend to 10 colors
-color = [ROOT.kBlack, ROOT.kBlack, ROOT.kBlue+1, ROOT.kBlue+1, ROOT.kGreen+3, ROOT.kGreen+3,
-		ROOT.kMagenta+1, ROOT.kMagenta+1, ROOT.kOrange+7, ROOT.kOrange+7]
+color = [ROOT.kAzure+1,ROOT.kAzure+1,ROOT.kViolet+1,ROOT.kViolet+1, ROOT.kPink-9,ROOT.kPink-9,
+			ROOT.kOrange+7, ROOT.kOrange+7, ROOT.kOrange-2, ROOT.kOrange-2]
 style = [1,3,1,3,1,3,1,3,1,3]
 
 if __name__ == '__main__':

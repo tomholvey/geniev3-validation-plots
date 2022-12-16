@@ -906,7 +906,7 @@ namespace distributions {
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];
     snprintf(spdg, 100, "%i", pdg);
-    title = std::string("Multiplicity, PDG ") + spdg + Form(", KE > %f", _ethreshold) + _filter->title;
+    title = std::string("Multiplicity, PDG ") + spdg + Form(", KE > %0.3f", _ethreshold) + _filter->title;
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 15, 0, 15);
   }
