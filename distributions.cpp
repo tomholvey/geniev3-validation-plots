@@ -906,7 +906,8 @@ namespace distributions {
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];
     snprintf(spdg, 100, "%i", pdg);
-    title = std::string("Multiplicity, PDG ") + spdg + Form(", KE > %0.3f", _ethreshold) + _filter->title;
+    if (ethreshold > 0) title += std::string("Multiplicity, PDG ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+    title = std::string("Multiplicity, PDG ") + spdg + _filter->title;
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 15, 0, 15);
   }
@@ -938,6 +939,7 @@ namespace distributions {
   Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
     title = std::string("Multiplicity, Nucleons ") + _filter->title;
+    if (ethreshold > 0) title += std::string("Multiplicity, Nucleons ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
     std::string hname = std::string("h1D_multNucleons_") + name;
     hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 15, 0, 15);
   }
