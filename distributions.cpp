@@ -939,7 +939,7 @@ namespace distributions {
   Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
     title = std::string("Multiplicity, Nucleons ") + _filter->title;
-    if (ethreshold > 0) title += std::string("Multiplicity, Nucleons ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+    if (ethreshold > 0) title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
     std::string hname = std::string("h1D_multNucleons_") + name;
     hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 15, 0, 15);
   }
