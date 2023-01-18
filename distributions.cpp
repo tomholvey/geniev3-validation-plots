@@ -54,125 +54,103 @@ namespace distributions {
 		std::string hname = "h1D_Enu_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + "; E_{#nu}^{true} (GeV); Events/tonne/year").c_str(),
-				50, 0., 5.);
+				60, 0., 6.);
 	}
 
 	void Enu_true::Fill(const NuisTree& nuistr){
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.Enu_true, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
-	// Theorists nu/q0 -----------------------------------------------------------------------------------------------------------//
-	TheoristsNu::TheoristsNu(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-		title = std::string("Theorists nu = p.q/sqrt(p^2), ") + _filter->title;
-		std::string hname = "hthnu_" + name;
-		hist = new TH1F(hname.c_str(),
-				(title + ";Theorists nu = p.q/sqrt(p^2);Events/tonne/year").c_str(),
-				20, 0, 1);
-	}
-
-	void TheoristsNu::Fill(const NuisTree& nuistr) {
-		// Find neutrino and nucleon in list of initial state particles
-		int i_nuc = -999;
-		int i_nu = -999;
-		for (int i=0; i<nuistr.ninitp; i++) {
-			if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
-				// check this is the only initial nucleon we've found
-				assert(i_nuc==-999);
-				i_nuc = i;
-			}
-			// Or NC 2p2h 
-			else if (nuistr.Mode == 53) {
-				assert(i_nuc = -999);
-				i_nuc = i;
-			}
-			if (nuistr.initp_pdg[i]==nuistr.PDGnu){
-				// check this is the only neutrino we've found
-				assert(i_nu==-999);
-				i_nu = i;
-			}
-		}
-
-		// Find lepton  in list of final state particles
-		int i_lep = -999;
-		for (int i=0; i<nuistr.nfsp; i++) {
-			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
-				// check this is the only lepton we've found
-				assert(i_lep==-999);
-				i_lep = i;
-			}
-		}
-
-		if (i_nuc == -999){
-			return;
-		}
-		assert (i_nuc!=-999);
-		assert (i_nu!=-999);
-		assert (i_lep!=-999);
-
-		TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
-		TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
-
-		TLorentzVector q = k-kprime;
-		// Sanity check: q should match saved values in tree!
-		assert((q.Mag2()*-1 - nuistr.Q2) < 1e-4);
-
-		TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
-
-		float nu_theorist = (p.Dot(q))/(p.Mag());
-
-		dynamic_cast<TH1F*>(hist)->Fill(nu_theorist, nuistr.Weight*(nuistr.fScaleFactor*1E38));
-	}
-
-	// q0/Experimentalists nu ----------------------------------------------------------------------------------//
-	q0::q0(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	// low version q0/Experimentalists nu ----------------------------------------------------------------------------------//
+	q0_low::q0_low(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 		title = std::string("q^{0}, ") + _filter->title;
-		std::string hname = "h1D_q0_" + name;
+		std::string hname = "h1D_lowq0_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
-				50, 0., 1.5);
+				15, 0., 1.5);
 	}
 
-	void q0::Fill(const NuisTree& nuistr){
+	void q0_low::Fill(const NuisTree& nuistr){
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
-	// q0 reco --------------------------------------------------------------------------------------------------//
-	q0Reco::q0Reco(std::string _name, Filter* _filter) : Distribution(_name, _filter){
-		title = std::string("Reco. q0, ") + _filter->title;
-		std::string hname = "h1D_q0Reco_" + name;
+	// low version q0/Experimentalists nu ----------------------------------------------------------------------------------//
+	q0_high::q0_high(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("q^{0}, ") + _filter->title;
+		std::string hname = "h1D_highq0_" + name;
 		hist = new TH1F(hname.c_str(),
-						(title + "; Reco. q^{0} (GeV); Events/tonne/year").c_str(),
-						50, 0, 1.5);
+				(title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
+				60, 0., 6);
 	}
 
-	void q0Reco::Fill(const NuisTree& nuistr){
+	void q0_high::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+	
+	// low q0 reco --------------------------------------------------------------------------------------------------//
+	q0Reco_low::q0Reco_low(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. q0, ") + _filter->title;
+		std::string hname = "h1D_Lowq0Reco_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + "; Reco. q^{0} (GeV); Events/tonne/year").c_str(),
+						15, 0, 1.5);
+	}
+
+	void q0Reco_low::Fill(const NuisTree& nuistr){
 		float q0Reco = -1* (nuistr.ELep - (nuistr.ELep + nuistr.Erecoil_minerva));
 		dynamic_cast<TH1F*>(hist)->Fill(q0Reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
-	// q3 -----------------------------------------------------------------------------------------------------//
-	q3::q3(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	// high q0 reco --------------------------------------------------------------------------------------------------//
+	q0Reco_high::q0Reco_high(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. q0, ") + _filter->title;
+		std::string hname = "h1D_Highq0Reco_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + "; Reco. q^{0} (GeV); Events/tonne/year").c_str(),
+						60, 0, 6);
+	}
+
+	void q0Reco_high::Fill(const NuisTree& nuistr){
+		float q0Reco = -1* (nuistr.ELep - (nuistr.ELep + nuistr.Erecoil_minerva));
+		dynamic_cast<TH1F*>(hist)->Fill(q0Reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+	
+	// low q3 -----------------------------------------------------------------------------------------------------//
+	q3_low::q3_low(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 		title = std::string("q3, ") + _filter->title;
-		std::string hname = "h1D_q3_" + name;
+		std::string hname = "h1D_Lowq3_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + " ; q^{3} (GeV); Events/tonne/year").c_str(),
 				30, 0., 3.);
 	}
 
-	void q3::Fill(const NuisTree& nuistr){
+	void q3_low::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+	
+	// high q3 -----------------------------------------------------------------------------------------------------//
+	q3_high::q3_high(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("q3, ") + _filter->title;
+		std::string hname = "h1D_Highq3_" + name;
+		hist = new TH1F(hname.c_str(),
+				(title + " ; q^{3} (GeV); Events/tonne/year").c_str(),
+				60, 0., 6.);
+	}
+
+	void q3_high::Fill(const NuisTree& nuistr){
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
-	// q3 reco --------------------------------------------------------------------------------------------------//
-	q3Reco::q3Reco(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+	// low q3 reco --------------------------------------------------------------------------------------------------//
+	q3Reco_low::q3Reco_low(std::string _name, Filter* _filter) : Distribution(_name, _filter){
 		title = std::string("Reco. q3, ") + _filter->title;
-		std::string hname = "h1D_q3Reco_" + name;
+		std::string hname = "h1D_Lowq3Reco_" + name;
 		hist = new TH1F(hname.c_str(),
 						(title + "; Reco. q^{3} (GeV); Events/tonne/year").c_str(),
 						30, 0., 3.);
 	}
 
-	void q3Reco::Fill(const NuisTree& nuistr){
+	void q3Reco_low::Fill(const NuisTree& nuistr){
 		float m_lep = 0;
 		int i_lep=-999;
 		for (int i=0; i<nuistr.nfsp; i++){
@@ -210,6 +188,52 @@ namespace distributions {
 		dynamic_cast<TH1F*>(hist)->Fill(q3_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
+	// high q3 reco --------------------------------------------------------------------------------------------------//
+	q3Reco_high::q3Reco_high(std::string _name, Filter* _filter) : Distribution(_name, _filter){
+		title = std::string("Reco. q3, ") + _filter->title;
+		std::string hname = "h1D_Highq3Reco_" + name;
+		hist = new TH1F(hname.c_str(),
+						(title + "; Reco. q^{3} (GeV); Events/tonne/year").c_str(),
+						60, 0., 6.);
+	}
+
+	void q3Reco_high::Fill(const NuisTree& nuistr){
+		float m_lep = 0;
+		int i_lep=-999;
+		for (int i=0; i<nuistr.nfsp; i++){
+			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
+			// check this is the only lepton we've found
+				if (i_lep!=-999){
+				// previously found another lepton -- error!
+				}
+			// Set lepton mass (e, mu or tau) 
+			if (nuistr.fsp_pdg[i] == 11 || nuistr.fsp_pdg[i] == -11){
+				m_lep = 0.000511;
+			}
+			else if (nuistr.fsp_pdg[i] == 13 || nuistr.fsp_pdg[i] == -13){
+				m_lep = 0.10567;
+			}
+			else if (nuistr.fsp_pdg[i] == 15 || nuistr.fsp_pdg[i] == -15){
+				m_lep = 1.7769;
+			}
+			i_lep = i;
+			}
+		}
+
+		// Now get lepton momentum from components.
+		TVector3 pv(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep]);
+		float p = pv.Mag();
+		
+		// Q2_reco = 2*Erec*(E_lep - p_lep*costheta_lep) - m_lep^2 
+		float Erec = nuistr.ELep + nuistr.Erecoil_minerva;
+		float Q2_reco = 2*Erec*(nuistr.ELep - p*nuistr.CosLep) - m_lep*m_lep;
+		float q0Reco = -1* (nuistr.ELep - (nuistr.ELep + nuistr.Erecoil_minerva));
+		
+		float q3_reco = TMath::Sqrt(q0Reco*q0Reco + Q2_reco*Q2_reco);	
+		
+		
+		dynamic_cast<TH1F*>(hist)->Fill(q3_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
 
 	// Q2 -------------------------------------------------------------------------------------------------------//
 	Q2::Q2(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
@@ -268,90 +292,19 @@ namespace distributions {
 		dynamic_cast<TH1F*>(hist)->Fill(Q2_reco, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 
-	// Theorists W ---------------------------------------------------------------------------------------------------------//
-	TheoristsW::TheoristsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-		title = std::string("Theorists W = sqrt(p.p + 2p.q - Q^2), ") + _filter->title;
-		std::string hname = "h1D_ThW_" + name;
-		hist = new TH1F(hname.c_str(),
-				(title + ";Theorists W = sqrt(p.p + 2p.q - Q^2) (GeV);Events/tonne/year").c_str(),
-				100, .5, 5);
-	}
-
-	void TheoristsW::Fill(const NuisTree& nuistr) {
-		// Find neutrino and nucleon in list of initial state particles
-		int i_nuc = -999;
-		int i_nu = -999;
-		for (int i=0; i<nuistr.ninitp; i++) {
-			// Look for initial state proton/neutron, nucleus for Coh
-			if (nuistr.initp_pdg[i]==2212 || nuistr.initp_pdg[i]==2112 ||  (nuistr.Mode == 36 && nuistr.initp_pdg[i] > 999999999)){ 
-				// check this is the only initial nucleon we've found
-				assert(i_nuc==-999);
-				i_nuc = i;
-			}
-			// Or NC 2p2h 
-			else if (nuistr.Mode == 53) {
-				assert(i_nuc = -999);
-				i_nuc = i;
-			}
-			if (nuistr.initp_pdg[i]==nuistr.PDGnu){
-				// check this is the only neutrino we've found
-				assert(i_nu==-999);
-				i_nu = i;
-			}
-		}
-
-		// Find lepton  in list of final state particles
-		int i_lep = -999;
-		for (int i=0; i<nuistr.nfsp; i++) {
-			if (nuistr.fsp_pdg[i]==nuistr.PDGLep && nuistr.fsp_E[i]==nuistr.ELep){
-				// check this is the only lepton we've found
-				assert(i_lep==-999);
-				i_lep = i;
-			}
-		}
-
-		if (i_nuc == -999){
-			// Should only be for reverse muon decay and elastic electron scattering
-			// Very rare!!
-			return;
-		}
-		assert (i_nuc!=-999);
-		assert (i_nu!=-999);
-		assert (i_lep!=-999);
-
-		TLorentzVector k(nuistr.initp_px[i_nu],nuistr.initp_py[i_nu],nuistr.initp_pz[i_nu],nuistr.initp_E[i_nu]);
-		TLorentzVector kprime(nuistr.fsp_px[i_lep],nuistr.fsp_py[i_lep],nuistr.fsp_pz[i_lep],nuistr.fsp_E[i_lep]);
-
-		TLorentzVector q = k-kprime;
-		// Sanity check: q should match saved values in tree!
-		assert(q.Mag2()*-1 - nuistr.Q2 < 1e-4);
-
-		TLorentzVector p(nuistr.initp_px[i_nuc],nuistr.initp_py[i_nuc],nuistr.initp_pz[i_nuc],nuistr.initp_E[i_nuc]);
-
-		float w_theorist = TMath::Sqrt(p.Mag2() + 2*p.Dot(q) - nuistr.Q2);
-
-		dynamic_cast<TH1F*>(hist)->Fill(w_theorist,nuistr.Weight*(nuistr.fScaleFactor*1E38));
-	}
-
 	// Experimentalists W --------------------------------------------------------------------------------------------------//
 	ExperimentalistsW::ExperimentalistsW(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
-		title = std::string("Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2), ") + _filter->title;
+		title = std::string("W, ") + _filter->title;
 		std::string hname = "h1D_expW_" + name;
 		hist = new TH1F(hname.c_str(),
-				(title + ";Experimentalists W = sqrt(M^2 + 2Mq0 - Q^2) (GeV);Events/tonne/year").c_str(),
-				100, 0.5, 5);
+				(title + ";W (GeV);Events/tonne/year").c_str(),
+				100, 0., 5);
 	}
 
 	void ExperimentalistsW::Fill(const NuisTree& nuistr) {
 		// below what previous DIRT validations did
-		//dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest,nuistr.Weight*(nuistr.fScaleFactor*1E38));
-
-    float Q2 = nuistr.Q2;
-    float q0 = nuistr.q0;
-    float M = 0.93956541; // neutron mass GeV
-    float W = TMath::Sqrt(M*M + 2*M*q0 - Q2);
-    dynamic_cast<TH1F*>(hist)->Fill(W,nuistr.Weight*(nuistr.fScaleFactor*1E38));
-  }
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.W_nuc_rest, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	 }
 
   // Theorists Bjorken X --------------------------------------------------------------------------------------------------//
   TheoristsBjorkenX::TheoristsBjorkenX(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
@@ -530,7 +483,7 @@ namespace distributions {
     std::string hname = "h1D_plep_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";p_{lep} (GeV);Events/tonne/year").c_str(),
-                    20, 0, 2);
+                    60, 0, 6);
   }
 
   void PLep::Fill(const NuisTree& nuistr) {
@@ -616,7 +569,7 @@ namespace distributions {
 	  std::string hname = "h1D_Erec_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; E_{rec} (GeV); Events/tonne/year").c_str(),
-					  50, 0., 5.);
+					  60, 0., 6.);
   }
 
   void Erec::Fill(const NuisTree& nuistr){
@@ -909,7 +862,7 @@ namespace distributions {
     if (ethreshold > 0) title += std::string("Multiplicity, PDG ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
     title = std::string("Multiplicity, PDG ") + spdg + _filter->title;
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
-    hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 15, 0, 15);
+    hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 8, 0, 8);
   }
 
   void Mult::Fill(const NuisTree& nuistr) {
@@ -938,10 +891,11 @@ namespace distributions {
 
   Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
-    title = std::string("Multiplicity, Nucleons ") + _filter->title;
+    //title = std::string("Multiplicity, Nucleons ") + _filter->title;
     if (ethreshold > 0) title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+    title = std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
     std::string hname = std::string("h1D_multNucleons_") + name;
-    hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 15, 0, 15);
+    hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 8, 0, 8);
   }
 
   void Mult_Nucl::Fill(const NuisTree& nuistr) {
@@ -965,7 +919,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      150, 0,1.5);
+                      100, 0,1.);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt
@@ -1109,7 +1063,7 @@ namespace distributions {
 	  std::string hname = "h2D_ErecYrec_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; E_{rec} (GeV); y_{rec}; Events/tonne/year").c_str(),
-					  60, 0., 5., 20, 0., 1.);
+					  60, 0., 6., 20, 0., 1.);
   }
 
   void ErecYrec::Fill(const NuisTree& nuistr){
@@ -1120,7 +1074,7 @@ namespace distributions {
   // 2D Emiss-Pmiss ---------------------------------------------------------------------------------------------------->
   EmissPmiss::EmissPmiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 	  title = std::string("E_{miss} - p_{miss}, ") + _filter->title;
-	  std::string hname = "hEmissPmiss_" + name;
+	  std::string hname = "h2D_EmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
 					  40, 0., 0.4, 60, 0., 0.06);
@@ -1131,15 +1085,28 @@ namespace distributions {
   }
 
   // q0-q3 ------------------------------------------------------------------------------------------------------------->
-  Q0Q3::Q0Q3(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+  Q0Q3_low::Q0Q3_low(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 	  title = std::string("q^{0} - q^{3}, ") + _filter->title;
 	  std::string hname = "h2D_q0q3_" + name;
 	  hist = new TH2F(hname.c_str(),
                     (title + ";q^{0} (GeV);q^{3} (GeV);Events/tonne/year").c_str(),
-                    48, 0, 1.2, 48, 0, 1.2);
+                    20, 0, 2, 20, 0, 2);
   }
 
-  void Q0Q3::Fill(const NuisTree& nuistr) {
+  void Q0Q3_low::Fill(const NuisTree& nuistr) {
+	  dynamic_cast<TH2F*>(hist)->Fill(nuistr.q0, nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+  }
+  
+  // q0-q3 high ------------------------------------------------------------------------------------------------------------->
+  Q0Q3_high::Q0Q3_high(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("q^{0} - q^{3}, ") + _filter->title;
+	  std::string hname = "h2D_q0q3_high_" + name;
+	  hist = new TH2F(hname.c_str(),
+                    (title + ";q^{0} (GeV);q^{3} (GeV);Events/tonne/year").c_str(),
+                    60, 0, 6, 60, 0, 6);
+  }
+
+  void Q0Q3_high::Fill(const NuisTree& nuistr) {
 	  dynamic_cast<TH2F*>(hist)->Fill(nuistr.q0, nuistr.q3, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
@@ -1149,7 +1116,7 @@ namespace distributions {
     std::string hname = "h2D_plep_thetalep_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + ";p_{lep} (GeV);cos#theta_{lep};Events/tonne/year").c_str(),
-                    20, 0, 2, 25, 0, 1);
+                    60, 0, 6, 25, 0, 1);
   }
 
   void PThetaLep::Fill(const NuisTree& nuistr) {
@@ -1231,7 +1198,7 @@ namespace distributions {
     std::string hname = "h2D_Q2_W_" + name;
     hist = new TH2F(hname.c_str(),
                     (title + "; W (GeV); Q^2 (GeV^2) ;Events/tonne/year").c_str(),
-                    50, 0.5, 1.5, 40, 0.5, 3);
+                    50, 0., 5, 30, 0., 3);
   }
 
   void Q2W::Fill(const NuisTree& nuistr){
@@ -1257,7 +1224,7 @@ namespace distributions {
 	  std::string hname = "h2D_etru_erec_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + " ; E_{#nu}; E_{reco.}; Events/tonne/year").c_str(),
-					  50, 0, 5., 50, 0., 5.);
+					  60, 0, 6., 60, 0., 6.);
   }
 
   void Enu_Erec::Fill(const NuisTree& nuistr){

@@ -54,36 +54,54 @@ namespace distributions {
 	  void Fill(const NuisTree& nuistr);
   };
 
-  // q0
-  struct q0 : public Distribution {
-	  q0(std::string _name, Filter* _filter);
-	  void Fill(const NuisTree& nuistr);
-  };
-
-  // q0 Reco
-  struct q0Reco : public Distribution {
-	  q0Reco(std::string _name, Filter* _filter);
+  // q0 low
+  struct q0_low : public Distribution {
+	  q0_low(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
   
-  // q3
-  struct q3 : public Distribution {
-	  q3(std::string _name, Filter* _filter);
+  // q0 high
+  struct q0_high : public Distribution {
+	  q0_high(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+
+  // low q0 Reco
+  struct q0Reco_low : public Distribution {
+	  q0Reco_low(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
   
-  // q3 Reco
-  struct q3Reco : public Distribution {
-	  q3Reco(std::string _name, Filter* _filter);
+  // high q0 Reco
+  struct q0Reco_high : public Distribution {
+	  q0Reco_high(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  // low q3
+  struct q3_low : public Distribution {
+	  q3_low(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  // high q3
+  struct q3_high : public Distribution {
+	  q3_high(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  // low q3 Reco
+  struct q3Reco_low : public Distribution {
+	  q3Reco_low(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
 
-  /** Theorists' nu distribution, nu = (p.q)/(sqrt(p^2)) (where p is the 4-momentum of the initial nucleon and q is 4-momentum pnu-plep) */
-  struct TheoristsNu : public Distribution {
-    TheoristsNu(std::string _name, Filter* _filter);
-    void Fill(const NuisTree& nuistr);
+  // high q3 Reco
+  struct q3Reco_high : public Distribution {
+	  q3Reco_high(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
   };
-
+  
   /** Q2 */
   struct Q2 : public Distribution {
     Q2(std::string _name, Filter* _filter);
@@ -93,12 +111,6 @@ namespace distributions {
   /** Reco Q2 */
   struct Q2Reco : public Distribution {
     Q2Reco(std::string _name, Filter* _filter);
-    void Fill(const NuisTree& nuistr);
-  };
-
-  /** Theorists' W distribution, W = sqrt(p'^2) = sqrt(p^2 + 2p.q - Q2) (where p is the 4-momentum of the initial nucleon, p' is the 4-momentum of the outgoing nucleon, q is 4-momentum pnu-plep, and Q2 = -q^2) */
-  struct TheoristsW : public Distribution {
-    TheoristsW(std::string _name, Filter* _filter);
     void Fill(const NuisTree& nuistr);
   };
 
@@ -293,8 +305,14 @@ namespace distributions {
   };
 
   /** q0/q3 distribution */
-  struct Q0Q3 : public Distribution {
-    Q0Q3(std::string _name, Filter* _filter);
+  struct Q0Q3_low : public Distribution {
+    Q0Q3_low(std::string _name, Filter* _filter);
+    void Fill(const NuisTree& nuistr);
+  };
+  
+  /** q0/q3 distribution */
+  struct Q0Q3_high : public Distribution {
+    Q0Q3_high(std::string _name, Filter* _filter);
     void Fill(const NuisTree& nuistr);
   };
   
