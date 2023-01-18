@@ -1077,7 +1077,7 @@ namespace distributions {
 	  std::string hname = "h2D_EmissPmiss_" + name;
 	  hist = new TH2F(hname.c_str(),
 					  (title + "; p_{miss} (GeV); E_{miss} (GeV); Events/tonne/year").c_str(),
-					  40, 0., 0.4, 60, 0., 0.06);
+					  40, 0., 0.4, 40, 0., 0.06);
   }
 
   void EmissPmiss::Fill(const NuisTree& nuistr){
