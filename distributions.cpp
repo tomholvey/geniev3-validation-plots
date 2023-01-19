@@ -919,7 +919,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      100, 0,1.);
+                      15, 0,1.);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt

@@ -20,6 +20,7 @@ if __name__ == '__main__':
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetPalette(ROOT.kBird)
     ROOT.gROOT.SetBatch(True)
+    ROOT.TGaxis.SetMaxDigits(3);
 
     i = 0
     fv = []
@@ -58,6 +59,7 @@ if __name__ == '__main__':
 
         ov[0].Sumw2()
         if ov[0].IsA() == ROOT.TH1F.Class():
+            ov[0].GetXaxis().SetTitleOffset(1.2)
             ov[0].Draw("E")
             for i in range(len(ov)):
                 if (ov[i]): 
@@ -83,7 +85,7 @@ if __name__ == '__main__':
             c.SaveAs(plotname)
 
         elif ov[0].IsA() == ROOT.TH2F.Class():
-            c.SetRightMargin(0.27)
+            c.SetRightMargin(0.21)
             # First do a loop through all these plots to find the maximum z value and set all plots to have the same z scale
             zmax=0;
             for i in range(len(ov)):
@@ -94,23 +96,11 @@ if __name__ == '__main__':
                     # Draw distribution as-is (comparisons are hard for 2D plots)
                     #c.SetLogz()
                     ov[i].SetTitle(' '.join(ov[i].GetTitle().split(' ')[0:] + legendtitle[i].split(' ')[0:]))
-                    #ov[i].GetZaxis().SetTitle('Ratio'+legendtitle[i]+'/'+legendtitle[0])
-                    #ov[i].GetZaxis().SetTitle(legendtitle[i])
-                    #ov[i].SetMinimum(0)
-                    #ov[i].SetMaximum(zmax)
+                    ov[i].GetXaxis().SetTitleOffset(1.2)
+                    ov[i].GetZaxis().SetTitleOffset(2.)
                     ov[i].Draw('colz')
-                    ov[i].GetZaxis().SetTitleOffset(1.25)
                     
                 plotname = '_'.join(['2D'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
                 c.SaveAs(plotname)
-
-                # Draw ratio to the first one given in arguments
-                # Comment out for now because it's just confusing
-                # ov[i].Divide(ov[0])
-                # ov[i].Draw('colz')
-                # #ov[i].GetZaxis().SetRangeUser(0,2)
-                #
-                # plotname = '_'.join(['cmp'] + legendtitle[i].split(' ')[1:] + legendtitle[0].split(' ')[0:] + k.GetName().split('_')[1:]) + '.pdf'
-                # c.SaveAs(plotname)
 
         del c
