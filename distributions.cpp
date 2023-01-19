@@ -861,11 +861,15 @@ namespace distributions {
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];
     snprintf(spdg, 100, "%i", pdg);
-    if (ethreshold > 0){
-		title += std::string("Multiplicity, PDG ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+    std::ostringstream streamObj;
+	streamObj << std::setprecision(2);
+	streamObj << ethreshold *1000;
+	std::string eth_str = streamObj.str();
+	if (ethreshold > 0){
+		title += std::string("Multiplicity, PDG ") + spdg + ", " + std::string("E > ") + eth_str  + std::string(" MeV, ") + _filter->title;
 	}
     else{
-		title = std::string("Multiplicity, PDG ") + spdg + _filter->title;
+		title = std::string("Multiplicity, PDG ") + spdg + ", " + _filter->title;
 	}
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 8, 0, 8);
@@ -899,12 +903,11 @@ namespace distributions {
   Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
 	std::ostringstream streamObj;
-	streamObj << std::setprecision(1);
-	streamObj << ethreshold;
+	streamObj << std::setprecision(2);
+	streamObj << ethreshold *1000;
 	std::string eth_str = streamObj.str();
 	if (ethreshold > 0){
-		//title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
-		title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + eth_str + std::string(" MeV ") + _filter->title;
+		title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + eth_str + std::string(" MeV, ") + _filter->title;
 	}
     else{
 		title = std::string("Multiplicity, Nucleons, ") + _filter->title;

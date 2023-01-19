@@ -381,7 +381,7 @@ int main(int argc, char* argv[]) {
         new distributions::Mult("-14_ccqe_multkp", filt_numubar_ccqe, 321),
         new distributions::Mult("-14_ccqe_multkm", filt_numubar_ccqe, -321),
         new distributions::Mult("-14_ccqe_multk0", filt_numubar_ccqe, 311),
-		new distributions::Mult("-14_nc_photon", filt_numubar_ccqe, 22),
+		new distributions::Mult("-14_ccqe_photon", filt_numubar_ccqe, 22),
         new distributions::Mult_Nucl("-14_ccqe_multNucleons", filt_numubar_ccqe),
         new distributions::tki_dpt("-14_ccqe", filt_numubar_ccqe),
         new distributions::tki_dat("-14_ccqe", filt_numubar_ccqe),
