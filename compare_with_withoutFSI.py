@@ -1,4 +1,4 @@
-# TH: plot to compare 5 plot files (all same line style)
+# TH: comparison of 5 tunes, with and without FSI enabled
 # Make comparison plots from input files
 # Note: currently does up to 5 input files. Can be extended to do more if desired
 #
@@ -9,8 +9,9 @@ import os
 import ROOT
 
 # Extend to 10 colors
-color = [ROOT.kAzure+1, ROOT.kViolet+1, ROOT.kPink-9, ROOT.kOrange+7, ROOT.kOrange-2]
-style = [1,1,1,1,1]
+color = [ROOT.kAzure+1,ROOT.kAzure+1,ROOT.kViolet+1,ROOT.kViolet+1, ROOT.kPink-9,ROOT.kPink-9,
+			ROOT.kOrange+7, ROOT.kOrange+7, ROOT.kOrange-2, ROOT.kOrange-2]
+style = [1,3,1,3,1,3,1,3,1,3]
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
