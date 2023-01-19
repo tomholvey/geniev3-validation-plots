@@ -12,6 +12,8 @@
 #include "distributions.h"
 #include "filter.h"
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 // From GENIE: Decoding Z from the PDG code (PDG ion code convention: 10LZZZAAAI)
 int IonPdgCodeToZ(int ion_pdgc) {
@@ -859,8 +861,12 @@ namespace distributions {
       : Distribution(_name, _filter), pdg(_pdg), ethreshold(_ethreshold) {
     char spdg[100];
     snprintf(spdg, 100, "%i", pdg);
-    if (ethreshold > 0) title += std::string("Multiplicity, PDG ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
-    title = std::string("Multiplicity, PDG ") + spdg + _filter->title;
+    if (ethreshold > 0){
+		title += std::string("Multiplicity, PDG ") + spdg + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+	}
+    else{
+		title = std::string("Multiplicity, PDG ") + spdg + _filter->title;
+	}
     std::string hname = std::string("h1D_mult_") + spdg + "_" + name;
     hist = new TH1F(hname.c_str(), (title + ";N_{" + spdg + "}").c_str(), 8, 0, 8);
   }
@@ -875,7 +881,8 @@ namespace distributions {
     else if (TMath::Abs(pdg) == 211) mass = 0.139570; // pi+/-
     else if (pdg == 2112) mass = 0.939565; // neutron
     else if (pdg == 2212) mass = 0.938272; // proton
-    else{
+    else if (pdg == 22) mass = 0.; // photon
+	else{
       std::cout << "Error: could not assign mass for particle with pdg " << pdg << ". Setting mass to 0 - this will mess up any thresholding you try to apply!" << std::endl;
       mass = 0;
     }\
@@ -891,9 +898,17 @@ namespace distributions {
 
   Mult_Nucl::Mult_Nucl(std::string _name, Filter* _filter, float _ethreshold)
       : Distribution(_name, _filter), ethreshold(_ethreshold) {
-    //title = std::string("Multiplicity, Nucleons ") + _filter->title;
-    if (ethreshold > 0) title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
-    title = std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+	std::ostringstream streamObj;
+	streamObj << std::setprecision(1);
+	streamObj << ethreshold;
+	std::string eth_str = streamObj.str();
+	if (ethreshold > 0){
+		//title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + std::to_string(ethreshold*1000) + std::string(" MeV ") + _filter->title;
+		title += std::string("Multiplicity, Nucleons, ") + std::string("E > ") + eth_str + std::string(" MeV ") + _filter->title;
+	}
+    else{
+		title = std::string("Multiplicity, Nucleons, ") + _filter->title;
+	}
     std::string hname = std::string("h1D_multNucleons_") + name;
     hist = new TH1F(hname.c_str(), (title + ";No. of Nucleons; Events/tonne/year").c_str(), 8, 0, 8);
   }
