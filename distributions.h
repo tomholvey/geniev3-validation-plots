@@ -181,16 +181,29 @@ namespace distributions {
     Erec(std::string _name, Filter* _filter);
     void Fill(const NuisTree& nuistr);
   };
- 
+
   /** 1D Emiss **/
   struct Emiss : public Distribution {
-	  Emiss(std::string _name, Filter* _filter);
+	  Emiss(std::string _name, Filter* _filter, bool _doRW=false);
+	  void Fill(const NuisTree& nuistr);
+	  bool doRW; // reweight?
+  };
+
+  /** 1D Emiss pre FSI **/
+  struct Emiss_preFSI : public Distribution {
+	  Emiss_preFSI(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
 
   /** 1D Pmiss **/
   struct Pmiss : public Distribution {
 	  Pmiss(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+  
+  /** 1D Pmiss pre FSI **/
+  struct Pmiss_preFSI : public Distribution {
+	  Pmiss_preFSI(std::string _name, Filter* _filter);
 	  void Fill(const NuisTree& nuistr);
   };
  

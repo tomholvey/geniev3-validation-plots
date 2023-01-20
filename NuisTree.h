@@ -19,6 +19,8 @@ public:
   // Add Emiss and Pmiss
   float Emiss;
   TVector3* pmiss;
+  float Emiss_preFSI;
+  TVector3* pmiss_preFSI;
   
   int Mode;
   int PDGnu;

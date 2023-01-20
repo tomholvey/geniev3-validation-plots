@@ -580,7 +580,7 @@ namespace distributions {
   }
 
   // 1D Emiss ----------------------------------------------------------------------------------------------------------------//
-  Emiss::Emiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+  Emiss::Emiss(std::string _name, Filter* _filter, bool _doRW) : Distribution(_name, _filter), doRW(_doRW) {
 	  title = std::string("E_{miss}, ") + _filter->title;
 	  std::string hname = "h1D_Emiss_" + name;
 	  hist = new TH1F(hname.c_str(),
@@ -589,8 +589,20 @@ namespace distributions {
   }
 
   void Emiss::Fill(const NuisTree& nuistr){
-	  //std::cout << "Filling Emiss with : " << nuistr.Emiss << std::endl;
 	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+  }
+  
+  // 1D Emiss pre FSI ----------------------------------------------------------------------------------------------------------------//
+  Emiss_preFSI::Emiss_preFSI(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("E_{miss}, pre-FSI, ") + _filter->title;
+	  std::string hname = "h1D_Emiss_preFSI_" + name;
+	  hist = new TH1F(hname.c_str(),
+					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
+					   60, 0., 0.06);
+  }
+
+  void Emiss_preFSI::Fill(const NuisTree& nuistr){
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss_preFSI, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   // 1D Pmiss -----------------------------------------------------------------------------------------------------------//
@@ -605,6 +617,20 @@ namespace distributions {
   void Pmiss::Fill(const NuisTree& nuistr){
 	  //std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
 	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss->Mag(), nuistr.Weight*(nuistr.fScaleFactor*1E38));
+  }
+  
+  // 1D Pmiss pre FSI -----------------------------------------------------------------------------------------------------------//
+  Pmiss_preFSI::Pmiss_preFSI(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("p_{miss}, pre-FSI, ") + _filter->title;
+	  std::string hname = "h1D_pmiss_preFSI_" + name;
+	  hist = new TH1F(hname.c_str(),
+					  (title + " ; p_{miss} (GeV); Events/tonne/year").c_str(),
+						40, 0, 0.4);
+  }
+
+  void Pmiss_preFSI::Fill(const NuisTree& nuistr){
+	  //std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss_preFSI->Mag(), nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   // Leading Proton Momentum -----------------------------------------------------------------------------//

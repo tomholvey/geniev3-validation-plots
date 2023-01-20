@@ -7,6 +7,8 @@ NuisTree::NuisTree(TTree *intree):
     // Add in EMiss and PMiss
 	tr->SetBranchAddress("Emiss", &Emiss);
 	tr->SetBranchAddress("pmiss", &pmiss);
+	tr->SetBranchAddress("Emiss_preFSI", &Emiss_preFSI);
+	tr->SetBranchAddress("pmiss_preFSI", &pmiss_preFSI);
 	
 	tr->SetBranchAddress("Mode",&Mode);
     tr->SetBranchAddress("PDGnu",&PDGnu);
