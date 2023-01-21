@@ -48,7 +48,7 @@ void Distribution::Save(TCanvas* c) {
 }
 
 namespace distributions {
-
+	
 	// 1D Distributions
 	// Enu_true ------------------------------------------------------------------------------------------------------------------//
 	Enu_true::Enu_true(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
@@ -56,7 +56,7 @@ namespace distributions {
 		std::string hname = "h1D_Enu_" + name;
 		hist = new TH1F(hname.c_str(),
 				(title + "; E_{#nu}^{true} (GeV); Events/tonne/year").c_str(),
-				60, 0., 6.);
+				30, 0., 6.);
 	}
 
 	void Enu_true::Fill(const NuisTree& nuistr){
@@ -485,7 +485,7 @@ namespace distributions {
     std::string hname = "h1D_plep_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";p_{lep} (GeV);Events/tonne/year").c_str(),
-                    60, 0, 6);
+                    30, 0, 6);
   }
 
   void PLep::Fill(const NuisTree& nuistr) {
@@ -571,7 +571,7 @@ namespace distributions {
 	  std::string hname = "h1D_Erec_" + name;
 	  hist = new TH1F(hname.c_str(),
 					  (title + "; E_{rec} (GeV); Events/tonne/year").c_str(),
-					  60, 0., 6.);
+					  30, 0., 6.);
   }
 
   void Erec::Fill(const NuisTree& nuistr){
@@ -700,7 +700,7 @@ namespace distributions {
     std::string hname = "h1D_PLead_CosTheta_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{p};Events/tonne/year").c_str(),
-                    50, -1, 1);
+                    20, -1, 1);
   }
 
   void ThetaPLead::Fill(const NuisTree& nuistr) {
@@ -795,7 +795,7 @@ namespace distributions {
     std::string hname = "h1D_NLead_CosTheta_" + name;
     hist = new TH1F(hname.c_str(),
                     (title + ";cos#theta_{n};Events/tonne/year").c_str(),
-                    50, -1, 1);
+                    20, -1, 1);
   }
 
   void ThetaNLead::Fill(const NuisTree& nuistr) {
