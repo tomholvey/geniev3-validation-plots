@@ -35,7 +35,7 @@ struct Distribution {
 
   /** Write to a ROOT file. */
   void Write();
-
+  
   /** Plot and save to a PDF. */
   void Save(TCanvas* c=NULL);
 

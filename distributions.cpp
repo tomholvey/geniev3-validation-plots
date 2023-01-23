@@ -37,15 +37,14 @@ Distribution::Distribution(std::string _name, std::string _title,
 		hist->Write();
 	}
 
-
-void Distribution::Save(TCanvas* c) {
-	bool own_canvas = c == NULL;
-	c = (c == NULL ? new TCanvas("c1", "", 500, 500) : c);
-	c->cd();
-	hist->Draw("colz");
-	c->SaveAs((std::string("hist_") + name + ".png").c_str());
-	if (own_canvas) delete c;
-}
+	void Distribution::Save(TCanvas* c) {
+		bool own_canvas = c == NULL;
+		c = (c == NULL ? new TCanvas("c1", "", 500, 500) : c);
+		c->cd();
+		hist->Draw("colz");
+		c->SaveAs((std::string("hist_") + name + ".png").c_str());
+		if (own_canvas) delete c;
+	}
 
 namespace distributions {
 	
@@ -963,7 +962,7 @@ namespace distributions {
 	  std::string hname = "h1D_dpt_" + name;
       hist = new TH1F(hname.c_str(),
                       (title + ";dp_{T} (GeV);Events/tonne/year").c_str(),
-                      15, 0,1.);
+                      30, 0,1.);
   }
 
   void tki_dpt::Fill(const NuisTree& nuistr){ // dpt
