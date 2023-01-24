@@ -25,6 +25,8 @@ int main(int argc, char* argv[]) {
   double NDFHC_IntFlux = 0.0010489263;
   double NDRHC_IntFlux =  0.00094423594;
   double NucleonTonneScale = 6.02831;
+  bool rw_corr_tail = false;
+  double rw_corr = 1.;
   
   // Parse command-line arguments
   if (argc != 3) {
@@ -89,7 +91,7 @@ int main(int argc, char* argv[]) {
 
   // Define distributions (plots)
   std::vector<Distribution*> dists = {
-  	        // numCCQE --------------------------------------------------------------------//
+  	    // numCCQE --------------------------------------------------------------------//
         new distributions::Enu_true("14_ccqe_enu", filt_numu_ccqe),
         new distributions::q0_low("14_ccqe", filt_numu_ccqe),
         new distributions::q0Reco_low("14_ccqe", filt_numu_ccqe),
@@ -1624,41 +1626,103 @@ int main(int argc, char* argv[]) {
         new distributions::Q2W("-16_nc", filt_nutaubar_nc),
         new distributions::BjorkenX_InelY("-16_nc", filt_nutaubar_nc),
         new distributions::Enu_Erec("-16_nc", filt_nutaubar_nc),
-
-
   };
 
+  float wgt_ccqe = 0.;
+  float wgt_ccres = 0.;
+  float wgt_ccdis = 0.;
+  float events_ccqe =0.;
+  float events_ccres = 0.;
+  float events_ccdis = 0.;
+  
   // Event loop
   for (int ievent=0; ievent<nuistr.GetEntries(); ievent++) {
     if (ievent % 10000 == 0) {
       std::cout << "EVENT " << ievent << std::endl;
     }
     nuistr.GetEntry(ievent);
+	
+	if (rw_corr_tail == true){
+		// CCQE 
+		if (nuistr.Mode == 1){
+			if (nuistr.Emiss_preFSI > -0.01 && nuistr.Emiss_preFSI < 0.008){
+				nuistr.Weight = rw_corr * nuistr.Weight;
+			}
+			events_ccqe += 1;
+			wgt_ccqe += nuistr.Weight;
+		}
+		// CCRES
+		if (nuistr.Mode == 11 || nuistr.Mode == 12 || nuistr.Mode == 13){
+			if (nuistr.Emiss_preFSI > -0.01 && nuistr.Emiss_preFSI < 0.009){
+				nuistr.Weight = rw_corr * nuistr.Weight;
+			}
+			events_ccres += 1;
+			wgt_ccres += nuistr.Weight;
+		}
+		// CCDIS
+		if (nuistr.Mode == 21 || nuistr.Mode == 26){
+			if (nuistr.Emiss_preFSI < 0.008){
+				nuistr.Weight = rw_corr * nuistr.Weight;
+			}
+			events_ccdis += 1;
+			wgt_ccdis += nuistr.Weight;
+		}
+	}
 
-    for (Distribution* dist : dists) {
+	for (Distribution* dist : dists) {
       if ((*dist->filter)(nuistr)) {
         dist->Fill(nuistr);
       }
     }
   } // end event loop
 
+
   // Save histograms (to file and png)
   TFile* fout = new TFile(outfile.c_str(), "recreate");
   for (Distribution* dist : dists) {
     if (dist->hist->GetEntries() > 0) {
-	  if (nuistr.PDGnu == 12 || nuistr.PDGnu == 14 || nuistr.PDGnu == 16){
+
+		std::string hist_name = dist->hist->GetName();
+		std::cout << "---------------------------------------------" << std::endl;
+		std::cout << "Processing histogram: " << hist_name << std::endl;
+
+		// Reweighting correlated tail (bool set at start of script
+		if (rw_corr_tail == true){
+			// Normalise after previous corr. tail reweighting
+			if (hist_name.find("_ccqe") != std::string::npos){
+				std::cout << "reweighting corr. tail for ccqe event" << std::endl;
+				float weight = events_ccqe / wgt_ccqe;
+				dist->hist->Scale(weight);
+			}
+			if (hist_name.find("_ccres") != std::string::npos){
+				std::cout << "reweighting corr. tail for ccres event" << std::endl;
+				float weight = events_ccres / wgt_ccres;
+				dist->hist->Scale(weight);
+			}
+
+		}
+
+	  // Now normalise to events/tonne/year
+	  //if (nuistr.PDGnu == 12 || nuistr.PDGnu == 14 || nuistr.PDGnu == 16){
+	  if (hist_name.find(std::to_string(12)) != std::string::npos || hist_name.find(std::to_string(14)) != std::string::npos || hist_name.find(std::to_string(16))!= std::string::npos){
+		  std::cout << "Converting nu mode to events/tonne/year " << std::endl;
 		  // Scale by DUNE numu FHC ND flux to get interactions per nucleon per POT
 		  dist->hist->Scale(NDFHC_IntFlux * 1E-4);
 		  // Scale by Ar atoms * 1 year POT * 1E-38
 		  dist->hist->Scale(NucleonTonneScale * 1.1E12);
 	  }
-	  else if (nuistr.PDGnu == -12 || nuistr.PDGnu == -14 || nuistr.PDGnu == -16){
+	  else if (hist_name.find(std::to_string(-12)) != std::string::npos || hist_name.find(std::to_string(-14)) != std::string::npos || hist_name.find(std::to_string(-16)) != std::string::npos){
+		  std::cout << "Converting anti-nu mode to events/tonne/year " << std::endl;
 		  // Scale by DUNE numubar RHC ND flux to get interactions per nucleon per POT
 		  dist->hist->Scale(NDRHC_IntFlux * 1E-4 );
 		  // Scale by Ar atoms * 1 year POT * 1E-38
 		  dist->hist->Scale(NucleonTonneScale * 1.1E12);
 	  }
+
+	  hist_name.clear();
+
 	  dist->Write();
+	  std::cout << "---------------------------------------------" << std::endl;
       // dist->Save();
     }
   }

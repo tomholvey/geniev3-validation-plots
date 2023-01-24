@@ -1,10 +1,8 @@
 CPPFLAGS=-I $(BOOST_INC) \
          -I $(NUSIMDATA_INC) \
          -I $(ROOT_INC) \
-	 -I $(LARSIM_INC) \
 	 -I $(GENIE_INC) \
          -I $(HEP_CONCURRENCY_INC) \
-         -D__LARSOFT__
 
 CXX=g++
 CXXFLAGS=-std=c++17 -Wall -Werror -pedantic -g -I.
