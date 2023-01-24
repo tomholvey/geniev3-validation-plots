@@ -82,8 +82,10 @@ if __name__ == '__main__':
                 l.AddEntry(ov[i],legendtitle[i])
             l.Draw()
 
-            plotname = '_'.join(['1DComp'] + k.GetName().split('_')[1:]) + '.pdf'
-            c.SaveAs(plotname)
+            plotname_pdf = '_'.join(['1DComp'] + k.GetName().split('_')[1:]) + '.pdf'
+            plotname_root = '_'.join(['1DComp'] + k.GetName().split('_')[1:]) + '.root'
+            c.SaveAs(plotname_pdf)
+            c.SaveAs(plotname_root)
 
         elif ov[0].IsA() == ROOT.TH2F.Class():
             c.SetRightMargin(0.21)
@@ -101,7 +103,9 @@ if __name__ == '__main__':
                     ov[i].GetZaxis().SetTitleOffset(2.)
                     ov[i].Draw('colz')
                     
-                plotname = '_'.join(['2D'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
-                c.SaveAs(plotname)
+                plotname_pdf = '_'.join(['2D'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.pdf'
+                plotname_root = '_'.join(['2D'] + k.GetName().split('_')[1:] + legendtitle[i].split(' ')[0:]) + '.root'
+                c.SaveAs(plotname_pdf)
+                c.SaveAs(plotname_root)
 
         del c
