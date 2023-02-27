@@ -4,6 +4,10 @@
 NuisTree::NuisTree(TTree *intree):
   tr(intree)
   {
+    // Friend tree test
+    tr->SetBranchAddress("ntweaks_CorrTailRW", &ntweaks_CorrTailRW);
+    tr->SetBranchAddress("tweak_responses_CorrTailRW", &tweak_responses_CorrTailRW);
+    
     // Add in EMiss and PMiss
 	tr->SetBranchAddress("Emiss", &Emiss);
 	tr->SetBranchAddress("pmiss", &pmiss);
@@ -86,8 +90,25 @@ int NuisTree::GetCCNCEnum() const{
   else return enums::kNC;
 }
 
+bool NuisTree::IsCCQE() const {
+	if (abs(Mode) == 1) return true;
+	else return false;
+}
 
+bool NuisTree::IsCCMEC() const {
+	if (abs(Mode) == 2) return true;
+	else return false;
+}
 
+bool NuisTree::IsCCDIS() const {
+	if (abs(Mode) == 21 || abs(Mode) == 26) return true;
+	else return false;
+}
+
+bool NuisTree::IsCCRES() const {
+	if (abs(Mode) == 11 || abs(Mode) == 12 || abs(Mode) == 13 || abs(Mode) == 17 || abs(Mode) == 22 || abs(Mode) == 23) return true;
+	else return false;
+}
 
 int NuisTree::GetGENIEMode() const{
   // References:

@@ -16,11 +16,19 @@ public:
   int GetCCNCEnum() const;
   int GetGENIEMode() const;
 
+  bool IsCCQE() const;
+  bool IsCCMEC() const;
+  bool IsCCDIS() const;
+  bool IsCCRES() const;
+
   // Add Emiss and Pmiss
   float Emiss;
   TVector3* pmiss;
   float Emiss_preFSI;
   TVector3* pmiss_preFSI;
+
+  int ntweaks_CorrTailRW;
+  double tweak_responses_CorrTailRW[9999];
   
   int Mode;
   int PDGnu;
