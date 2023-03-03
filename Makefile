@@ -16,6 +16,8 @@ CXXFLAGSROOTONLY=$(shell root-config --cflags)
 
 LDFLAGSROOTONLY=$(shell root-config --libs)
 
+_dummy := $(shell mkdir -p bin)
+
 all: bin/plot_kinematics bin/plot_kinematics_reweights
 
 bin/plot_kinematics: src/plot_kinematics.cpp src/NuisTree.cpp src/filter.cpp src/distributions.cpp
@@ -25,3 +27,6 @@ bin/plot_kinematics: src/plot_kinematics.cpp src/NuisTree.cpp src/filter.cpp src
 bin/plot_kinematics_reweights: src/plot_kinematics_reweights.cpp src/NuisTree.cpp src/filter.cpp src/distributions.cpp
 	@echo Building $@
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ 
+
+links:
+	@ [ -d bin ]     || mkdir bin
