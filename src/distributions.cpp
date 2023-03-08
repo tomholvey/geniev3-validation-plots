@@ -604,6 +604,19 @@ namespace distributions {
 	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss_preFSI, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
+  // 1D Emiss GENIE ----------------------------------------------------------------------------------------------------------------//
+  Emiss_GENIE::Emiss_GENIE(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+	  title = std::string("E_{miss}, pre-FSI, GENIE, ") + _filter->title;
+	  std::string hname = "h1D_Emiss_GENIE_" + name;
+	  hist = new TH1F(hname.c_str(),
+					  (title + " ; E_{miss} (GeV); Events/tonne/year").c_str(),
+					   60, 0., 0.06);
+  }
+
+  void Emiss_GENIE::Fill(const NuisTree& nuistr){
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.Emiss_GENIE, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+  }
+
   // 1D Pmiss -----------------------------------------------------------------------------------------------------------//
   Pmiss::Pmiss(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 	  title = std::string("p_{miss}, ") + _filter->title;

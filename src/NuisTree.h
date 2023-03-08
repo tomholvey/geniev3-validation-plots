@@ -26,6 +26,7 @@ public:
   TVector3* pmiss;
   float Emiss_preFSI;
   TVector3* pmiss_preFSI;
+  double Emiss_GENIE;
 
   int ntweaks_CorrTailRW;
   double tweak_responses_CorrTailRW[9999];

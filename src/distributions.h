@@ -195,6 +195,12 @@ namespace distributions {
 	  void Fill(const NuisTree& nuistr);
   };
 
+  /** 1D Emiss pre FSI **/
+  struct Emiss_GENIE : public Distribution {
+	  Emiss_GENIE(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+
   /** 1D Pmiss **/
   struct Pmiss : public Distribution {
 	  Pmiss(std::string _name, Filter* _filter);

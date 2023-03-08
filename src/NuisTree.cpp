@@ -12,6 +12,7 @@ NuisTree::NuisTree(TTree *intree):
 	tr->SetBranchAddress("Emiss", &Emiss);
 	tr->SetBranchAddress("pmiss", &pmiss);
 	tr->SetBranchAddress("Emiss_preFSI", &Emiss_preFSI);
+    tr->SetBranchAddress("Emiss_GENIE", &Emiss_GENIE);
 	tr->SetBranchAddress("pmiss_preFSI", &pmiss_preFSI);
 	
 	tr->SetBranchAddress("Mode",&Mode);
