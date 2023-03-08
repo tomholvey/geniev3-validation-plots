@@ -13,9 +13,12 @@ color = [ROOT.kAzure+1, ROOT.kViolet+1, ROOT.kPink-9, ROOT.kOrange+7, ROOT.kOran
 style = [1,1,1,1,1]
 
 if __name__ == '__main__':
-    if len(sys.argv) < 4:
-        print('Usage: %s  input1.root legendtitle1 input2.root legendtitle2 [input3.root legendtitle3 input4.root legendtitle4 input5.root legendtitle5]' % sys.argv[0])
+    if len(sys.argv) < 5:
+        print('Usage: %s printMeans(true/false) input1.root legendtitle1 input2.root legendtitle2 [input3.root legendtitle3 input4.root legendtitle4 input5.root legendtitle5]' % sys.argv[0])
         sys.exit(0)
+    
+    printMeans = sys.argv[1]
+    print("Printing distribution means on legend = " + str(printMeans))
 
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetPalette(ROOT.kBird)
@@ -26,10 +29,10 @@ if __name__ == '__main__':
     fv = []
     legendtitle = []
     for arg in sys.argv:
-        if i<1:
+        if i<2:
             i = i+1
             continue
-        if i%2 != 0:
+        if i%2 == 0:
             fv.append(ROOT.TFile(arg))
             print('Adding to comparison: %s' % arg)
         else:
@@ -73,12 +76,15 @@ if __name__ == '__main__':
 
             ov[0].GetYaxis().SetRangeUser(0, ymax)
 
-            l = ROOT.TLegend(0.5, 0.65, 0.88, 0.88)
+            l = ROOT.TLegend(0.19, 0.67, 0.91, 0.89)
             l.SetBorderSize(0)
             l.SetFillColor(0)
             l.SetFillStyle(0)
             for i in range(len(ov)):
-                l.AddEntry(ov[i],legendtitle[i])
+                if printMeans == 'true':
+					l.AddEntry(ov[i],legendtitle[i] + " (#mu = " + str(round(1000*ov[i].GetMean(), 2)) + " MeV)")
+                else:
+					l.AddEntry(ov[i],legendtitle[i])
             l.Draw()
 
             plotname_pdf = '_'.join(['1DComp'] + k.GetName().split('_')[1:]) + '.pdf'
