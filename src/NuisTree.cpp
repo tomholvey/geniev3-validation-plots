@@ -5,8 +5,12 @@ NuisTree::NuisTree(TTree *intree):
   tr(intree)
   {
     // Friend tree test
-    tr->SetBranchAddress("ntweaks_CorrTailRW", &ntweaks_CorrTailRW);
-    tr->SetBranchAddress("tweak_responses_CorrTailRW", &tweak_responses_CorrTailRW);
+    tr->SetBranchAddress("ntweaks_Emiss_CorrTailRW", &ntweaks_Emiss_CorrTailRW);
+    tr->SetBranchAddress("tweak_responses_Emiss_CorrTailRW", &tweak_responses_Emiss_CorrTailRW);
+    tr->SetBranchAddress("ntweaks_Emiss_LinearRW", &ntweaks_Emiss_LinearRW);
+    tr->SetBranchAddress("tweak_responses_Emiss_LinearRW", &tweak_responses_Emiss_LinearRW);
+    tr->SetBranchAddress("ntweaks_Emiss_TrigRW", &ntweaks_Emiss_TrigRW);
+    tr->SetBranchAddress("tweak_responses_Emiss_TrigRW", &tweak_responses_Emiss_TrigRW);
     
     // Add in EMiss and PMiss
 	tr->SetBranchAddress("Emiss", &Emiss);

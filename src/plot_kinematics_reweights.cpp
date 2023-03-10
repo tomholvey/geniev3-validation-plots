@@ -1658,27 +1658,27 @@ int main(int argc, char* argv[]) {
     // This part needed to normalise distributions after applying weights from NuSystematics
 	if (nuistr.IsCCQE() == true){ // CCQE
         nEv_ccqe += 1;
-        norm_ccqe += nuistr.tweak_responses_CorrTailRW[WeightIndex];
+        norm_ccqe += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
     }
 	else if (nuistr.IsCCRES() == true) { // CCRES
         nEv_ccres += 1;
-        norm_ccres += nuistr.tweak_responses_CorrTailRW[WeightIndex];
+        norm_ccres += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
     }
 	else if (nuistr.IsCCMEC() == true) { // CCMEC
         nEv_ccmec += 1;
-        norm_ccmec += nuistr.tweak_responses_CorrTailRW[WeightIndex];
+        norm_ccmec += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
     }
 	else if (nuistr.IsCCDIS() == true) { // CCDIS
         nEv_ccdis += 1;
-        norm_ccdis += nuistr.tweak_responses_CorrTailRW[WeightIndex];
+        norm_ccdis += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
     }
     else if (nuistr.GetCCNCEnum() == 1){ // NC
         nEv_nc += 1;
-        norm_nc += nuistr.tweak_responses_CorrTailRW[WeightIndex];
+        norm_nc += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
     }
     
 	// Modify NUISANCE weight to be equal to NuSystematics weight
-    nuistr.Weight = nuistr.tweak_responses_CorrTailRW[WeightIndex];
+    nuistr.Weight = nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
 
 	for (Distribution* dist : dists) {
       if ((*dist->filter)(nuistr)) {
@@ -1696,7 +1696,8 @@ int main(int argc, char* argv[]) {
 		std::cout << "---------------------------------------------" << std::endl;
 		std::cout << "Processing histogram: " << hist_name << std::endl;
 
-        // Normliase distributions if re-weighting performed
+    
+	    // Normliase distributions if re-weighting performed
 		if (hist_name.find("_ccqe") != std::string::npos){
 				float weight = nEv_ccqe/norm_ccqe;
 				dist->hist->Scale(weight);

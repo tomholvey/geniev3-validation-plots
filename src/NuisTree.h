@@ -28,8 +28,12 @@ public:
   TVector3* pmiss_preFSI;
   double Emiss_GENIE;
 
-  int ntweaks_CorrTailRW;
-  double tweak_responses_CorrTailRW[9999];
+  int ntweaks_Emiss_CorrTailRW;
+  int ntweaks_Emiss_LinearRW;
+  int ntweaks_Emiss_TrigRW;
+  double tweak_responses_Emiss_CorrTailRW[9999];
+  double tweak_responses_Emiss_LinearRW[9999];
+  double tweak_responses_Emiss_TrigRW[9999];
   
   int Mode;
   int PDGnu;
