@@ -642,7 +642,7 @@ namespace distributions {
 
   void Pmiss_preFSI::Fill(const NuisTree& nuistr){
 	  //std::cout << "Filling Pmiss with : " << nuistr.pmiss->Mag() << std::endl;
-	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss_preFSI->Mag(), nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	  dynamic_cast<TH1F*>(hist)->Fill(nuistr.pmiss_preFSI, nuistr.Weight*(nuistr.fScaleFactor*1E38));
   }
 
   // Leading Proton Momentum -----------------------------------------------------------------------------//

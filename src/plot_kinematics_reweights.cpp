@@ -112,6 +112,7 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccqe", filt_numu_ccqe),
         new distributions::Emiss("14_ccqe", filt_numu_ccqe),
         new distributions::Pmiss("14_ccqe", filt_numu_ccqe),
+        new distributions::Pmiss_preFSI("14_ccqe", filt_numu_ccqe),
         new distributions::Emiss_preFSI("14_ccqe", filt_numu_ccqe),
         new distributions::Emiss_GENIE("14_ccqe", filt_numu_ccqe),
         new distributions::PPLead("14_ccqe", filt_numu_ccqe),
@@ -166,6 +167,7 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccres", filt_numu_ccres),
         new distributions::Emiss("14_ccres", filt_numu_ccres),
         new distributions::Pmiss("14_ccres", filt_numu_ccres),
+        new distributions::Pmiss_preFSI("14_ccres", filt_numu_ccres),
         new distributions::Emiss_preFSI("14_ccres", filt_numu_ccres),
         new distributions::Emiss_GENIE("14_ccres", filt_numu_ccres),
         new distributions::PPLead("14_ccres", filt_numu_ccres),
@@ -221,6 +223,7 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccmec", filt_numu_ccmec),
         new distributions::Emiss("14_ccmec", filt_numu_ccmec),
         new distributions::Pmiss("14_ccmec", filt_numu_ccmec),
+        new distributions::Pmiss_preFSI("14_ccmec", filt_numu_ccmec),
         new distributions::Emiss_GENIE("14_ccmec", filt_numu_ccmec),
         new distributions::PPLead("14_ccmec", filt_numu_ccmec),
         new distributions::PLead_KE("14_ccmec", filt_numu_ccmec),
@@ -273,7 +276,7 @@ int main(int argc, char* argv[]) {
         new distributions::Pmiss("14_ccdis", filt_numu_ccdis),
         new distributions::Emiss_preFSI("14_ccdis", filt_numu_ccdis),
         new distributions::Emiss_GENIE("14_ccdis", filt_numu_ccdis),
-        //new distributions::Pmiss_preFSI("14_ccdis", filt_numu_ccdis),
+        new distributions::Pmiss_preFSI("14_ccdis", filt_numu_ccdis),
         new distributions::PPLead("14_ccdis", filt_numu_ccdis),
         new distributions::PLead_KE("14_ccdis", filt_numu_ccdis),
         new distributions::ThetaPLead("14_ccdis", filt_numu_ccdis),
@@ -1658,27 +1661,27 @@ int main(int argc, char* argv[]) {
     // This part needed to normalise distributions after applying weights from NuSystematics
 	if (nuistr.IsCCQE() == true){ // CCQE
         nEv_ccqe += 1;
-        norm_ccqe += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+        norm_ccqe += nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
     }
 	else if (nuistr.IsCCRES() == true) { // CCRES
         nEv_ccres += 1;
-        norm_ccres += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+        norm_ccres += nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
     }
 	else if (nuistr.IsCCMEC() == true) { // CCMEC
         nEv_ccmec += 1;
-        norm_ccmec += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+        norm_ccmec += nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
     }
 	else if (nuistr.IsCCDIS() == true) { // CCDIS
         nEv_ccdis += 1;
-        norm_ccdis += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+        norm_ccdis += nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
     }
     else if (nuistr.GetCCNCEnum() == 1){ // NC
         nEv_nc += 1;
-        norm_nc += nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+        norm_nc += nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
     }
     
 	// Modify NUISANCE weight to be equal to NuSystematics weight
-    nuistr.Weight = nuistr.tweak_responses_Emiss_TrigRW[WeightIndex];
+    nuistr.Weight = nuistr.tweak_responses_Emiss_CorrTailRW[WeightIndex];
 
 	for (Distribution* dist : dists) {
       if ((*dist->filter)(nuistr)) {

@@ -25,7 +25,7 @@ public:
   float Emiss;
   TVector3* pmiss;
   float Emiss_preFSI;
-  TVector3* pmiss_preFSI;
+  float pmiss_preFSI;
   double Emiss_GENIE;
 
   int ntweaks_Emiss_CorrTailRW;
