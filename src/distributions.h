@@ -60,6 +60,12 @@ namespace distributions {
 	  void Fill(const NuisTree& nuistr);
   };
   
+  // q0 CPRA
+  struct q0_CRPA : public Distribution {
+	  q0_CRPA(std::string _name, Filter* _filter);
+	  void Fill(const NuisTree& nuistr);
+  };
+
   // q0 high
   struct q0_high : public Distribution {
 	  q0_high(std::string _name, Filter* _filter);

@@ -27,17 +27,19 @@ int main(int argc, char* argv[]) {
   double NucleonTonneScale = 6.02831;
 
   // Parse command-line arguments
-  if (argc != 3) {
+  if (argc != 4) {
     std::cout << "Usage: " << argv[0] << " "
-              << "OUTPUT.root INPUT.root" << std::endl;
+              << "WeightIndex(i) OUTPUT.root INPUT.root" << std::endl;
     return 0;
   }
   
+  int WeightIndex = atoi(argv[1]);
+
   gStyle->SetOptStat(0);
   gStyle->SetHistLineColor(kBlack);
 
-  std::string outfile = argv[1];
-  std::string infile = argv[2];
+  std::string outfile = argv[2];
+  std::string infile = argv[3];
 
   // Get tree from input file
   TFile *fin = new TFile(infile.c_str(),"READ");
@@ -91,8 +93,8 @@ int main(int argc, char* argv[]) {
   std::vector<Distribution*> dists = {
   	    // numCCQE --------------------------------------------------------------------//
         new distributions::Enu_true("14_ccqe_enu", filt_numu_ccqe),
-        new distributions::q0_CRPA("14_ccqe", filt_numu_ccqe),
         new distributions::q0_low("14_ccqe", filt_numu_ccqe),
+        new distributions::q0_CRPA("14_ccqe", filt_numu_ccqe),
         new distributions::q0Reco_low("14_ccqe", filt_numu_ccqe),
         new distributions::q3_low("14_ccqe", filt_numu_ccqe),
         new distributions::q3Reco_low("14_ccqe", filt_numu_ccqe),
@@ -111,6 +113,9 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccqe", filt_numu_ccqe),
         new distributions::Emiss("14_ccqe", filt_numu_ccqe),
         new distributions::Pmiss("14_ccqe", filt_numu_ccqe),
+        new distributions::Pmiss_preFSI("14_ccqe", filt_numu_ccqe),
+        new distributions::Emiss_preFSI("14_ccqe", filt_numu_ccqe),
+        new distributions::Emiss_GENIE("14_ccqe", filt_numu_ccqe),
         new distributions::PPLead("14_ccqe", filt_numu_ccqe),
         new distributions::PLead_KE("14_ccqe", filt_numu_ccqe),
         new distributions::ThetaPLead("14_ccqe", filt_numu_ccqe),
@@ -163,6 +168,9 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccres", filt_numu_ccres),
         new distributions::Emiss("14_ccres", filt_numu_ccres),
         new distributions::Pmiss("14_ccres", filt_numu_ccres),
+        new distributions::Pmiss_preFSI("14_ccres", filt_numu_ccres),
+        new distributions::Emiss_preFSI("14_ccres", filt_numu_ccres),
+        new distributions::Emiss_GENIE("14_ccres", filt_numu_ccres),
         new distributions::PPLead("14_ccres", filt_numu_ccres),
         new distributions::PLead_KE("14_ccres", filt_numu_ccres),
         new distributions::ThetaPLead("14_ccres", filt_numu_ccres),
@@ -216,6 +224,8 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccmec", filt_numu_ccmec),
         new distributions::Emiss("14_ccmec", filt_numu_ccmec),
         new distributions::Pmiss("14_ccmec", filt_numu_ccmec),
+        new distributions::Pmiss_preFSI("14_ccmec", filt_numu_ccmec),
+        new distributions::Emiss_GENIE("14_ccmec", filt_numu_ccmec),
         new distributions::PPLead("14_ccmec", filt_numu_ccmec),
         new distributions::PLead_KE("14_ccmec", filt_numu_ccmec),
         new distributions::ThetaPLead("14_ccmec", filt_numu_ccmec),
@@ -265,6 +275,9 @@ int main(int argc, char* argv[]) {
         new distributions::Erec("14_ccdis", filt_numu_ccdis),
         new distributions::Emiss("14_ccdis", filt_numu_ccdis),
         new distributions::Pmiss("14_ccdis", filt_numu_ccdis),
+        new distributions::Emiss_preFSI("14_ccdis", filt_numu_ccdis),
+        new distributions::Emiss_GENIE("14_ccdis", filt_numu_ccdis),
+        new distributions::Pmiss_preFSI("14_ccdis", filt_numu_ccdis),
         new distributions::PPLead("14_ccdis", filt_numu_ccdis),
         new distributions::PLead_KE("14_ccdis", filt_numu_ccdis),
         new distributions::ThetaPLead("14_ccdis", filt_numu_ccdis),
@@ -315,6 +328,7 @@ int main(int argc, char* argv[]) {
         new distributions::ErecAbsBias("14_nc", filt_numu_nc),
         new distributions::Erec("14_nc", filt_numu_nc),
         new distributions::Emiss("14_nc", filt_numu_nc),
+        new distributions::Emiss_GENIE("14_nc", filt_numu_nc),
         new distributions::Pmiss("14_nc", filt_numu_nc),
         new distributions::PPLead("14_nc", filt_numu_nc),
         new distributions::PLead_KE("14_nc", filt_numu_nc),
@@ -1633,12 +1647,17 @@ int main(int argc, char* argv[]) {
 	   std::cout << "EVENT " << ievent << std::endl;
     }
     nuistr.GetEntry(ievent);
+
+	// Modify NUISANCE weight to be equal to NuSystematics weight
+    
+	nuistr.Weight = nuistr.tweak_responses_RPA_LowETransfer_0[WeightIndex] * nuistr.tweak_responses_RPA_LowETransfer_1[WeightIndex] * nuistr.tweak_responses_RPA_LowETransfer_2[WeightIndex] * nuistr.tweak_responses_RPA_LowETransfer_3[WeightIndex] * nuistr.tweak_responses_RPA_HighETransfer_0[WeightIndex];
 	
 	for (Distribution* dist : dists) {
       if ((*dist->filter)(nuistr)) {
         dist->Fill(nuistr);
       }
     }
+
   } // end event loop
 
 

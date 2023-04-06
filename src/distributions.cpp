@@ -65,13 +65,30 @@ namespace distributions {
 	// low version q0/Experimentalists nu ----------------------------------------------------------------------------------//
 	q0_low::q0_low(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
 		title = std::string("q^{0}, ") + _filter->title;
-		std::string hname = "h1D_lowq0_" + name;
+		std::string hname = "h1D_lowq0_all_" + name;
 		hist = new TH1F(hname.c_str(),
-				(title + " ; q^{0} (GeV); Events/tonne/year").c_str(),
-				15, 0., 1.5);
+				(title + " ; #omega (GeV); Events/tonne/year").c_str(),
+				50, 0., 1.5);
 	}
 
 	void q0_low::Fill(const NuisTree& nuistr){
+		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
+	}
+
+	// CRPA version q0 ----------------------------------------------------------------------------------//
+	q0_CRPA::q0_CRPA(std::string _name, Filter* _filter) : Distribution(_name, _filter) {
+		title = std::string("#omega, fit binning, ") + _filter->title;
+		std::string hname = "h1D_CRPAq0_" + name;
+	
+		const int nOmega_bins = 5;	
+		double omega_bins[nOmega_bins + 1] = {0.01, 0.06, 0.11, 0.16, 0.21, 0.5};
+		
+		hist = new TH1F(hname.c_str(),
+				(title + " ; #omega (GeV); Events/tonne/year").c_str(),
+				nOmega_bins, omega_bins);
+	}
+
+	void q0_CRPA::Fill(const NuisTree& nuistr){
 		dynamic_cast<TH1F*>(hist)->Fill(nuistr.q0, nuistr.Weight*(nuistr.fScaleFactor*1E38));
 	}
 

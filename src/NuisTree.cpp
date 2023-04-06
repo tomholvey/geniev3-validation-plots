@@ -4,13 +4,15 @@
 NuisTree::NuisTree(TTree *intree):
   tr(intree)
   {
-    // Friend tree test
-    tr->SetBranchAddress("ntweaks_Emiss_CorrTailRW", &ntweaks_Emiss_CorrTailRW);
+    // Weights from NuSystematics
     tr->SetBranchAddress("tweak_responses_Emiss_CorrTailRW", &tweak_responses_Emiss_CorrTailRW);
-    tr->SetBranchAddress("ntweaks_Emiss_LinearRW", &ntweaks_Emiss_LinearRW);
     tr->SetBranchAddress("tweak_responses_Emiss_LinearRW", &tweak_responses_Emiss_LinearRW);
-    tr->SetBranchAddress("ntweaks_Emiss_TrigRW", &ntweaks_Emiss_TrigRW);
     tr->SetBranchAddress("tweak_responses_Emiss_TrigRW", &tweak_responses_Emiss_TrigRW);
+	tr->SetBranchAddress("tweak_responses_RPA_LowETransfer_0", &tweak_responses_RPA_LowETransfer_0);
+	tr->SetBranchAddress("tweak_responses_RPA_LowETransfer_1", &tweak_responses_RPA_LowETransfer_1);
+	tr->SetBranchAddress("tweak_responses_RPA_LowETransfer_2", &tweak_responses_RPA_LowETransfer_2);
+	tr->SetBranchAddress("tweak_responses_RPA_LowETransfer_3", &tweak_responses_RPA_LowETransfer_3);
+	tr->SetBranchAddress("tweak_responses_RPA_HighETransfer_0", &tweak_responses_RPA_HighETransfer_0);
     
     // Add in EMiss and PMiss
 	tr->SetBranchAddress("Emiss", &Emiss);

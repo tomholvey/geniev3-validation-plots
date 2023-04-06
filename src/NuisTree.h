@@ -28,12 +28,14 @@ public:
   float pmiss_preFSI;
   double Emiss_GENIE;
 
-  int ntweaks_Emiss_CorrTailRW;
-  int ntweaks_Emiss_LinearRW;
-  int ntweaks_Emiss_TrigRW;
   double tweak_responses_Emiss_CorrTailRW[9999];
   double tweak_responses_Emiss_LinearRW[9999];
   double tweak_responses_Emiss_TrigRW[9999];
+  double tweak_responses_RPA_LowETransfer_0[9999];
+  double tweak_responses_RPA_LowETransfer_1[9999];
+  double tweak_responses_RPA_LowETransfer_2[9999];
+  double tweak_responses_RPA_LowETransfer_3[9999];
+  double tweak_responses_RPA_HighETransfer_0[9999];
   
   int Mode;
   int PDGnu;
